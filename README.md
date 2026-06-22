@@ -335,7 +335,7 @@ This makes it a strong interdisciplinary Final Year Project involving software e
 
 Final Year Project Team
 
-- **PlatinumManX**  
+- **Ahmed Ansari**  
 🎓 Engineering Student | 💻 Technical Game Dev Enthusiast | ⚛️ Quantum ML Explorer  
 📫 Connect: [GitHub Profile](https://github.com/PlatinumManX)
 
