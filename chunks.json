@@ -1,0 +1,93 @@
+[
+    {
+        "id": "app_login",
+        "type": "function",
+        "name": "login",
+        "file": "app.py",
+        "code": "@app.route('/login', methods=['POST'])\ndef login():\n    pass"
+    },
+    {
+        "id": "app_register",
+        "type": "function",
+        "name": "register",
+        "file": "app.py",
+        "code": "@app.route('/register', methods=['POST'])\ndef register():\n    pass"
+    },
+    {
+        "id": "app_route_login",
+        "type": "route",
+        "name": "/login",
+        "file": "app.py",
+        "code": "@app.route('/login', methods=['POST'])\ndef login():\n    pass"
+    },
+    {
+        "id": "app_route_register",
+        "type": "route",
+        "name": "/register",
+        "file": "app.py",
+        "code": "@app.route('/register', methods=['POST'])\ndef register():\n    pass"
+    },
+    {
+        "id": "auth_login",
+        "type": "function",
+        "name": "login",
+        "file": "auth.py",
+        "code": "async def login(username, password):\n    await authenticate()\n    await generate_token()"
+    },
+    {
+        "id": "auth_authenticate",
+        "type": "function",
+        "name": "authenticate",
+        "file": "auth.py",
+        "code": "async def authenticate():\n    pass"
+    },
+    {
+        "id": "auth_generate_token",
+        "type": "function",
+        "name": "generate_token",
+        "file": "auth.py",
+        "code": "async def generate_token():\n    pass"
+    },
+    {
+        "id": "db_query_db",
+        "type": "function",
+        "name": "query_db",
+        "file": "db.py",
+        "code": "def query_db():\n    pass"
+    },
+    {
+        "id": "models_User",
+        "type": "class",
+        "name": "User",
+        "file": "models.py",
+        "code": ""
+    },
+    {
+        "id": "test_login",
+        "type": "function",
+        "name": "login",
+        "file": "test.py",
+        "code": "def login():\n    requests.post('https://api.example.com')\n    httpx.get('https://google.com')"
+    },
+    {
+        "id": "test_User",
+        "type": "class",
+        "name": "User",
+        "file": "test.py",
+        "code": ""
+    },
+    {
+        "id": "test_Admin",
+        "type": "class",
+        "name": "Admin",
+        "file": "test.py",
+        "code": ""
+    },
+    {
+        "id": "test_SuperAdmin",
+        "type": "class",
+        "name": "SuperAdmin",
+        "file": "test.py",
+        "code": ""
+    }
+]
