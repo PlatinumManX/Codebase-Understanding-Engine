@@ -220,3 +220,6 @@ __marimo__/
 
 #embeddings
 embeddings.json
+
+#Vector Index
+vector_index.faiss

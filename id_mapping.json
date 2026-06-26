@@ -1,0 +1,15 @@
+{
+    "0": "app_login",
+    "1": "app_register",
+    "2": "app_route_login",
+    "3": "app_route_register",
+    "4": "auth_login",
+    "5": "auth_authenticate",
+    "6": "auth_generate_token",
+    "7": "db_query_db",
+    "8": "models_User",
+    "9": "test_login",
+    "10": "test_User",
+    "11": "test_Admin",
+    "12": "test_SuperAdmin"
+}
