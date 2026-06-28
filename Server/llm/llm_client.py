@@ -13,7 +13,9 @@ class LLMClient:
 
     def __init__(self):
 
-        load_dotenv()
+        from pathlib import Path
+
+        load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
         keys = os.getenv("GEMINI_API_KEYS", "")
 
@@ -102,3 +104,21 @@ class LLMClient:
             return response.text
 
         return self._run_with_rotation(task)
+    
+if __name__ == "__main__":
+
+    client = LLMClient()
+
+    prompt = input("Enter a prompt: ")
+
+    try:
+
+        response = client.generate(prompt)
+
+        print("\nGemini Response:\n")
+        print(response)
+
+    except Exception as error:
+
+        print("\nError:")
+        print(error)
