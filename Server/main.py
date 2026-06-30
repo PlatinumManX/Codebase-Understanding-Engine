@@ -1,11 +1,11 @@
-from repository_parser import (
+from Parser.repository_parser import (
     parse_repository
 )
 from dataclasses import asdict
 import json
 
 repo = parse_repository(
-    "sample_repo"
+    "Server\Sample_repo"
 )
 
 # print(repo)
