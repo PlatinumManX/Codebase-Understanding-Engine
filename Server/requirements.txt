@@ -1,0 +1,7 @@
+# AI Retrieval & Query Engine
+sentence-transformers
+faiss-cpu
+numpy
+torch
+python-dotenv
+google-genai
