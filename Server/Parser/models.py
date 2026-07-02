@@ -21,6 +21,7 @@ class ClassInfo:
     name: str
     methods: list[str] = field(default_factory=list)
     inherits: list[str] = field(default_factory=list)
+    source_code: str = ""
 
 
 @dataclass
@@ -29,13 +30,20 @@ class RouteInfo:
     handler: str
     methods: list[str] = field(default_factory=list)
 
+@dataclass
+class ImportInfo:
+    module: str
+    symbols: list[str]
+    alias: str | None
+    is_internal: bool
+    resolved_path: str | None
 
 @dataclass
 class FileMetadata:
     file_name: str
     file_path: str
 
-    imports: list[str] = field(default_factory=list)
+    imports: list[ImportInfo] = field(default_factory=list)
 
     module_calls: list[str] = field(default_factory=list)
 

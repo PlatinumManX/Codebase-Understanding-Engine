@@ -1,5 +1,4 @@
 import os
-
 from Parser.scanner import get_python_files
 from Parser.extractor import parse_file
 from Parser.models import ResolvedCall, RepositoryMetadata
@@ -13,9 +12,9 @@ def build_file_index(files, repo_path):
         filename = os.path.splitext(
             os.path.basename(file)
         )[0]
-        
+
         index[filename] = file
-        # for dotted imports
+
         relative_path = os.path.relpath(
             file,
             repo_path
@@ -32,6 +31,13 @@ def build_file_index(files, repo_path):
         )[0]
 
         index[module_path] = file
+
+        # Package support
+        if module_path.endswith(".__init__"):
+
+            package_name = module_path.removesuffix(".__init__")
+
+            index[package_name] = file
 
     return index
 def build_function_index(repository):
@@ -66,18 +72,19 @@ def parse_repository(repo_path):
 
     for metadata in repository.files:
 
-        for imported_module in metadata.imports:
-
-            if imported_module in file_index:
-
+        for imported in metadata.imports:
+            resolved = file_index.get(imported.module)
+            if resolved:
                 dependency_path = os.path.relpath(
-                    file_index[imported_module],
-                    repo_path
-                )
-
-                metadata.dependencies.append(
-                    dependency_path
-                )
+                resolved,
+                repo_path
+            )
+                imported.is_internal = True
+                imported.resolved_path = dependency_path
+                metadata.dependencies.append(dependency_path)
+            else:
+                imported.is_internal = False
+                imported.resolved_path = None
     function_index = build_function_index(repository)
     for file in repository.files:
         for function in file.functions:
@@ -85,6 +92,36 @@ def parse_repository(repo_path):
 
                 if "." in call:
                     continue
+                resolved = False
+
+            # 1. Check imported symbols first
+                for imported in file.imports:
+
+                    if call in imported.symbols and imported.is_internal:
+
+                        function.resolved_calls.append(
+                        ResolvedCall(
+                            function=call,
+                            file=imported.resolved_path
+                        )
+                    )
+
+                        resolved = True
+                        break
+
+            # Already resolved from an import
+                if resolved:
+                    continue
+
+            # 2. Fall back to existing lookup
+                if call in function_index:
+
+                    function.resolved_calls.append(
+                    ResolvedCall(
+                        function=call,
+                        file=function_index[call]
+                    )
+                )
                 if call in function_index:
                     function.resolved_calls.append(
 

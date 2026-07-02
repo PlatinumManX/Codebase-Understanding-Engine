@@ -54,7 +54,9 @@ class GraphVisualizer:
 
         return node
     def visualize(self, graph, output_file="graph.html"):
-
+        if graph is None:
+            print("Nothing to visualize.")
+            return
         net = Network(
             height="850px",
             width="100%",
@@ -71,7 +73,7 @@ var options = {
   "physics": {
     "enabled": true,
     "barnesHut": {
-      "gravitationalConstant": -20000,
+      "gravitationalConstant": -2000,
       "centralGravity": 0.15,
       "springLength": 180,
       "springConstant": 0.03,
@@ -92,7 +94,7 @@ var options = {
             net.add_node(
         node,
         label=self._get_label(node, data),
-        title="",
+        title=str(data),
         color=self._get_color(node_type),
         size=self._get_size(node_type),
         shape=self._get_shape(node_type))

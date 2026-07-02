@@ -6,7 +6,8 @@ from Parser.models import (
     FileMetadata,
     FunctionInfo,
     ClassInfo,
-    RouteInfo
+    RouteInfo,
+    ImportInfo
 )
 API_LIBRARIES = {
     "requests",
@@ -36,12 +37,33 @@ class MetadataVisitor(ast.NodeVisitor):
 
         for alias in node.names:
 
-            self.imports.append(alias.name)
+            self.imports.append( 
+                ImportInfo(
+        module=alias.name,
+        symbols=[],
+        alias=alias.asname,
+        is_internal=False,
+        resolved_path=None
+    ))
     def visit_ImportFrom(self, node):
 
         if node.module:
+            symbols = []
 
-            self.imports.append(node.module)
+            for alias in node.names:
+                symbols.append(alias.name)
+
+                self.imports.append(
+                    ImportInfo(
+                module=node.module,
+                symbols=symbols,
+                alias=None,
+                is_internal=False,
+                resolved_path=None
+            )
+        )
+
+            # self.imports.append(node.module)
     def process_function(self,node,is_async=False):
 
         if self.current_class is None:
@@ -184,7 +206,7 @@ class MetadataVisitor(ast.NodeVisitor):
             if isinstance(base, ast.Name):
 
                 inherits.append(base.id)
-        class_info = ClassInfo(name=node.name, inherits=inherits)
+        class_info = ClassInfo(name=node.name, inherits=inherits, source_code = ast.unparse(node))
 
         self.current_class = class_info
         for child in node.body:
