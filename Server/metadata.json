@@ -5,7 +5,15 @@
             "file_name": "app.py",
             "file_path": "app.py",
             "imports": [
-                "flask"
+                {
+                    "module": "flask",
+                    "symbols": [
+                        "Flask"
+                    ],
+                    "alias": null,
+                    "is_internal": false,
+                    "resolved_path": null
+                }
             ],
             "module_calls": [
                 "Flask"
@@ -53,8 +61,24 @@
             "file_name": "auth.py",
             "file_path": "auth.py",
             "imports": [
-                "db",
-                "services.auth_services"
+                {
+                    "module": "db",
+                    "symbols": [
+                        "query_db"
+                    ],
+                    "alias": null,
+                    "is_internal": true,
+                    "resolved_path": "db.py"
+                },
+                {
+                    "module": "services.auth_services",
+                    "symbols": [
+                        "authenticate"
+                    ],
+                    "alias": null,
+                    "is_internal": true,
+                    "resolved_path": "services\\auth_services.py"
+                }
             ],
             "module_calls": [],
             "functions": [
@@ -71,6 +95,10 @@
                     "resolved_calls": [
                         {
                             "function": "authenticate",
+                            "file": "services\\auth_services.py"
+                        },
+                        {
+                            "function": "generate_token",
                             "file": "auth.py"
                         },
                         {
@@ -141,7 +169,8 @@
                         "save",
                         "delete"
                     ],
-                    "inherits": []
+                    "inherits": [],
+                    "source_code": "class User:\n\n    def save(self):\n        pass\n\n    def delete(self):\n        pass"
                 }
             ],
             "routes": [],
@@ -151,8 +180,20 @@
             "file_name": "test.py",
             "file_path": "test.py",
             "imports": [
-                "requests",
-                "httpx"
+                {
+                    "module": "requests",
+                    "symbols": [],
+                    "alias": null,
+                    "is_internal": false,
+                    "resolved_path": null
+                },
+                {
+                    "module": "httpx",
+                    "symbols": [],
+                    "alias": null,
+                    "is_internal": false,
+                    "resolved_path": null
+                }
             ],
             "module_calls": [],
             "functions": [
@@ -176,21 +217,24 @@
                 {
                     "name": "User",
                     "methods": [],
-                    "inherits": []
+                    "inherits": [],
+                    "source_code": "class User:\n    pass"
                 },
                 {
                     "name": "Admin",
                     "methods": [],
                     "inherits": [
                         "User"
-                    ]
+                    ],
+                    "source_code": "class Admin(User):\n    pass"
                 },
                 {
                     "name": "SuperAdmin",
                     "methods": [],
                     "inherits": [
                         "Admin"
-                    ]
+                    ],
+                    "source_code": "class SuperAdmin(Admin):\n    pass"
                 }
             ],
             "routes": [],
