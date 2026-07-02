@@ -1,3 +1,13 @@
+# Repository Parser & Metadata Extraction
+ast
+os
+pathlib
+dataclasses
+json
+typing
+# Knowledge Graph Construction & Visualization
+networkx
+pyvis
 # AI Retrieval & Query Engine
 sentence-transformers
 faiss-cpu
