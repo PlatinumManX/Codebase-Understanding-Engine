@@ -9,3 +9,9 @@ numpy
 torch
 python-dotenv
 google-genai
+fastapi
+uvicorn
+pymongo
+python-multipart
+
+#
