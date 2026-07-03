@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import useRoute from '../../hooks/useRoute';
+import useAuth from '../../../features/auth/hooks/useAuth';
 
 export default function Sidebar() {
   const { route } = useRoute();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { logout, user } = useAuth();
 
   const menuItems = [
     {
@@ -133,19 +135,25 @@ export default function Sidebar() {
         {/* Profile Card */}
         <div className={`flex items-center gap-3 px-3 py-2 rounded-md ${isCollapsed ? 'justify-center' : ''}`}>
           <div className="w-7 h-7 rounded-full bg-[#a855f7]/20 border border-[#a855f7]/40 flex items-center justify-center shrink-0">
-            <span className="text-xs font-bold text-[#c084fc] font-mono">D</span>
+            <span className="text-xs font-bold text-[#c084fc] font-mono">
+              {user?.name ? user.name[0].toUpperCase() : 'D'}
+            </span>
           </div>
           {!isCollapsed && (
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-gray-200 truncate leading-none">Developer</p>
-              <span className="text-[9px] text-gray-500 font-mono truncate block mt-1">mpr_dev@codemap.ai</span>
+              <p className="text-xs font-semibold text-gray-200 truncate leading-none">
+                {user?.name || 'Developer'}
+              </p>
+              <span className="text-[9px] text-gray-500 font-mono truncate block mt-1">
+                {user?.email || 'mpr_dev@codemap.ai'}
+              </span>
             </div>
           )}
         </div>
 
         {/* Logout Button */}
         <button
-          onClick={() => alert('Logout triggered (UI Simulation)')}
+          onClick={logout}
           className={`flex items-center gap-3 w-full px-3 py-2 text-xs font-medium rounded-md text-red-400/80 hover:bg-red-950/20 hover:text-red-400 transition-colors cursor-pointer border border-transparent ${
             isCollapsed ? 'justify-center' : ''
           }`}

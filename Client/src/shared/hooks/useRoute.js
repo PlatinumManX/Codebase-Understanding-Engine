@@ -1,23 +1,37 @@
 import { useState, useEffect } from 'react';
 
-export function getRouteFromHash() {
+// Get route from pathname or hash fallback
+export function getRoute() {
   const hash = window.location.hash.replace('#', '');
-  return hash || 'dashboard'; // default route
+  if (hash) {
+    return hash;
+  }
+  const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  return path || 'landing';
 }
 
 export default function useRoute() {
-  const [route, setRoute] = useState(getRouteFromHash());
+  const [route, setRoute] = useState(getRoute());
 
   useEffect(() => {
-    const handleHashChange = () => {
-      setRoute(getRouteFromHash());
+    const handlePopState = () => {
+      setRoute(getRoute());
     };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('hashchange', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('hashchange', handlePopState);
+    };
   }, []);
 
   const navigate = (newRoute) => {
-    window.location.hash = newRoute;
+    if (newRoute.startsWith('#')) {
+      window.location.hash = newRoute;
+    } else {
+      window.history.pushState({}, '', `/${newRoute === 'landing' ? '' : newRoute}`);
+      window.dispatchEvent(new Event('popstate'));
+    }
   };
 
   return { route, navigate };
