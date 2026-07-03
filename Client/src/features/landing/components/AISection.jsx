@@ -73,13 +73,13 @@ const AISection = forwardRef(({
                   className="cursor-pointer"
                 >
                   <circle r="12" fill="#0d1117" stroke={n.color} strokeWidth="3.5" />
-                  <text x="25" y="5" fill="#e2e8f0" fontSize="13" fontFamily="monospace" textAnchor="start" fontWeight="bold">
+                  <text x="25" y="5" fill="#e2e8f0" fontSize="16" fontFamily="monospace" textAnchor="start" fontWeight="bold">
                     {n.label}
                   </text>
                 </g>
               ))}
             </svg>
-            <div className="absolute bottom-3 left-3 bg-[#0d1117]/85 border border-[#30363d] px-2 py-0.5 rounded text-[9px] font-mono text-gray-500 font-semibold uppercase tracking-wider">
+            <div className="absolute bottom-3 left-3 bg-[#0d1117]/85 border border-[#30363d] px-2 py-0.5 rounded text-[12px] font-mono text-gray-500 font-semibold uppercase tracking-wider">
               Auth Context Subset
             </div>
           </div>
@@ -91,17 +91,17 @@ const AISection = forwardRef(({
           >
             {/* Header */}
             <div className="flex items-center gap-2 border-b border-[#30363d]/30 pb-3 mb-3 shrink-0">
-              <div className="w-6 h-6 rounded-lg bg-[#a855f7]/20 border border-[#a855f7]/40 flex items-center justify-center shrink-0">
-                <span className="text-[10px] font-bold text-[#c084fc] font-mono">AI</span>
+              <div className="w-7 h-7 rounded-lg bg-[#a855f7]/20 border border-[#a855f7]/40 flex items-center justify-center shrink-0">
+                <span className="text-[14px] font-bold text-[#c084fc] font-mono">AI</span>
               </div>
-              <span className="text-[11px] font-mono font-semibold text-gray-200">Architecture Copilot</span>
+              <span className="text-[14px] font-mono font-semibold text-gray-200">Architecture Copilot</span>
             </div>
 
             {/* Chat message content box */}
-            <div className="flex-1 overflow-y-auto space-y-4 pr-1 text-[11px] font-mono select-text">
+            <div className="flex-1 overflow-y-auto space-y-4 pr-1 text-[14px] font-mono select-text">
               {/* User message */}
               <div className="flex gap-2">
-                <div className="w-5 h-5 rounded-full bg-[#00f0ff]/20 flex items-center justify-center shrink-0 text-cyan-400 text-[8px] font-bold font-mono border border-[#00f0ff]/20 select-none">U</div>
+                <div className="w-7 h-7 rounded-full bg-[#00f0ff]/20 flex items-center justify-center shrink-0 text-cyan-400 text-[14px] font-bold font-mono border border-[#00f0ff]/20 select-none">U</div>
                 <div className="bg-[#0d1117]/70 border border-[#30363d] rounded-xl px-3 py-2 text-gray-300 max-w-[85%]">
                   <span ref={promptTextRef}></span>
                 </div>
@@ -109,7 +109,7 @@ const AISection = forwardRef(({
 
               {/* AI Message */}
               <div className="flex gap-2">
-                <div className="w-5 h-5 rounded-full bg-[#a855f7]/20 flex items-center justify-center shrink-0 text-[#c084fc] text-[8px] font-bold font-mono border border-[#a855f7]/20 select-none">AI</div>
+                <div className="w-7 h-7 rounded-full bg-[#a855f7]/20 flex items-center justify-center shrink-0 text-[#c084fc] text-[14px] font-bold font-mono border border-[#a855f7]/20 select-none">AI</div>
                 <div className="bg-[#0d1117]/50 border border-[#30363d]/30 rounded-xl px-3 py-2 text-slate-300 leading-relaxed max-w-[85%] select-text">
                   <span ref={responseTextRef}></span>
                 </div>
@@ -118,9 +118,9 @@ const AISection = forwardRef(({
 
             {/* Bottom prompt bar simulator */}
             <div className="mt-3 shrink-0">
-              <div className="bg-[#0d1117] border border-[#30363d] rounded-lg p-2.5 text-[10px] text-slate-500 font-sans flex items-center justify-between select-none">
+              <div className="bg-[#0d1117] border border-[#30363d] rounded-lg p-2.5 text-[14px] text-slate-500 font-sans flex items-center justify-between select-none">
                 <span>Ask Copilot...</span>
-                <svg className="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-6 h-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9-2-9-18-9 18 9 2zm0 0v-8" />
                 </svg>
               </div>

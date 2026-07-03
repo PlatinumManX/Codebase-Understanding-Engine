@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import Button from '../../../shared/components/Button';
+import { NavLink } from 'react-router-dom';
 
 export default function CTASection() {
   const svgRef = useRef(null);
@@ -64,16 +65,16 @@ export default function CTASection() {
 
         {/* Buttons */}
         <div className="flex flex-wrap justify-center gap-4 pt-3">
-          <a href="#repository">
+          <NavLink to="/login">
             <Button variant="primary" size="lg" className="font-mono text-xs cursor-pointer shadow-[0_0_20px_rgba(0,240,255,0.15)]">
               Upload Repository
             </Button>
-          </a>
-          <a href="#dashboard">
+          </NavLink>
+          <NavLink to="/login">
             <Button variant="outline" size="lg" className="font-mono text-xs cursor-pointer">
               Explore Platform
             </Button>
-          </a>
+          </NavLink>
         </div>
       </div>
     </section>

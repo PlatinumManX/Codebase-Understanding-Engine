@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -18,6 +19,23 @@ import CTASection from '../components/CTASection';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function LandingPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Scroll to target section if redirected with target id state
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      const targetId = location.state.scrollTo;
+      // Clear history state immediately so refreshes don't re-trigger scroll
+      navigate(location.pathname, { replace: true, state: {} });
+      
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [location.state, navigate, location.pathname]);
+
   // Hero refs
   const heroZipRef = useRef(null);
 

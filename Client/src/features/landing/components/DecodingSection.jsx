@@ -103,8 +103,8 @@ const DecodingSection = forwardRef(({
               </svg>
             </div>
             <div className="min-w-0 font-mono">
-              <p className="text-xs font-semibold text-gray-200 truncate">HospitalManagement.zip</p>
-              <span className="text-[10px] text-gray-500">Extracting AST...</span>
+              <p className="text-lg font-semibold text-gray-200 truncate">HospitalManagement.zip</p>
+              <span className="text-[16px] text-gray-500">Extracting AST...</span>
             </div>
           </div>
 
@@ -117,14 +117,14 @@ const DecodingSection = forwardRef(({
               <div
                 key={idx}
                 ref={el => fileRefs.current[idx] = el}
-                className={`absolute w-44 bg-[#0d1117]/95 border ${file.color} rounded-xl p-4 shadow-2xl flex items-center gap-2.5 font-mono text-xs select-none transition-colors duration-300`}
+                className={`absolute w-44 bg-[#0d1117]/95 border ${file.color} rounded-xl p-4 shadow-2xl flex items-center gap-2.5 font-mono text-lg select-none transition-colors duration-300`}
               >
                 <svg className="w-4.5 h-4.5 text-[#00f0ff] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 <div className="min-w-0">
                   <p className="font-semibold text-gray-200 truncate leading-tight">{file.name}</p>
-                  <span className="text-[9px] text-slate-400 mt-0.5 block">{file.size}</span>
+                  <span className="text-[16px] text-slate-400 mt-0.5 block">{file.size}</span>
                 </div>
               </div>
             ))}
@@ -176,7 +176,7 @@ const DecodingSection = forwardRef(({
                   <text
                     y="28"
                     fill="#e2e8f0"
-                    fontSize="13"
+                    fontSize="16"
                     fontFamily="monospace"
                     textAnchor="middle"
                     fontWeight="bold"

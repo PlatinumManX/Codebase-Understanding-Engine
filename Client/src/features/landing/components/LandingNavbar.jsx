@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import useRoute from '../../../shared/hooks/useRoute';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Button from '../../../shared/components/Button';
+import { NavLink } from 'react-router-dom';
 
 export default function LandingNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('landing');
-  const { route, navigate } = useRoute();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,8 +18,8 @@ export default function LandingNavbar() {
   }, []);
 
   useEffect(() => {
-    if (route !== 'landing') {
-      setActiveSection(route);
+    if (location.pathname !== '/') {
+      setActiveSection(location.pathname.substring(1));
       return;
     }
 
@@ -50,45 +52,39 @@ export default function LandingNavbar() {
     window.addEventListener('scroll', handleSectionScroll);
     handleSectionScroll(); // Run immediately
     return () => window.removeEventListener('scroll', handleSectionScroll);
-  }, [route]);
+  }, [location.pathname]);
 
   const handleLinkClick = (e, targetRoute, anchorId) => {
     e.preventDefault();
-    if (targetRoute === 'landing') {
+    if (targetRoute === '/') {
       if (!anchorId) {
-        if (route === 'landing') {
+        if (location.pathname === '/') {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-          navigate('landing');
+          navigate('/');
         }
       } else {
-        if (route === 'landing') {
+        if (location.pathname === '/') {
           const element = document.getElementById(anchorId);
           if (element) {
             element.scrollIntoView({ behavior: 'smooth' });
           }
         } else {
-          navigate('landing',true);
-          setTimeout(() => {
-            const element = document.getElementById(anchorId);
-            if (element) {
-              element.scrollIntoView({ behavior: 'smooth' });
-            }
-          }, 150);
+          navigate('/', { state: { scrollTo: anchorId } });
         }
       }
     } else {
       navigate(targetRoute);
-      if (anchorId) {
-        setTimeout(() => {
-          const element = document.getElementById(anchorId);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }
-        }, 150);
-      }
     }
   };
+
+  const isHomeActive = location.pathname === '/' && activeSection === 'landing';
+  const isFeaturesActive = location.pathname === '/' && activeSection === 'decoding-section';
+  const isArchitectureActive = location.pathname === '/' && activeSection === 'flow-section';
+  const isPricingActive = location.pathname === '/pricing' || (location.pathname === '/' && activeSection === 'pricing-section');
+  const isDocsActive = location.pathname === '/docs' || (location.pathname === '/' && activeSection === 'docs-section');
+  const isAboutActive = location.pathname === '/about' || (location.pathname === '/' && activeSection === 'about-section');
+  const isContactActive = location.pathname === '/contact' || (location.pathname === '/' && activeSection === 'contact-section');
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -99,100 +95,100 @@ export default function LandingNavbar() {
       <div className="px-6 flex items-center justify-between mx-10">
         {/* Brand Logo */}
         <div 
-          onClick={(e) => handleLinkClick(e, 'landing')}
+          onClick={(e) => handleLinkClick(e, '/')}
           className="flex items-center gap-3 select-none cursor-pointer"
         >
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00f0ff]/20 to-[#a855f7]/20 border border-[#00f0ff]/30 flex items-center justify-center">
-            <span className="text-sm font-extrabold text-[#00f0ff] font-mono">CM</span>
+            <span className="text-lg font-extrabold text-[#00f0ff] font-mono">CM</span>
           </div>
-          <span className="text-base font-bold tracking-wider text-white font-mono">
+          <span className="text-xl font-bold tracking-wider text-white font-mono">
             CODEMAP<span className="text-[#00f0ff]">AI</span>
           </span>
         </div>
 
-        {/* Links (Increased size: 16px - 18px) */}
-        <div className="hidden lg:flex items-center gap-8 text-[19px] font-semibold font-mono">
+        {/* Links */}
+        <div className="hidden lg:flex items-center gap-8 text-[20px] font-semibold font-mono">
           <a 
             href="/" 
-            onClick={(e) => handleLinkClick(e, 'landing')}
+            onClick={(e) => handleLinkClick(e, '/')}
             className={`relative py-2 transition-colors duration-200 hover:text-white ${
-              activeSection === 'landing' ? 'text-[#00f0ff]' : 'text-slate-400'
+              isHomeActive ? 'text-[#00f0ff]' : 'text-slate-400'
             }`}
           >
             Home
-            {activeSection === 'landing' && (
+            {isHomeActive && (
               <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#00f0ff] to-[#a855f7] rounded-full shadow-[0_1px_8px_#00f0ff]" />
             )}
           </a>
           <a 
             href="#decoding-section" 
-            onClick={(e) => handleLinkClick(e, 'landing', 'decoding-section')}
+            onClick={(e) => handleLinkClick(e, '/', 'decoding-section')}
             className={`relative py-2 transition-colors duration-200 hover:text-white ${
-              activeSection === 'decoding-section' ? 'text-[#00f0ff]' : 'text-slate-400'
+              isFeaturesActive ? 'text-[#00f0ff]' : 'text-slate-400'
             }`}
           >
             Features
-            {activeSection === 'decoding-section' && (
+            {isFeaturesActive && (
               <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#00f0ff] to-[#a855f7] rounded-full shadow-[0_1px_8px_#00f0ff]" />
             )}
           </a>
           <a 
             href="#flow-section" 
-            onClick={(e) => handleLinkClick(e, 'landing', 'flow-section')}
+            onClick={(e) => handleLinkClick(e, '/', 'flow-section')}
             className={`relative py-2 transition-colors duration-200 hover:text-white ${
-              activeSection === 'flow-section' ? 'text-[#00f0ff]' : 'text-slate-400'
+              isArchitectureActive ? 'text-[#00f0ff]' : 'text-slate-400'
             }`}
           >
             Architecture
-            {activeSection === 'flow-section' && (
+            {isArchitectureActive && (
               <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#00f0ff] to-[#a855f7] rounded-full shadow-[0_1px_8px_#00f0ff]" />
             )}
           </a>
           <a 
             href="/pricing" 
-            onClick={(e) => handleLinkClick(e, 'pricing')}
+            onClick={(e) => handleLinkClick(e, '/pricing')}
             className={`relative py-2 transition-colors duration-200 hover:text-white ${
-              activeSection === 'pricing' || activeSection === 'pricing-section' ? 'text-[#00f0ff]' : 'text-slate-400'
+              isPricingActive ? 'text-[#00f0ff]' : 'text-slate-400'
             }`}
           >
             Pricing
-            {(activeSection === 'pricing' || activeSection === 'pricing-section') && (
+            {isPricingActive && (
               <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#00f0ff] to-[#a855f7] rounded-full shadow-[0_1px_8px_#00f0ff]" />
             )}
           </a>
           <a 
             href="/docs" 
-            onClick={(e) => handleLinkClick(e, 'docs')}
+            onClick={(e) => handleLinkClick(e, '/docs')}
             className={`relative py-2 transition-colors duration-200 hover:text-white ${
-              activeSection === 'docs' || activeSection === 'docs-section' ? 'text-[#00f0ff]' : 'text-slate-400'
+              isDocsActive ? 'text-[#00f0ff]' : 'text-slate-400'
             }`}
           >
             Documentation
-            {(activeSection === 'docs' || activeSection === 'docs-section') && (
+            {isDocsActive && (
               <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#00f0ff] to-[#a855f7] rounded-full shadow-[0_1px_8px_#00f0ff]" />
             )}
           </a>
           <a 
             href="/about" 
-            onClick={(e) => handleLinkClick(e, 'about')}
+            onClick={(e) => handleLinkClick(e, '/about')}
             className={`relative py-2 transition-colors duration-200 hover:text-white ${
-              activeSection === 'about' || activeSection === 'about-section' ? 'text-[#00f0ff]' : 'text-slate-400'
+              isAboutActive ? 'text-[#00f0ff]' : 'text-slate-400'
             }`}
           >
             About Us
-            {(activeSection === 'about' || activeSection === 'about-section') && (
+            {isAboutActive && (
               <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#00f0ff] to-[#a855f7] rounded-full shadow-[0_1px_8px_#00f0ff]" />
             )}
           </a>
           <a 
             href="/contact" 
-            onClick={(e) => handleLinkClick(e, 'contact')}
+            onClick={(e) => handleLinkClick(e, '/contact')}
             className={`relative py-2 transition-colors duration-200 hover:text-white ${
-              activeSection === 'contact' || activeSection === 'contact-section' ? 'text-[#00f0ff]' : 'text-slate-400'
+              isContactActive ? 'text-[#00f0ff]' : 'text-slate-400'
             }`}
           >
             Contact
-            {(activeSection === 'contact' || activeSection === 'contact-section') && (
+            {isContactActive && (
               <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#00f0ff] to-[#a855f7] rounded-full shadow-[0_1px_8px_#00f0ff]" />
             )}
           </a>
@@ -200,11 +196,11 @@ export default function LandingNavbar() {
 
         {/* Actions (Launch App only) */}
         <div className="flex items-center">
-          <a href="/dashboard" onClick={(e) => handleLinkClick(e, 'dashboard')}>
+          <NavLink to="/login">
             <Button variant="primary" size="md" className="font-mono text-[16px] cursor-pointer shadow-[0_0_15px_rgba(0,240,255,0.15)] border-[#00f0ff]/40">
               Launch App
             </Button>
-          </a>
+          </NavLink>
         </div>
       </div>
     </nav>

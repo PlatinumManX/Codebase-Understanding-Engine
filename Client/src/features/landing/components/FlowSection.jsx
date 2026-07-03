@@ -52,7 +52,7 @@ const FlowSection = forwardRef(({
         <div className="w-full md:w-[55%] flex items-center justify-center relative h-[420px] md:h-[500px]">
           <div 
             ref={graphRef}
-            className="relative w-full h-full max-w-[520px] max-h-[460px] border border-[#3e4651]/55 bg-[#0d1117]/50 rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] p-6"
+            className="relative w-full h-full max-w-[520px] max-h-[460px] border border-[#3e4651]/55 bg-[#0d1117]/50 rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] p-2"
           >
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#161b22_1px,transparent_1px),linear-gradient(to_bottom,#161b22_1px,transparent_1px)] bg-[size:16px_16px] opacity-20" />
             
@@ -126,7 +126,7 @@ const FlowSection = forwardRef(({
                     x="30"
                     y="5"
                     fill="#e2e8f0"
-                    fontSize="13"
+                    fontSize="16"
                     fontFamily="monospace"
                     textAnchor="start"
                     fontWeight="bold"

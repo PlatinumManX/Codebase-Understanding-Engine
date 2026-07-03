@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import useRoute from '../../hooks/useRoute';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../../../features/auth/hooks/useAuth';
 
 export default function Sidebar() {
-  const { route, navigate } = useRoute();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { logout, user } = useAuth();
 
@@ -47,7 +48,7 @@ export default function Sidebar() {
     },
     {
       name: 'AI Assistant',
-      hash: 'ai',
+      hash: 'assistant',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -108,14 +109,14 @@ export default function Sidebar() {
         {/* Menu Navigation */}
         <nav className="p-3 space-y-1">
           {menuItems.map((item) => {
-            const isActive = route === item.hash;
+            const isActive = location.pathname === `/${item.hash}`;
             return (
               <a
                 key={item.name}
                 href={`/${item.hash}`}
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate(item.hash);
+                  navigate(`/${item.hash}`);
                 }}
                 className={`flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-md transition-all duration-150 group ${
                   isActive

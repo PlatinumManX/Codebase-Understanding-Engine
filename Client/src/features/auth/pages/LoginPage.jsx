@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import useAuth from '../hooks/useAuth';
-import useRoute from '../../../shared/hooks/useRoute';
+import { useNavigate } from 'react-router-dom';
 import Input from '../../../shared/components/Input';
 import Button from '../../../shared/components/Button';
 
@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({});
 
   const { login } = useAuth();
-  const { navigate } = useRoute();
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -177,7 +177,7 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate('register')}
+                onClick={() => navigate('/register')}
                 className="w-full py-2.5 font-mono text-xs cursor-pointer border-[#3e4651]"
               >
                 Create Account

@@ -1,24 +1,12 @@
-import React, { useEffect } from 'react';
-import MainLayout from '../shared/layouts/MainLayout';
-import AppRoutes from './AppRoutes';
-import useRoute from '../shared/hooks/useRoute';
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { ToastProvider } from '../shared/context/ToastContext';
 import { AuthProvider, useAuth } from '../features/auth/context/AuthContext';
-import LandingNavbar from '../features/landing/components/LandingNavbar';
-import Footer from '../features/landing/components/Footer';
+import AppRouter from '../routes/Router';
+import ScrollToTop from '../routes/ScrollToTop';
 
 function AppContent() {
-  const { route, navigate } = useRoute();
-  const { user, loading } = useAuth();
-
-  const protectedRoutes = ['dashboard', 'repository', 'graph', 'flow', 'ai', 'settings'];
-  const isProtected = protectedRoutes.includes(route);
-
-  useEffect(() => {
-    if (!loading && isProtected && !user) {
-      navigate('login', true);
-    }
-  }, [route, user, loading, navigate, isProtected]);
+  const { loading } = useAuth();
 
   if (loading) {
     return (
@@ -31,43 +19,22 @@ function AppContent() {
     );
   }
 
-  if (isProtected && !user) {
-    return null; // Avoid flashing protected content
-  }
-
-  // Auth pages (no navbar, no footer)
-  if (route === 'login' || route === 'register') {
-    return <AppRoutes />;
-  }
-
-  // Public marketing pages
-  const marketingRoutes = ['landing', 'about', 'contact', 'docs', 'pricing'];
-  if (marketingRoutes.includes(route) || !isProtected) {
-    return (
-      <div className="bg-[#040609] min-h-screen text-gray-200 overflow-x-hidden flex flex-col justify-between selection:bg-[#00f0ff]/30 selection:text-white">
-        <LandingNavbar />
-        <div className="flex-grow">
-          <AppRoutes />
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-
-  // Protected dashboard layout
   return (
-    <MainLayout>
-      <AppRoutes />
-    </MainLayout>
+    <>
+      <ScrollToTop />
+      <AppRouter />
+    </>
   );
 }
 
 export default function App() {
   return (
     <ToastProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </BrowserRouter>
     </ToastProvider>
   );
 }

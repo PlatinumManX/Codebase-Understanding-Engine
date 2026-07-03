@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '../../../shared/components/Button';
+import { NavLink } from 'react-router-dom';
 
 export default function HeroSection({ zipRef }) {
   const scrollToNext = () => {
@@ -32,11 +33,11 @@ export default function HeroSection({ zipRef }) {
 
         {/* Action buttons (Increased size to 16px) */}
         <div className="flex flex-wrap justify-center gap-5 pt-4">
-          <a href="#dashboard">
+          <NavLink to="/login">
             <Button variant="primary" size="lg" className="font-mono text-[16px] px-6 py-3 cursor-pointer shadow-[0_0_25px_rgba(0,240,255,0.2)] border-[#00f0ff]/50">
               Explore Platform
             </Button>
-          </a>
+          </NavLink>
           <Button variant="outline" size="lg" onClick={scrollToNext} className="font-mono text-[16px] px-6 py-3 cursor-pointer border-[#3e4651] hover:border-slate-400">
             View Architecture Demo
           </Button>
@@ -49,14 +50,14 @@ export default function HeroSection({ zipRef }) {
         className="w-[360px] bg-[#0d1117]/90 border border-[#3e4651] rounded-2xl p-6 shadow-[0_15px_40px_rgba(0,0,0,0.6)] z-20 flex items-center justify-between mt-20 relative cursor-pointer hover:border-[#00f0ff]/50 hover:shadow-[0_0_25px_rgba(0,240,255,0.15)] transition-all duration-300 group"
       >
         <div className="flex items-center gap-4 min-w-0">
-          <div className="w-12 h-12 bg-yellow-500/10 border border-yellow-500/30 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            <svg className="w-7 h-7 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-15 h-15 bg-yellow-500/10 border border-yellow-500/30 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <svg className="w-9 h-9 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
             </svg>
           </div>
           <div className="min-w-0 font-mono">
-            <p className="text-sm font-semibold text-white truncate font-mono">HospitalManagement.zip</p>
-            <span className="text-[11px] text-slate-400">ZIP Source Archive | 14.5 MB</span>
+            <p className="text-lg font-semibold text-white truncate font-mono">HospitalManagement.zip</p>
+            <span className="text-[14px] text-slate-400">ZIP Source Archive | 14.5 MB</span>
           </div>
         </div>
         <div className="w-2 h-2 rounded-full bg-cyan-400 animate-ping shrink-0" />

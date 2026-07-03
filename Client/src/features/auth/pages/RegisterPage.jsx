@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import useAuth from '../hooks/useAuth';
-import useRoute from '../../../shared/hooks/useRoute';
+import { useNavigate } from 'react-router-dom';
 import Input from '../../../shared/components/Input';
 import Button from '../../../shared/components/Button';
 
@@ -13,7 +13,7 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState({});
 
   const { register } = useAuth();
-  const { navigate } = useRoute();
+  const navigate = useNavigate();
 
   const handleRegister = (e) => {
     e.preventDefault();
@@ -201,7 +201,7 @@ export default function RegisterPage() {
                 <span>Already have an account? </span>
                 <button
                   type="button"
-                  onClick={() => navigate('login')}
+                  onClick={() => navigate('/login')}
                   className="text-cyan-400 hover:underline cursor-pointer font-mono"
                 >
                   Sign In

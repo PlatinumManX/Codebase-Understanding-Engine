@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useToast } from '../../../shared/context/ToastContext';
-import useRoute from '../../../shared/hooks/useRoute';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
@@ -9,7 +9,7 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const { showToast } = useToast();
-  const { navigate } = useRoute();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = localStorage.getItem('codemap_user');
@@ -53,7 +53,7 @@ export function AuthProvider({ children }) {
     setToken(mockToken);
 
     showToast('success', 'Login Successful');
-    navigate('dashboard', true);
+    navigate('/dashboard', { replace: true });
     return true;
   };
 
@@ -91,7 +91,7 @@ export function AuthProvider({ children }) {
     setToken(mockToken);
 
     showToast('success', 'Registration Successful');
-    navigate('dashboard', true);
+    navigate('/dashboard', { replace: true });
     return true;
   };
 
@@ -101,7 +101,7 @@ export function AuthProvider({ children }) {
     setUser(null);
     setToken(null);
     showToast('success', 'Logout Successful');
-    navigate('landing', true);
+    navigate('/', { replace: true });
   };
 
   return (
