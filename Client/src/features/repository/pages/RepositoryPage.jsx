@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import RepositoryHeader from '../components/RepositoryHeader';
 import RepositoryUploadCard from '../components/RepositoryUploadCard';
 import RepositoryInformationCard from '../components/RepositoryInformationCard';
 import RepositoryHistoryTable from '../components/RepositoryHistoryTable';
+import { useToast } from '../../../shared/context/ToastContext';
+import { uploadRepository } from '../../../shared/api/repositoryApi';
 
 export default function RepositoryPage() {
+  const { showToast } = useToast();
+  
   const [file, setFile] = useState(null);
   const [uploadState, setUploadState] = useState('idle'); // idle, uploading, success, error
-  const [progress, setProgress] = useState(0);
-  const [currentStage, setCurrentStage] = useState(0);
+  const [statistics, setStatistics] = useState(null);
   
   const [repoInfo, setRepoInfo] = useState({
     name: '',
@@ -19,14 +22,29 @@ export default function RepositoryPage() {
     tags: ''
   });
 
-  const [repositoriesList, setRepositoriesList] = useState([
-    { name: 'django-auth-flow', language: 'Python', files: 84, status: 'READY', uploadedAt: '2 days ago' },
-    { name: 'fastapi-vector-db', language: 'Python', files: 142, status: 'READY', uploadedAt: '1 week ago' },
-    { name: 'node-microservices', language: 'Node', files: 210, status: 'FAILED', uploadedAt: '3 weeks ago' }
-  ]);
+  const abortControllerRef = useRef(null);
+
+  // Abort ongoing requests when the page component unmounts
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const handleFileSelected = (selectedFile) => {
-    if (!selectedFile.name.endsWith('.zip')) {
+    // 1. Only ZIP extension validated
+    if (!selectedFile.name.toLowerCase().endsWith('.zip')) {
+      showToast('Only ZIP archives are supported.', 'error');
+      setUploadState('error');
+      return;
+    }
+
+    // 2. Size validation limit to 500 MB
+    const maxAllowedSize = 500 * 1024 * 1024;
+    if (selectedFile.size > maxAllowedSize) {
+      showToast('File size exceeds the 500 MB limit.', 'error');
       setUploadState('error');
       return;
     }
@@ -34,7 +52,7 @@ export default function RepositoryPage() {
     setFile(selectedFile);
     setUploadState('idle');
 
-    // Auto-fill Repository Name without extension
+    // Auto-fill Repository Name without file extension
     const cleanName = selectedFile.name.replace(/\.[^/.]+$/, "");
     setRepoInfo(prev => ({
       ...prev,
@@ -42,49 +60,45 @@ export default function RepositoryPage() {
     }));
   };
 
-  const handleStartUpload = () => {
+  const handleStartUpload = async () => {
     if (!file) return;
 
     setUploadState('uploading');
-    setProgress(0);
-    setCurrentStage(0);
+    setStatistics(null);
 
-    const intervalTime = 55; // 100 ticks in ~5.5s
-    const timer = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(timer);
-          
-          // Append to history list
-          const newRepo = {
-            name: repoInfo.name || file.name.replace(/\.[^/.]+$/, ""),
-            language: repoInfo.language || 'Python',
-            files: 127,
-            status: 'READY',
-            uploadedAt: 'Just now'
-          };
-          setRepositoriesList(prevList => [newRepo, ...prevList]);
-          setUploadState('success');
-          return 100;
-        }
+    // Cancel any previous pending request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
 
-        const nextProgress = prev + 1;
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
-        if (nextProgress < 20) {
-          setCurrentStage(0);
-        } else if (nextProgress < 40) {
-          setCurrentStage(1);
-        } else if (nextProgress < 60) {
-          setCurrentStage(2);
-        } else if (nextProgress < 80) {
-          setCurrentStage(3);
-        } else {
-          setCurrentStage(4);
-        }
+    try {
+      const response = await uploadRepository(
+        repoInfo.name || file.name.replace(/\.[^/.]+$/, ""),
+        file,
+        controller.signal
+      );
 
-        return nextProgress;
-      });
-    }, intervalTime);
+      if (response && response.success) {
+        setStatistics(response.statistics);
+        setUploadState('success');
+        showToast('Repository parsed successfully.', 'success');
+      } else {
+        throw new Error(response?.detail || 'Inbound parse error');
+      }
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        return;
+      }
+      setUploadState('error');
+      showToast(err.message || 'An error occurred during upload', 'error');
+    } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
+    }
   };
 
   const handleRemoveFile = () => {
@@ -99,8 +113,7 @@ export default function RepositoryPage() {
   const handleReset = () => {
     setFile(null);
     setUploadState('idle');
-    setProgress(0);
-    setCurrentStage(0);
+    setStatistics(null);
     setRepoInfo({
       name: '',
       description: '',
@@ -110,6 +123,8 @@ export default function RepositoryPage() {
       tags: ''
     });
   };
+
+  const isUploading = uploadState === 'uploading';
 
   return (
     <div className="space-y-8 select-none">
@@ -123,8 +138,7 @@ export default function RepositoryPage() {
           <RepositoryUploadCard
             file={file}
             uploadState={uploadState}
-            progress={progress}
-            currentStage={currentStage}
+            statistics={statistics}
             onFileSelected={handleFileSelected}
             onStartUpload={handleStartUpload}
             onRemoveFile={handleRemoveFile}
@@ -137,14 +151,15 @@ export default function RepositoryPage() {
           <RepositoryInformationCard
             repoInfo={repoInfo}
             setRepoInfo={setRepoInfo}
+            disabled={isUploading}
           />
         </div>
       </div>
 
-      {/* Historical List uploads table */}
+      {/* Historical List uploads table - rendered empty until listing APIs exist */}
       <div className="w-full">
         <RepositoryHistoryTable 
-          repositories={repositoriesList} 
+          repositories={[]} 
         />
       </div>
     </div>

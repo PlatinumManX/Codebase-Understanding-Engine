@@ -1,8 +1,9 @@
 import React from 'react';
 import Card from '../../../shared/components/Card';
 
-export default function RepositoryInformationCard({ repoInfo, setRepoInfo }) {
+export default function RepositoryInformationCard({ repoInfo, setRepoInfo, disabled }) {
   const handleChange = (field, val) => {
+    if (disabled) return;
     setRepoInfo(prev => ({
       ...prev,
       [field]: val
@@ -21,10 +22,11 @@ export default function RepositoryInformationCard({ repoInfo, setRepoInfo }) {
           <label className="text-slate-400 font-semibold block text-xs">Repository Name</label>
           <input
             type="text"
+            disabled={disabled}
             value={repoInfo.name || ''}
             onChange={(e) => handleChange('name', e.target.value)}
             placeholder="e.g. codemap-ai-core"
-            className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff] font-sans transition-colors"
+            className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff] font-sans transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -32,11 +34,12 @@ export default function RepositoryInformationCard({ repoInfo, setRepoInfo }) {
         <div className="space-y-2">
           <label className="text-slate-400 font-semibold block text-xs">Description (Optional)</label>
           <textarea
+            disabled={disabled}
             value={repoInfo.description || ''}
             onChange={(e) => handleChange('description', e.target.value)}
             placeholder="Describe the repository modules..."
             rows={3}
-            className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff] font-sans transition-colors resize-none"
+            className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff] font-sans transition-colors resize-none disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -45,9 +48,10 @@ export default function RepositoryInformationCard({ repoInfo, setRepoInfo }) {
           <div className="space-y-2">
             <label className="text-slate-400 font-semibold block text-xs">Repository Type</label>
             <select
+              disabled={disabled}
               value={repoInfo.type || 'Backend'}
               onChange={(e) => handleChange('type', e.target.value)}
-              className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00f0ff] font-sans transition-colors"
+              className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00f0ff] font-sans transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="Backend">Backend</option>
               <option value="Frontend">Frontend</option>
@@ -61,9 +65,10 @@ export default function RepositoryInformationCard({ repoInfo, setRepoInfo }) {
           <div className="space-y-2">
             <label className="text-slate-400 font-semibold block text-xs">Primary Language</label>
             <select
+              disabled={disabled}
               value={repoInfo.language || 'Python'}
               onChange={(e) => handleChange('language', e.target.value)}
-              className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00f0ff] font-sans transition-colors"
+              className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00f0ff] font-sans transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="Python">Python</option>
               <option value="Node">Node</option>
@@ -81,10 +86,11 @@ export default function RepositoryInformationCard({ repoInfo, setRepoInfo }) {
             <label className="text-slate-400 font-semibold block text-xs">Version</label>
             <input
               type="text"
+              disabled={disabled}
               value={repoInfo.version || ''}
               onChange={(e) => handleChange('version', e.target.value)}
               placeholder="e.g. 1.0.0"
-              className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff] font-sans transition-colors"
+              className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff] font-sans transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -92,10 +98,11 @@ export default function RepositoryInformationCard({ repoInfo, setRepoInfo }) {
             <label className="text-slate-400 font-semibold block text-xs">Tags</label>
             <input
               type="text"
+              disabled={disabled}
               value={repoInfo.tags || ''}
               onChange={(e) => handleChange('tags', e.target.value)}
               placeholder="e.g. fast-api, core"
-              className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff] font-sans transition-colors"
+              className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00f0ff] focus:ring-1 focus:ring-[#00f0ff] font-sans transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
         </div>

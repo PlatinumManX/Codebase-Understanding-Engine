@@ -9,8 +9,7 @@ import RepositoryErrorState from './RepositoryErrorState';
 export default function RepositoryUploadCard({
   file,
   uploadState,
-  progress,
-  currentStage,
+  statistics,
   onFileSelected,
   onStartUpload,
   onRemoveFile,
@@ -30,13 +29,10 @@ export default function RepositoryUploadCard({
     return new Date(timestamp).toLocaleString();
   };
 
+  const isUploading = uploadState === 'uploading';
+
   if (uploadState === 'uploading') {
-    return (
-      <RepositoryProgress 
-        progress={progress} 
-        currentStage={currentStage} 
-      />
-    );
+    return <RepositoryProgress />;
   }
 
   if (uploadState === 'success') {
@@ -44,6 +40,7 @@ export default function RepositoryUploadCard({
       <RepositorySummaryCard 
         repoName={file ? file.name.replace(/\.[^/.]+$/, "") : 'unknown'} 
         fileSizeLabel={file ? formatBytes(file.size) : '24 MB'}
+        statistics={statistics}
         onUploadAnother={onReset}
       />
     );
@@ -89,7 +86,7 @@ export default function RepositoryUploadCard({
                   <p>Modified: {formatDate(file.lastModified)}</p>
                   <div className="pt-1.5 flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                    <span className="text-cyan-400 font-semibold uppercase text-[10px]">Ready for Upload</span>
+                    <span className="text-cyan-400 font-semibold uppercase text-[10px]">Ready for Ingestion</span>
                   </div>
                 </div>
               </div>
@@ -97,10 +94,20 @@ export default function RepositoryUploadCard({
 
             {/* Remove / Replace Buttons */}
             <div className="flex gap-4">
-              <Button variant="outline" onClick={onRemoveFile} className="flex-1 text-xs py-2">
+              <Button 
+                variant="outline" 
+                onClick={onRemoveFile} 
+                disabled={isUploading}
+                className="flex-1 text-xs py-2"
+              >
                 Remove File
               </Button>
-              <Button variant="outline" onClick={onRemoveFile} className="flex-1 text-xs py-2">
+              <Button 
+                variant="outline" 
+                onClick={onRemoveFile} 
+                disabled={isUploading}
+                className="flex-1 text-xs py-2"
+              >
                 Replace File
               </Button>
             </div>
@@ -112,9 +119,9 @@ export default function RepositoryUploadCard({
           <Button
             variant="primary"
             onClick={onStartUpload}
-            disabled={!file}
+            disabled={!file || isUploading}
             className={`w-full font-mono text-[15px] py-3 shadow-[0_0_20px_rgba(0,240,255,0.15)] border-[#00f0ff]/40 ${
-              !file ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+              (!file || isUploading) ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
             }`}
           >
             Upload Repository

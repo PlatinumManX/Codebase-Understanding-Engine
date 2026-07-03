@@ -3,7 +3,7 @@ import Card from '../../../shared/components/Card';
 import Button from '../../../shared/components/Button';
 import Badge from '../../../shared/components/Badge';
 
-export default function RepositorySummaryCard({ repoName, fileSizeLabel, onUploadAnother }) {
+export default function RepositorySummaryCard({ repoName, fileSizeLabel, statistics, onUploadAnother }) {
   return (
     <Card 
       title="Upload Success" 
@@ -41,19 +41,23 @@ export default function RepositorySummaryCard({ repoName, fileSizeLabel, onUploa
           </div>
           <div className="flex items-center justify-between p-3.5">
             <span className="text-slate-400">Total Files</span>
-            <span className="text-white font-semibold">127</span>
+            <span className="text-white font-semibold">{statistics?.files || 0}</span>
           </div>
           <div className="flex items-center justify-between p-3.5">
             <span className="text-slate-400">Extracted Classes</span>
-            <span className="text-white font-semibold">34</span>
+            <span className="text-white font-semibold">{statistics?.classes || 0}</span>
           </div>
           <div className="flex items-center justify-between p-3.5">
             <span className="text-slate-400">Discovered Functions</span>
-            <span className="text-white font-semibold">241</span>
+            <span className="text-white font-semibold">{statistics?.functions || 0}</span>
           </div>
           <div className="flex items-center justify-between p-3.5">
             <span className="text-slate-400">Isolated Modules</span>
-            <span className="text-white font-semibold">18</span>
+            <span className="text-white font-semibold">{statistics?.modules || 0}</span>
+          </div>
+          <div className="flex items-center justify-between p-3.5">
+            <span className="text-slate-400">Extracted Routes</span>
+            <span className="text-white font-semibold">{statistics?.routes || 0}</span>
           </div>
           <div className="flex items-center justify-between p-3.5">
             <span className="text-slate-400">Repository Size</span>
