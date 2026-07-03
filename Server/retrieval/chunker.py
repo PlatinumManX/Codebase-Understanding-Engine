@@ -21,6 +21,35 @@ class CodeChunker:
             "code": code
         }
 
+    def build_class_description(self, cls):
+        """
+        Build a semantic description for a class.
+
+        This avoids embedding the full class implementation while
+        preserving useful structural information for semantic retrieval.
+        """
+
+        description = f"Class {cls['name']}"
+
+        inherits = cls.get("inherits", [])
+
+        if inherits:
+            description += f" inherits {', '.join(inherits)}"
+
+        methods = cls.get("methods", [])
+
+        if methods:
+            formatted_methods = ", ".join(
+                f"{method}()"
+                for method in methods
+            )
+
+            description += f". Methods: {formatted_methods}."
+        else:
+            description += "."
+
+        return description
+
     def generate_chunks(self):
         metadata = self.load_metadata()
         chunks = []
@@ -66,7 +95,7 @@ class CodeChunker:
                         chunk_type="class",
                         name=cls["name"],
                         file_name=file_name,
-                        code=cls.get("source_code", "")
+                        code=self.build_class_description(cls)
                     )
                 )
 
@@ -112,6 +141,14 @@ class CodeChunker:
         print(f"Saved {len(chunks)} chunks to {output_path}")
 
 
+from pathlib import Path
+
 if __name__ == "__main__":
-    chunker = CodeChunker("metadata.json")
-    chunker.save_chunks()
+
+    base_dir = Path(__file__).resolve().parent.parent
+
+    metadata_path = base_dir / "metadata.json"
+    output_path = base_dir / "chunks.json"
+
+    chunker = CodeChunker(metadata_path)
+    chunker.save_chunks(output_path)

@@ -36,7 +36,7 @@ class VectorDatabase:
         print(f"Indexed {self.index.ntotal} vectors.")
 
     def save_index(self, index_path="vector_index.faiss"):
-        faiss.write_index(self.index, index_path)
+        faiss.write_index(self.index, str(index_path))
 
         print(f"Saved FAISS index to {index_path}")
 
@@ -51,14 +51,20 @@ class VectorDatabase:
         print(f"Saved ID mapping to {mapping_path}")
 
 
+from pathlib import Path
+
 if __name__ == "__main__":
 
-    vectordb = VectorDatabase(
-        "embeddings.json"
-    )
+    base_dir = Path(__file__).resolve().parent.parent
+
+    embeddings_path = base_dir / "embeddings.json"
+    index_path = base_dir / "vector_index.faiss"
+    mapping_path = base_dir / "id_mapping.json"
+
+    vectordb = VectorDatabase(embeddings_path)
 
     vectordb.build_index()
 
-    vectordb.save_index()
+    vectordb.save_index(index_path)
 
-    vectordb.save_mapping()
+    vectordb.save_mapping(mapping_path)

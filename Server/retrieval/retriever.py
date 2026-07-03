@@ -24,7 +24,7 @@ class Retriever:
 
     def load_index(self, index_path):
         """Load FAISS index"""
-        return faiss.read_index(index_path)
+        return faiss.read_index(str(index_path))
 
     def load_mapping(self, mapping_path):
         """Load ID mapping"""
@@ -91,9 +91,17 @@ class Retriever:
         return results
 
 
+from pathlib import Path
+
 if __name__ == "__main__":
 
-    retriever = Retriever()
+    base_dir = Path(__file__).resolve().parent.parent
+
+    retriever = Retriever(
+        chunks_path=base_dir / "chunks.json",
+        index_path=base_dir / "vector_index.faiss",
+        mapping_path=base_dir / "id_mapping.json"
+    )
 
     query = input("Enter your query: ")
 

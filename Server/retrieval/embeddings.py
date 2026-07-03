@@ -70,10 +70,15 @@ class EmbeddingGenerator:
         )
 
 
+from pathlib import Path
+
 if __name__ == "__main__":
 
-    generator = EmbeddingGenerator(
-        "chunks.json"
-    )
+    base_dir = Path(__file__).resolve().parent.parent
 
-    generator.save_embeddings()
+    chunks_path = base_dir / "chunks.json"
+    output_path = base_dir / "embeddings.json"
+
+    generator = EmbeddingGenerator(chunks_path)
+
+    generator.save_embeddings(output_path)

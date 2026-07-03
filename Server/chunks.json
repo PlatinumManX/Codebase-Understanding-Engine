@@ -60,7 +60,7 @@
         "type": "class",
         "name": "User",
         "file": "models.py",
-        "code": ""
+        "code": "Class User. Methods: save(), delete()."
     },
     {
         "id": "test_login",
@@ -74,20 +74,20 @@
         "type": "class",
         "name": "User",
         "file": "test.py",
-        "code": ""
+        "code": "Class User."
     },
     {
         "id": "test_Admin",
         "type": "class",
         "name": "Admin",
         "file": "test.py",
-        "code": ""
+        "code": "Class Admin inherits User."
     },
     {
         "id": "test_SuperAdmin",
         "type": "class",
         "name": "SuperAdmin",
         "file": "test.py",
-        "code": ""
+        "code": "Class SuperAdmin inherits Admin."
     }
 ]
