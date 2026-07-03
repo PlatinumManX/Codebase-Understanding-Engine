@@ -16,7 +16,7 @@ function AppContent() {
 
   useEffect(() => {
     if (!loading && isProtected && !user) {
-      navigate('login');
+      navigate('login', true);
     }
   }, [route, user, loading, navigate, isProtected]);
 

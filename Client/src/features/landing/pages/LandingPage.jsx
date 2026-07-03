@@ -8,6 +8,10 @@ import DecodingSection from '../components/DecodingSection';
 import FlowSection from '../components/FlowSection';
 import AISection from '../components/AISection';
 import PreviewSection from '../components/PreviewSection';
+import PricingPage from './PricingPage';
+import DocsPage from './DocsPage';
+import AboutPage from './AboutPage';
+import ContactPage from './ContactPage';
 import CTASection from '../components/CTASection';
 
 // Register GSAP ScrollTrigger

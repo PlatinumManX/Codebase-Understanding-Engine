@@ -23,10 +23,10 @@ const PreviewSection = forwardRef(({ containerRef, dashboardRef, statRefs }, ref
         {/* Intro */}
         <div className="space-y-4">
           <Badge variant="info" size="sm" className="uppercase tracking-wider font-mono text-[14px] bg-[#00f0ff]/10 border-[#00f0ff]/30 text-[#00f0ff]">05 . Interactive Workspace</Badge>
-          <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
+          <h2 className="text-4xl md:text-[60px] lg:text-[64px] font-extrabold tracking-tight text-white leading-[1.1]">
             Designed for Developers
           </h2>
-          <p className="max-w-2xl mx-auto text-lg md:text-[21px] text-slate-300 font-sans leading-relaxed">
+          <p className="max-w-2xl mx-auto text-lg md:text-[22px] lg:text-[24px] text-slate-300 font-sans leading-relaxed">
             Manage files, explore dependencies, trace execution flows, and query codebase semantics in a high-fidelity workspace environment.
           </p>
         </div>
@@ -68,31 +68,31 @@ const PreviewSection = forwardRef(({ containerRef, dashboardRef, statRefs }, ref
           {/* Grid Layout Layout details */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
             {/* Visual graph snippet card */}
-            <Card title="Interactive Blueprint Explorer" className="md:col-span-2 bg-[#161b22]/30 border border-[#3e4651]/40">
+            <Card title="Interactive Blueprint Explorer" titleClassName="text-[22px] font-semibold text-white" className="md:col-span-2 bg-[#161b22]/30 border border-[#3e4651]/40">
               <div className="h-[210px] border border-[#3e4651]/30 bg-[#0d1117]/30 rounded-xl flex items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#161b22_1px,transparent_1px),linear-gradient(to_bottom,#161b22_1px,transparent_1px)] bg-[size:12px_12px] opacity-15" />
                 <svg className="w-full h-full relative z-10" viewBox="0 0 300 180">
-                  <g stroke="#30363d" strokeWidth="1.2" strokeDasharray="3 3">
+                  <g stroke="#30363d" strokeWidth="2" strokeDasharray="3 3">
                     <line x1="80" y1="90" x2="150" y2="40" />
                     <line x1="80" y1="90" x2="150" y2="140" />
                     <line x1="150" y1="40" x2="220" y2="90" />
                     <line x1="150" y1="140" x2="220" y2="90" />
                   </g>
-                  <circle cx="80" cy="90" r="5" fill="#0d1117" stroke="#00f0ff" strokeWidth="2" />
-                  <circle cx="150" cy="40" r="5" fill="#0d1117" stroke="#a855f7" strokeWidth="2" />
-                  <circle cx="150" cy="140" r="5" fill="#0d1117" stroke="#10b981" strokeWidth="2" />
-                  <circle cx="220" cy="90" r="5" fill="#0d1117" stroke="#00f0ff" strokeWidth="2" />
+                  <circle cx="80" cy="90" r="7.5" fill="#0d1117" stroke="#00f0ff" strokeWidth="3.5" />
+                  <circle cx="150" cy="40" r="7.5" fill="#0d1117" stroke="#a855f7" strokeWidth="3.5" />
+                  <circle cx="150" cy="140" r="7.5" fill="#0d1117" stroke="#10b981" strokeWidth="3.5" />
+                  <circle cx="220" cy="90" r="7.5" fill="#0d1117" stroke="#00f0ff" strokeWidth="3.5" />
                   
-                  <text x="80" y="106" fill="#94a3b8" fontSize="7.5" textAnchor="middle" fontWeight="semibold">app.py</text>
-                  <text x="150" y="26" fill="#94a3b8" fontSize="7.5" textAnchor="middle" fontWeight="semibold">auth_service.py</text>
-                  <text x="150" y="157" fill="#94a3b8" fontSize="7.5" textAnchor="middle" fontWeight="semibold">payment_service.py</text>
-                  <text x="220" y="106" fill="#94a3b8" fontSize="7.5" textAnchor="middle" fontWeight="semibold">db_client.py</text>
+                  <text x="80" y="110" fill="#e2e8f0" fontSize="11" textAnchor="middle" fontWeight="bold">app.py</text>
+                  <text x="150" y="24" fill="#e2e8f0" fontSize="11" textAnchor="middle" fontWeight="bold">auth_service.py</text>
+                  <text x="150" y="161" fill="#e2e8f0" fontSize="11" textAnchor="middle" fontWeight="bold">payment_service.py</text>
+                  <text x="220" y="110" fill="#e2e8f0" fontSize="11" textAnchor="middle" fontWeight="bold">db_client.py</text>
                 </svg>
               </div>
             </Card>
 
             {/* Sidebar Details Panel snippet */}
-            <Card title="Node Inspector Panel" className="bg-[#161b22]/30 border border-[#3e4651]/40">
+            <Card title="Node Inspector Panel" titleClassName="text-[22px] font-semibold text-white" className="bg-[#161b22]/30 border border-[#3e4651]/40">
               <div className="space-y-5 p-1">
                 <div className="space-y-2 border-b border-[#30363d]/30 pb-3">
                   <span className="text-slate-500 font-mono text-[10px]">Selected Symbol:</span>

@@ -3,7 +3,7 @@ import useRoute from '../../hooks/useRoute';
 import useAuth from '../../../features/auth/hooks/useAuth';
 
 export default function Sidebar() {
-  const { route } = useRoute();
+  const { route, navigate } = useRoute();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { logout, user } = useAuth();
 
@@ -112,7 +112,11 @@ export default function Sidebar() {
             return (
               <a
                 key={item.name}
-                href={`#${item.hash}`}
+                href={`/${item.hash}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(item.hash);
+                }}
                 className={`flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-md transition-all duration-150 group ${
                   isActive
                     ? 'bg-[#161b22] text-[#00f0ff] border-l-2 border-[#00f0ff] pl-2.5'

@@ -5,7 +5,7 @@ import Input from '../../../shared/components/Input';
 import Button from '../../../shared/components/Button';
 import { useToast } from '../../../shared/context/ToastContext';
 
-export default function ContactPage() {
+export default function ContactPage({ isSection = false }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
@@ -43,7 +43,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-[#040609] min-h-screen text-gray-200 py-24 px-6 font-mono select-none relative">
+    <div className={`bg-[#040609] text-gray-200 font-mono select-none relative ${isSection ? 'py-16' : 'min-h-screen py-24 px-6'}`}>
       {/* Grid background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#161b22_1px,transparent_1px),linear-gradient(to_bottom,#161b22_1px,transparent_1px)] bg-[size:36px_36px] opacity-10 pointer-events-none" />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00f0ff]/5 rounded-full blur-[140px] pointer-events-none" />
@@ -51,10 +51,10 @@ export default function ContactPage() {
       <div className="max-w-6xl mx-auto space-y-12 relative z-10">
         {/* Intro */}
         <div className="space-y-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">
+          <h1 className="text-4xl md:text-[60px] lg:text-[64px] font-extrabold tracking-tight text-white leading-tight">
             Connect With Our Team
           </h1>
-          <p className="max-w-2xl mx-auto text-lg md:text-[21px] text-slate-300 font-sans leading-relaxed">
+          <p className="max-w-2xl mx-auto text-lg md:text-[22px] lg:text-[24px] text-slate-300 font-sans leading-relaxed">
             Have questions about parser setups, AST extensions, or future integrations? Get in touch.
           </p>
         </div>
@@ -71,19 +71,19 @@ export default function ContactPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Card title="Team Coordinator" className="bg-[#161b22]/30 border-[#3e4651]/45">
-                <div className="space-y-2 text-xs font-mono">
+              <Card title="Team Coordinator" titleClassName="text-[22px] font-semibold text-white" className="bg-[#161b22]/30 border-[#3e4651]/45">
+                <div className="space-y-2 text-[18px] font-mono">
                   <p className="text-slate-400">Coordinator Email:</p>
                   <p className="text-[#00f0ff] font-bold">gupta.rajesh@codemap.ai</p>
-                  <p className="text-slate-500 mt-2 text-[10px]">Office Coordinates:<br />Block 4, CE Department</p>
+                  <p className="text-slate-500 mt-2 text-[15px]">Office Coordinates:<br />Block 4, CE Department</p>
                 </div>
               </Card>
-              <Card title="Student Developers" className="bg-[#161b22]/30 border-[#3e4651]/45">
-                <div className="space-y-2 text-xs font-mono">
+              <Card title="Student Developers" titleClassName="text-[22px] font-semibold text-white" className="bg-[#161b22]/30 border-[#3e4651]/45">
+                <div className="space-y-2 text-[18px] font-mono">
                   <p className="text-slate-400">Student Leads:</p>
-                  <p className="text-gray-200">mukesh.k@codemap.ai</p>
+                  <p className="text-gray-200">Rajesh.k@codemap.ai</p>
                   <p className="text-gray-200">priya.s@codemap.ai</p>
-                  <p className="text-slate-500 mt-1 text-[10px]">Academic Year: 2025-2026</p>
+                  <p className="text-slate-500 mt-1 text-[15px]">Academic Year: 2025-2026</p>
                 </div>
               </Card>
             </div>
@@ -96,14 +96,14 @@ export default function ContactPage() {
           </div>
 
           {/* Right Column: Contact form */}
-          <Card title="Send Message" className="bg-[#0d1117]/60 border-[#3e4651]/55">
+          <Card title="Send Message" titleClassName="text-[22px] font-semibold text-white" className="bg-[#0d1117]/60 border-[#3e4651]/55">
             <form onSubmit={handleSubmit} className="space-y-4 p-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
                   label="Your Name"
                   id="name"
                   type="text"
-                  placeholder="e.g. Mukesh Kushwaha"
+                  placeholder="e.g. Vrijesh Yadav"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   error={errors.name}

@@ -36,13 +36,13 @@ const AISection = forwardRef(({
           <Badge variant="info" size="sm" className="uppercase tracking-wider font-mono text-[14px] bg-[#00f0ff]/10 border-[#00f0ff]/30 text-[#00f0ff]">04 . Semantic Queries</Badge>
           <h2 
             ref={titleRef} 
-            className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-[1.1]"
+            className="text-4xl md:text-[60px] lg:text-[64px] font-extrabold tracking-tight text-white leading-[1.1]"
           >
             Graph + AI <br /> In Perfect Sync
           </h2>
           <p 
             ref={descRef} 
-            className="text-slate-300 font-sans text-lg md:text-[21px] leading-relaxed"
+            className="text-slate-300 font-sans text-lg md:text-[22px] lg:text-[24px] leading-relaxed"
           >
             Ask CodeMap AI questions about your codebase architecture. The assistant scans the relational call graph to explain code flows, highlighting symbols and file routes interactively as they are discussed.
           </p>
@@ -59,9 +59,9 @@ const AISection = forwardRef(({
             <svg className="w-full h-full relative z-10" viewBox="0 0 360 400">
               {/* Connectors */}
               <g ref={edgesRefs}>
-                <line x1="180" y1="70" x2="180" y2="160" stroke="#22303f" strokeWidth="2.5" />
-                <line x1="180" y1="160" x2="180" y2="250" stroke="#22303f" strokeWidth="2.5" />
-                <line x1="180" y1="250" x2="180" y2="340" stroke="#22303f" strokeWidth="2.5" />
+                <line x1="180" y1="70" x2="180" y2="160" stroke="#22303f" strokeWidth="3.5" />
+                <line x1="180" y1="160" x2="180" y2="250" stroke="#22303f" strokeWidth="3.5" />
+                <line x1="180" y1="250" x2="180" y2="340" stroke="#22303f" strokeWidth="3.5" />
               </g>
 
               {/* Node items */}
@@ -72,8 +72,8 @@ const AISection = forwardRef(({
                   transform={`translate(${n.x}, ${n.y})`}
                   className="cursor-pointer"
                 >
-                  <circle r="9" fill="#0d1117" stroke={n.color} strokeWidth="2.5" />
-                  <text x="20" y="4" fill="#e2e8f0" fontSize="10" fontFamily="monospace" textAnchor="start" fontWeight="semibold">
+                  <circle r="12" fill="#0d1117" stroke={n.color} strokeWidth="3.5" />
+                  <text x="25" y="5" fill="#e2e8f0" fontSize="13" fontFamily="monospace" textAnchor="start" fontWeight="bold">
                     {n.label}
                   </text>
                 </g>

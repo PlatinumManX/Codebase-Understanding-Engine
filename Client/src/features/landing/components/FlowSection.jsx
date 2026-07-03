@@ -36,13 +36,13 @@ const FlowSection = forwardRef(({
           <Badge variant="info" size="sm" className="uppercase tracking-wider font-mono text-[14px] bg-[#00f0ff]/10 border-[#00f0ff]/30 text-[#00f0ff]">03 . Execution Flow</Badge>
           <h2 
             ref={titleRef} 
-            className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-[1.1]"
+            className="text-4xl md:text-[60px] lg:text-[64px] font-extrabold tracking-tight text-white leading-[1.1]"
           >
             Trace Every <br /> Execution Path
           </h2>
           <p 
             ref={descRef} 
-            className="text-slate-300 font-sans text-lg md:text-[21px] leading-relaxed"
+            className="text-slate-300 font-sans text-lg md:text-[22px] lg:text-[24px] leading-relaxed"
           >
             Go beyond static files. CodeMap AI tracks and maps dynamic transaction pathways step-by-step, showing how logic flows from routes through controllers, services, databases, and token generators.
           </p>
@@ -93,7 +93,7 @@ const FlowSection = forwardRef(({
               {/* Glowing animated pulse ball */}
               <circle
                 ref={pulseRef}
-                r="6.5"
+                r="8"
                 fill="#00f0ff"
                 className="opacity-0"
                 style={{ filter: 'drop-shadow(0 0 8px #00f0ff)' }}
@@ -116,20 +116,20 @@ const FlowSection = forwardRef(({
                     className="opacity-0 group-hover:opacity-30 transition-opacity"
                   />
                   <circle
-                    r="8"
+                    r="11"
                     fill="#0d1117"
                     stroke={step.color}
-                    strokeWidth="2.5"
+                    strokeWidth="3.5"
                   />
                   {/* Text on side */}
                   <text
-                    x="25"
+                    x="30"
                     y="5"
                     fill="#e2e8f0"
-                    fontSize="10"
+                    fontSize="13"
                     fontFamily="monospace"
                     textAnchor="start"
-                    fontWeight="semibold"
+                    fontWeight="bold"
                     className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
                   >
                     {step.label}

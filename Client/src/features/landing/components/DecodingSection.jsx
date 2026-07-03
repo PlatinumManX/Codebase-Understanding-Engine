@@ -60,10 +60,10 @@ const DecodingSection = forwardRef(({
             className="space-y-5 md:absolute md:inset-x-0"
           >
             <Badge variant="info" size="sm" className="uppercase tracking-wider font-mono text-[14px] bg-[#00f0ff]/10 border-[#00f0ff]/30 text-[#00f0ff]">01 . Ingestion</Badge>
-            <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
+            <h2 className="text-4xl md:text-[60px] lg:text-[64px] font-extrabold tracking-tight text-white leading-[1.1]">
               Repository <br /> Decoding
             </h2>
-            <p className="text-slate-300 font-sans text-lg md:text-[21px] leading-relaxed">
+            <p className="text-slate-300 font-sans text-lg md:text-[22px] lg:text-[24px] leading-relaxed">
               Every repository begins as a collection of loose files. CodeMap AI automatically parses raw source directories, discovering functions, classes, and routing trees instantly.
             </p>
           </div>
@@ -74,10 +74,10 @@ const DecodingSection = forwardRef(({
             className="space-y-5 md:absolute md:inset-x-0 opacity-0 pointer-events-none"
           >
             <Badge variant="info" size="sm" className="uppercase tracking-wider font-mono text-[14px] bg-[#00f0ff]/10 border-[#00f0ff]/30 text-[#00f0ff]">02 . Visual Mapping</Badge>
-            <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
+            <h2 className="text-4xl md:text-[60px] lg:text-[64px] font-extrabold tracking-tight text-white leading-[1.1]">
               Automatically Build <br /> Architecture
             </h2>
-            <div className="text-slate-300 font-sans text-lg md:text-[21px] leading-relaxed space-y-4">
+            <div className="text-slate-300 font-sans text-lg md:text-[22px] lg:text-[24px] leading-relaxed space-y-4">
               <p>
                 Extracted raw files gradually morph into a structured dependency graph model.
               </p>
@@ -152,7 +152,7 @@ const DecodingSection = forwardRef(({
                       x2={to.x}
                       y2={to.y}
                       stroke="#22303f"
-                      strokeWidth="2"
+                      strokeWidth="2.8"
                     />
                   );
                 })}
@@ -167,19 +167,19 @@ const DecodingSection = forwardRef(({
                   className="cursor-pointer group"
                 >
                   <circle
-                    r="10"
+                    r="14"
                     fill="#0d1117"
                     stroke={node.color}
-                    strokeWidth="2.5"
+                    strokeWidth="3.5"
                     className="group-hover:scale-110 transition-transform"
                   />
                   <text
-                    y="22"
-                    fill="#94a3b8"
-                    fontSize="10"
+                    y="28"
+                    fill="#e2e8f0"
+                    fontSize="13"
                     fontFamily="monospace"
                     textAnchor="middle"
-                    fontWeight="semibold"
+                    fontWeight="bold"
                   >
                     {node.label}
                   </text>

@@ -53,7 +53,7 @@ export function AuthProvider({ children }) {
     setToken(mockToken);
 
     showToast('success', 'Login Successful');
-    navigate('dashboard');
+    navigate('dashboard', true);
     return true;
   };
 
@@ -91,7 +91,7 @@ export function AuthProvider({ children }) {
     setToken(mockToken);
 
     showToast('success', 'Registration Successful');
-    navigate('dashboard');
+    navigate('dashboard', true);
     return true;
   };
 
@@ -101,7 +101,7 @@ export function AuthProvider({ children }) {
     setUser(null);
     setToken(null);
     showToast('success', 'Logout Successful');
-    navigate('landing');
+    navigate('landing', true);
   };
 
   return (

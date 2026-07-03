@@ -60,10 +60,10 @@ export default function LoginPage() {
 
         {/* Narrative and Animated Visual */}
         <div className="relative z-10 my-auto space-y-6 max-w-sm">
-          <h2 className="text-3xl font-extrabold tracking-tight text-white leading-tight">
+          <h2 className="text-3xl md:text-[40px] lg:text-[44px] font-extrabold tracking-tight text-white leading-tight">
             Decode software <br /> architecture.
           </h2>
-          <p className="text-slate-300 font-sans text-sm leading-relaxed">
+          <p className="text-slate-300 font-sans text-lg md:text-[22px] lg:text-[24px] leading-relaxed">
             Sign in to start index call graphs, trace transaction paths, and resolve circular dependencies automatically.
           </p>
 
@@ -76,16 +76,16 @@ export default function LoginPage() {
                 <line x1="150" y1="20" x2="250" y2="60" />
                 <line x1="150" y1="100" x2="250" y2="60" />
               </g>
-              <circle cx="50" cy="60" r="4.5" fill="#0d1117" stroke="#00f0ff" strokeWidth="2" />
-              <circle cx="150" cy="20" r="4.5" fill="#0d1117" stroke="#a855f7" strokeWidth="2" />
-              <circle cx="150" cy="100" r="4.5" fill="#0d1117" stroke="#10b981" strokeWidth="2" />
-              <circle cx="250" cy="60" r="4.5" fill="#0d1117" stroke="#00f0ff" strokeWidth="2" />
+              <circle cx="50" cy="60" r="7.5" fill="#0d1117" stroke="#00f0ff" strokeWidth="3.5" />
+              <circle cx="150" cy="20" r="7.5" fill="#0d1117" stroke="#a855f7" strokeWidth="3.5" />
+              <circle cx="150" cy="100" r="7.5" fill="#0d1117" stroke="#10b981" strokeWidth="3.5" />
+              <circle cx="250" cy="60" r="7.5" fill="#0d1117" stroke="#00f0ff" strokeWidth="3.5" />
             </svg>
           </div>
         </div>
 
         {/* Footer info */}
-        <div className="relative z-10 text-[10px] text-gray-500 font-sans">
+        <div className="relative z-10 text-[15px] text-gray-500 font-sans">
           CodeMap AI © 2026. Premium codebase analytics interface.
         </div>
       </div>
@@ -96,8 +96,8 @@ export default function LoginPage() {
 
         <div className="max-w-[400px] w-full space-y-6">
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight text-white">Sign In</h1>
-            <p className="text-xs text-slate-400 font-sans">Enter your credentials to manage workspace environments.</p>
+            <h1 className="text-[32px] font-bold tracking-tight text-white">Sign In</h1>
+            <p className="text-[17px] text-slate-300 font-sans">Enter your credentials to manage workspace environments.</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">

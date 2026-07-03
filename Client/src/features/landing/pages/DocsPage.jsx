@@ -2,7 +2,7 @@ import React from 'react';
 import Card from '../../../shared/components/Card';
 import Badge from '../../../shared/components/Badge';
 
-export default function DocsPage() {
+export default function DocsPage({ isSection = false }) {
   const sections = [
     {
       title: '1. Ingestion Pipeline & AST Parser',
@@ -27,17 +27,17 @@ export default function DocsPage() {
   ];
 
   return (
-    <div className="bg-[#040609] min-h-screen text-gray-200 py-24 px-6 font-mono select-none relative">
+    <div className={`bg-[#040609] text-gray-200 font-mono select-none relative ${isSection ? 'py-16' : 'min-h-screen py-24 px-6'}`}>
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#161b22_1px,transparent_1px),linear-gradient(to_bottom,#161b22_1px,transparent_1px)] bg-[size:36px_36px] opacity-10 pointer-events-none" />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#a855f7]/5 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto space-y-12 relative z-10">
         {/* Header */}
         <div className="space-y-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">
+          <h1 className="text-4xl md:text-[60px] lg:text-[64px] font-extrabold tracking-tight text-white leading-tight">
             Developer Reference Documentation
           </h1>
-          <p className="max-w-2xl mx-auto text-lg md:text-[21px] text-slate-300 font-sans leading-relaxed">
+          <p className="max-w-2xl mx-auto text-lg md:text-[22px] lg:text-[24px] text-slate-300 font-sans leading-relaxed">
             Technical workflow specifications, AST parsing parameters, and frontend dashboard architecture.
           </p>
         </div>
@@ -84,12 +84,12 @@ export default function DocsPage() {
         {/* Section Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {sections.map((sec, idx) => (
-            <Card key={idx} title={sec.title} className="bg-[#161b22]/30 border-[#3e4651]/55">
+            <Card key={idx} title={sec.title} titleClassName="text-[22px] font-semibold text-white" className="bg-[#161b22]/30 border-[#3e4651]/55">
               <div className="space-y-4 p-1">
-                <p className="text-slate-300 font-sans text-sm leading-relaxed">
+                <p className="text-slate-300 font-sans text-[18px] leading-relaxed">
                   {sec.desc}
                 </p>
-                <div className="border-t border-[#30363d]/30 pt-3 text-[10px] text-slate-500 font-mono flex justify-between">
+                <div className="border-t border-[#30363d]/30 pt-3 text-[15px] text-slate-500 font-mono flex justify-between">
                   <span>Stack:</span>
                   <span className="text-[#00f0ff] font-semibold">{sec.tech}</span>
                 </div>

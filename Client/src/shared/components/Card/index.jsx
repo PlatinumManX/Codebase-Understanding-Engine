@@ -8,6 +8,7 @@ export default function Card({
   footer,
   className = '',
   bodyClassName = '',
+  titleClassName = 'text-sm font-medium text-gray-200',
   onClick,
 }) {
   const isClickable = !!onClick;
@@ -21,7 +22,7 @@ export default function Card({
       {(title || subtitle || headerActions) && (
         <div className="flex items-center justify-between px-4 py-3 border-b border-[#30363d]">
           <div className="min-w-0">
-            {title && <h3 className="text-sm font-medium text-gray-200 truncate">{title}</h3>}
+            {title && <h3 className={`truncate ${titleClassName}`}>{title}</h3>}
             {subtitle && <p className="text-xs text-gray-400 mt-0.5 truncate">{subtitle}</p>}
           </div>
           {headerActions && <div className="flex items-center gap-2 ml-4 shrink-0">{headerActions}</div>}

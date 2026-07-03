@@ -19,17 +19,17 @@ export default function Footer() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00f0ff]/20 to-[#a855f7]/20 border border-[#00f0ff]/30 flex items-center justify-center">
                 <span className="text-sm font-extrabold text-[#00f0ff]">CM</span>
               </div>
-              <span className="text-base font-bold tracking-wider text-white">CODEMAP<span className="text-[#00f0ff]">AI</span></span>
+              <span className="text-lg font-bold tracking-wider text-white">CODEMAP<span className="text-[#00f0ff]">AI</span></span>
             </div>
-            <p className="text-xs text-slate-400 font-sans leading-relaxed max-w-xs">
+            <p className="text-[17px] text-slate-300 font-sans leading-relaxed max-w-xs">
               Next-generation Software Architecture Visualizer & AST Parser. Building interactive dependency call graphs dynamically.
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-3.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Quick Links</h4>
-            <div className="flex flex-col gap-2 text-xs text-slate-400">
+            <h4 className="text-[20px] font-bold text-white uppercase tracking-wider">Quick Links</h4>
+            <div className="flex flex-col gap-2 text-[17px] text-slate-300">
               <a href="#landing" className="hover:text-[#00f0ff] transition-colors">Home</a>
               <a href="#decoding-section" className="hover:text-[#00f0ff] transition-colors">Features</a>
               <a href="#flow-section" className="hover:text-[#00f0ff] transition-colors">Workflow</a>
@@ -39,8 +39,8 @@ export default function Footer() {
 
           {/* Resources */}
           <div className="space-y-3.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Resources</h4>
-            <div className="flex flex-col gap-2 text-xs text-slate-400 font-mono">
+            <h4 className="text-[20px] font-bold text-white uppercase tracking-wider">Resources</h4>
+            <div className="flex flex-col gap-2 text-[17px] text-slate-300 font-mono">
               <a href="#docs" className="hover:text-[#00f0ff] transition-colors">Documentation</a>
               <a href="#pricing" className="hover:text-[#00f0ff] transition-colors">Pricing Plans</a>
               <a href="#about" className="hover:text-[#00f0ff] transition-colors">About Team</a>
@@ -50,8 +50,8 @@ export default function Footer() {
 
           {/* Tech Stack */}
           <div className="space-y-3.5">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Tech Stack</h4>
-            <p className="text-xs text-slate-400 font-sans leading-relaxed">
+            <h4 className="text-[20px] font-bold text-white uppercase tracking-wider">Tech Stack</h4>
+            <p className="text-[17px] text-slate-300 font-sans leading-relaxed">
               React 19, Vite, Tailwind CSS v4, GSAP, Lenis, FastAPI, MongoDB, PyAST.
             </p>
             <div className="pt-1 flex items-center gap-3">
@@ -71,8 +71,8 @@ export default function Footer() {
         </div>
 
         {/* Bottom copyright details and back to top button */}
-        <div className="border-t border-[#1f2937]/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-[10px] text-slate-500 font-sans text-center sm:text-left space-y-1">
+        <div className="border-t border-[#1f2937]/20 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-[15px] text-slate-400 font-sans text-center sm:text-left space-y-1">
             <p>CodeMap AI © 2026. Designed and developed as a Final Year Project.</p>
             <p>Department of Computer Engineering | MPR Project Guide Coordinator</p>
           </div>

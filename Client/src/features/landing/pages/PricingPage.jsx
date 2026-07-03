@@ -3,7 +3,7 @@ import Card from '../../../shared/components/Card';
 import Badge from '../../../shared/components/Badge';
 import Button from '../../../shared/components/Button';
 
-export default function PricingPage() {
+export default function PricingPage({ isSection = false }) {
   const plans = [
     {
       name: 'Student',
@@ -49,17 +49,17 @@ export default function PricingPage() {
   ];
 
   return (
-    <div className="bg-[#040609] min-h-screen text-gray-200 py-24 px-6 font-mono select-none relative">
+    <div className={`bg-[#040609] text-gray-200 font-mono select-none relative ${isSection ? 'py-16' : 'min-h-screen py-24 px-6'}`}>
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#161b22_1px,transparent_1px),linear-gradient(to_bottom,#161b22_1px,transparent_1px)] bg-[size:36px_36px] opacity-10 pointer-events-none" />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#a855f7]/5 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto space-y-16 relative z-10">
         {/* Header */}
         <div className="space-y-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">
+          <h1 className="text-4xl md:text-[60px] lg:text-[64px] font-extrabold tracking-tight text-white leading-tight">
             Flexible Plans for Every Developer
           </h1>
-          <p className="max-w-2xl mx-auto text-lg md:text-[21px] text-slate-300 font-sans leading-relaxed">
+          <p className="max-w-2xl mx-auto text-lg md:text-[22px] lg:text-[24px] text-slate-300 font-sans leading-relaxed">
             Choose a plan to visualize your codebase architecture, debug workflows, and scale indices.
           </p>
         </div>
@@ -70,6 +70,7 @@ export default function PricingPage() {
             <Card 
               key={idx}
               title={p.name}
+              titleClassName="text-[22px] font-semibold text-white"
               className={`bg-[#0d1117]/60 border flex flex-col justify-between h-full hover:scale-[1.02] transition-transform ${p.accent}`}
               bodyClassName="p-6 flex flex-col gap-6 justify-between flex-grow"
             >
@@ -81,10 +82,10 @@ export default function PricingPage() {
                 </div>
 
                 {/* Features list */}
-                <ul className="space-y-3 font-sans text-xs text-slate-300">
+                <ul className="space-y-3 font-sans text-[18px] text-slate-300">
                   {p.features.map((f, fIdx) => (
                     <li key={fIdx} className="flex items-start gap-2">
-                      <svg className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-4 h-4 text-cyan-400 shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                       </svg>
                       <span>{f}</span>

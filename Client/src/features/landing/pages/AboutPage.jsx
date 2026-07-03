@@ -2,7 +2,7 @@ import React from 'react';
 import Card from '../../../shared/components/Card';
 import Badge from '../../../shared/components/Badge';
 
-export default function AboutPage() {
+export default function AboutPage({ isSection = false }) {
   const team = [
     {
       name: 'Mukesh Kushwaha',
@@ -31,30 +31,30 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="bg-[#040609] min-h-screen text-gray-200 py-24 px-6 font-mono select-none relative">
+    <div className={`bg-[#040609] text-gray-200 font-mono select-none relative ${isSection ? 'py-16' : 'min-h-screen py-24 px-6'}`}>
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#161b22_1px,transparent_1px),linear-gradient(to_bottom,#161b22_1px,transparent_1px)] bg-[size:36px_36px] opacity-10 pointer-events-none" />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#a855f7]/5 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto space-y-16 relative z-10">
         {/* Title */}
         <div className="space-y-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">
+          <h1 className="text-4xl md:text-[60px] lg:text-[64px] font-extrabold tracking-tight text-white leading-tight">
             How Unknown Repositories <br /> Become Understandable
           </h1>
-          <p className="max-w-2xl mx-auto text-lg md:text-[21px] text-slate-300 font-sans leading-relaxed">
+          <p className="max-w-2xl mx-auto text-lg md:text-[22px] lg:text-[24px] text-slate-300 font-sans leading-relaxed">
             CodeMap AI was engineered to bridge the gap between complex raw source codebases and clear mental architecture diagrams.
           </p>
         </div>
 
         {/* Core Pillars */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card title="Problem Statement" className="bg-[#161b22]/30 border-[#3e4651]/55">
-            <p className="text-slate-300 font-sans text-sm leading-relaxed p-1">
+          <Card title="Problem Statement" titleClassName="text-[22px] font-semibold text-white" className="bg-[#161b22]/30 border-[#3e4651]/55">
+            <p className="text-slate-300 font-sans text-[18px] leading-relaxed p-1">
               Onboarding developers to a legacy backend repository is notoriously slow. Static document files get outdated instantly, and tracing deep functional connections through thousands of lines of code is mentally exhausting.
             </p>
           </Card>
-          <Card title="Our Mission" className="bg-[#161b22]/30 border-[#3e4651]/55">
-            <p className="text-slate-300 font-sans text-sm leading-relaxed p-1">
+          <Card title="Our Mission" titleClassName="text-[22px] font-semibold text-white" className="bg-[#161b22]/30 border-[#3e4651]/55">
+            <p className="text-slate-300 font-sans text-[18px] leading-relaxed p-1">
               We aim to automate developer onboarding. By combining AST parser systems, execution timeline analyzers, and AI semantic lookup models, we turn raw code into living visual maps.
             </p>
           </Card>
@@ -82,16 +82,16 @@ export default function AboutPage() {
                   </div>
                   
                   <div className="space-y-1 font-mono">
-                    <h3 className="text-sm font-bold text-white leading-tight">{t.name}</h3>
-                    <p className="text-[10px] text-[#00f0ff] uppercase tracking-wider font-semibold">{t.role}</p>
+                    <h3 className="text-[22px] font-bold text-white leading-tight">{t.name}</h3>
+                    <p className="text-[14px] text-[#00f0ff] uppercase tracking-wider font-semibold">{t.role}</p>
                   </div>
                   
-                  <p className="text-slate-300 font-sans text-xs leading-relaxed">
+                  <p className="text-slate-300 font-sans text-[18px] leading-relaxed">
                     {t.desc}
                   </p>
                 </div>
 
-                <div className="border-t border-[#30363d]/40 pt-3 mt-1 text-[9px] text-slate-500 font-mono">
+                <div className="border-t border-[#30363d]/40 pt-3 mt-1 text-[15px] text-slate-500 font-mono">
                   {t.college}
                 </div>
               </Card>
