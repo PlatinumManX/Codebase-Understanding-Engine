@@ -1,5 +1,6 @@
 import networkx as nx
-
+from Parser.models import RepositoryMetadata
+import json
 NODE_MODULE = "module"
 NODE_FUNCTION = "function"
 NODE_ROUTE = "route"
@@ -29,6 +30,20 @@ class ModuleGraphBuilder:
         self._add_routes(repository)
 
         self._add_classes(repository)
+        return self.graph
+    @classmethod
+    def from_metadata_json(cls, metadata_path):
+
+        with open(metadata_path, "r") as file:
+            data = json.load(file)
+
+        repository = RepositoryMetadata.from_dict(data)
+
+        builder = cls()
+
+        graph=builder.build(repository)
+
+        return graph
     def _add_modules(self, repository):
         for file in repository.files:
             self.graph.add_node(file.file_path, type=NODE_MODULE, name=file.file_name)
