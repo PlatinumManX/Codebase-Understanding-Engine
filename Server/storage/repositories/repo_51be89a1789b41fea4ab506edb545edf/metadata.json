@@ -1,0 +1,70 @@
+{
+  "repository_name": "osmodules",
+  "files": [
+    {
+      "file_name": "main.py",
+      "file_path": "main.py",
+      "imports": [
+        {
+          "module": "os",
+          "symbols": [],
+          "alias": null,
+          "is_internal": false,
+          "resolved_path": null
+        }
+      ],
+      "module_calls": [
+        "range",
+        "os.rename"
+      ],
+      "functions": [],
+      "classes": [],
+      "routes": [],
+      "dependencies": []
+    },
+    {
+      "file_name": "oslist.py",
+      "file_path": "oslist.py",
+      "imports": [
+        {
+          "module": "os",
+          "symbols": [],
+          "alias": null,
+          "is_internal": false,
+          "resolved_path": null
+        }
+      ],
+      "module_calls": [
+        "os.listdir",
+        "print",
+        "print",
+        "os.getcwd"
+      ],
+      "functions": [],
+      "classes": [],
+      "routes": [],
+      "dependencies": []
+    },
+    {
+      "file_name": "rename.py",
+      "file_path": "rename.py",
+      "imports": [
+        {
+          "module": "os",
+          "symbols": [],
+          "alias": null,
+          "is_internal": false,
+          "resolved_path": null
+        }
+      ],
+      "module_calls": [
+        "range",
+        "os.rename"
+      ],
+      "functions": [],
+      "classes": [],
+      "routes": [],
+      "dependencies": []
+    }
+  ]
+}
