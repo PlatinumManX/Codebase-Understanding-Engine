@@ -84,7 +84,7 @@ export default function RepositoryPage() {
       if (response && response.success) {
         setStatistics(response.statistics);
         setUploadState('success');
-        showToast('Repository parsed successfully.', 'success');
+        showToast('success','Repository parsed successfully.');
       } else {
         throw new Error(response?.detail || 'Inbound parse error');
       }
