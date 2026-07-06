@@ -4,16 +4,17 @@ from graph_engine.graph_queries import (
     get_function_call_subgraph,
     get_route_execution_subgraph,
 )
+from graph_engine.graph_serializer import GraphSerializer
 
 class GraphService:
 
     @staticmethod
     def get_repository_graph(metadata_path):
 
-        return ModuleGraphBuilder.from_metadata_json(
+        graph = ModuleGraphBuilder.from_metadata_json(
             metadata_path
         )
-
+        return GraphSerializer.to_json(graph)
     @staticmethod
     def get_module_graph(metadata_path, module):
 
@@ -21,10 +22,10 @@ class GraphService:
             metadata_path
         )
 
-        return get_module_dependency_subgraph(
+        return GraphSerializer.to_json(get_module_dependency_subgraph(
             graph,
             module
-        )
+        ))
 
     @staticmethod
     def get_function_graph(metadata_path, function):
@@ -33,10 +34,10 @@ class GraphService:
             metadata_path
         )
 
-        return get_function_call_subgraph(
+        return GraphSerializer.to_json(get_function_call_subgraph(
             graph,
             function
-        )
+        ))
 
     @staticmethod
     def get_route_graph(metadata_path, route):
@@ -45,7 +46,7 @@ class GraphService:
             metadata_path
         )
 
-        return get_route_execution_subgraph(
+        return GraphSerializer.to_json(get_route_execution_subgraph(
             graph,
             route
-        )
+        ))

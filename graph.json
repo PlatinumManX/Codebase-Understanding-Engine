@@ -1,0 +1,450 @@
+{
+    "nodes": [
+        {
+            "id": "app.py",
+            "type": "module",
+            "label": "app.py",
+            "data": {
+                "type": "module",
+                "name": "app.py"
+            }
+        },
+        {
+            "id": "auth.py",
+            "type": "module",
+            "label": "auth.py",
+            "data": {
+                "type": "module",
+                "name": "auth.py"
+            }
+        },
+        {
+            "id": "db.py",
+            "type": "module",
+            "label": "db.py",
+            "data": {
+                "type": "module",
+                "name": "db.py"
+            }
+        },
+        {
+            "id": "models.py",
+            "type": "module",
+            "label": "models.py",
+            "data": {
+                "type": "module",
+                "name": "models.py"
+            }
+        },
+        {
+            "id": "test.py",
+            "type": "module",
+            "label": "test.py",
+            "data": {
+                "type": "module",
+                "name": "test.py"
+            }
+        },
+        {
+            "id": "models\\user.py",
+            "type": "module",
+            "label": "user.py",
+            "data": {
+                "type": "module",
+                "name": "user.py"
+            }
+        },
+        {
+            "id": "routes\\auth.py",
+            "type": "module",
+            "label": "auth.py",
+            "data": {
+                "type": "module",
+                "name": "auth.py"
+            }
+        },
+        {
+            "id": "routes\\user.py",
+            "type": "module",
+            "label": "user.py",
+            "data": {
+                "type": "module",
+                "name": "user.py"
+            }
+        },
+        {
+            "id": "services\\auth_services.py",
+            "type": "module",
+            "label": "auth_services.py",
+            "data": {
+                "type": "module",
+                "name": "auth_services.py"
+            }
+        },
+        {
+            "id": "services\\email_services.py",
+            "type": "module",
+            "label": "email_services.py",
+            "data": {
+                "type": "module",
+                "name": "email_services.py"
+            }
+        },
+        {
+            "id": "app.py::login",
+            "type": "function",
+            "label": "login",
+            "data": {
+                "type": "function",
+                "name": "login"
+            }
+        },
+        {
+            "id": "app.py::register",
+            "type": "function",
+            "label": "register",
+            "data": {
+                "type": "function",
+                "name": "register"
+            }
+        },
+        {
+            "id": "auth.py::login",
+            "type": "function",
+            "label": "login",
+            "data": {
+                "type": "function",
+                "name": "login"
+            }
+        },
+        {
+            "id": "auth.py::authenticate",
+            "type": "function",
+            "label": "authenticate",
+            "data": {
+                "type": "function",
+                "name": "authenticate"
+            }
+        },
+        {
+            "id": "auth.py::generate_token",
+            "type": "function",
+            "label": "generate_token",
+            "data": {
+                "type": "function",
+                "name": "generate_token"
+            }
+        },
+        {
+            "id": "db.py::query_db",
+            "type": "function",
+            "label": "query_db",
+            "data": {
+                "type": "function",
+                "name": "query_db"
+            }
+        },
+        {
+            "id": "test.py::login",
+            "type": "function",
+            "label": "login",
+            "data": {
+                "type": "function",
+                "name": "login"
+            }
+        },
+        {
+            "id": "services\\auth_services.py::authenticate",
+            "type": null,
+            "label": "services\\auth_services.py::authenticate",
+            "data": {}
+        },
+        {
+            "id": "ROUTE:/login",
+            "type": "route",
+            "label": "ROUTE:/login",
+            "data": {
+                "type": "route",
+                "path": "/login",
+                "methods": [
+                    "POST"
+                ]
+            }
+        },
+        {
+            "id": "ROUTE:/register",
+            "type": "route",
+            "label": "ROUTE:/register",
+            "data": {
+                "type": "route",
+                "path": "/register",
+                "methods": [
+                    "POST"
+                ]
+            }
+        },
+        {
+            "id": "models.py::User",
+            "type": "class",
+            "label": "User",
+            "data": {
+                "type": "class",
+                "name": "User"
+            }
+        },
+        {
+            "id": "models.py::User::save",
+            "type": "method",
+            "label": "save",
+            "data": {
+                "type": "method",
+                "name": "save"
+            }
+        },
+        {
+            "id": "models.py::User::delete",
+            "type": "method",
+            "label": "delete",
+            "data": {
+                "type": "method",
+                "name": "delete"
+            }
+        },
+        {
+            "id": "test.py::User",
+            "type": "class",
+            "label": "User",
+            "data": {
+                "type": "class",
+                "name": "User"
+            }
+        },
+        {
+            "id": "test.py::Admin",
+            "type": "class",
+            "label": "Admin",
+            "data": {
+                "type": "class",
+                "name": "Admin"
+            }
+        },
+        {
+            "id": "test.py::SuperAdmin",
+            "type": "class",
+            "label": "SuperAdmin",
+            "data": {
+                "type": "class",
+                "name": "SuperAdmin"
+            }
+        }
+    ],
+    "edges": [
+        {
+            "id": "app.py->app.py::login",
+            "source": "app.py",
+            "target": "app.py::login",
+            "type": "contains",
+            "data": {
+                "type": "contains"
+            }
+        },
+        {
+            "id": "app.py->app.py::register",
+            "source": "app.py",
+            "target": "app.py::register",
+            "type": "contains",
+            "data": {
+                "type": "contains"
+            }
+        },
+        {
+            "id": "app.py->ROUTE:/login",
+            "source": "app.py",
+            "target": "ROUTE:/login",
+            "type": "defines_route",
+            "data": {
+                "type": "defines_route"
+            }
+        },
+        {
+            "id": "app.py->ROUTE:/register",
+            "source": "app.py",
+            "target": "ROUTE:/register",
+            "type": "defines_route",
+            "data": {
+                "type": "defines_route"
+            }
+        },
+        {
+            "id": "auth.py->db.py",
+            "source": "auth.py",
+            "target": "db.py",
+            "type": "imports",
+            "data": {
+                "type": "imports"
+            }
+        },
+        {
+            "id": "auth.py->services\\auth_services.py",
+            "source": "auth.py",
+            "target": "services\\auth_services.py",
+            "type": "imports",
+            "data": {
+                "type": "imports"
+            }
+        },
+        {
+            "id": "auth.py->auth.py::login",
+            "source": "auth.py",
+            "target": "auth.py::login",
+            "type": "contains",
+            "data": {
+                "type": "contains"
+            }
+        },
+        {
+            "id": "auth.py->auth.py::authenticate",
+            "source": "auth.py",
+            "target": "auth.py::authenticate",
+            "type": "contains",
+            "data": {
+                "type": "contains"
+            }
+        },
+        {
+            "id": "auth.py->auth.py::generate_token",
+            "source": "auth.py",
+            "target": "auth.py::generate_token",
+            "type": "contains",
+            "data": {
+                "type": "contains"
+            }
+        },
+        {
+            "id": "db.py->db.py::query_db",
+            "source": "db.py",
+            "target": "db.py::query_db",
+            "type": "contains",
+            "data": {
+                "type": "contains"
+            }
+        },
+        {
+            "id": "models.py->models.py::User",
+            "source": "models.py",
+            "target": "models.py::User",
+            "type": "contains",
+            "data": {
+                "type": "contains"
+            }
+        },
+        {
+            "id": "test.py->test.py::login",
+            "source": "test.py",
+            "target": "test.py::login",
+            "type": "contains",
+            "data": {
+                "type": "contains"
+            }
+        },
+        {
+            "id": "test.py->test.py::User",
+            "source": "test.py",
+            "target": "test.py::User",
+            "type": "contains",
+            "data": {
+                "type": "contains"
+            }
+        },
+        {
+            "id": "test.py->test.py::Admin",
+            "source": "test.py",
+            "target": "test.py::Admin",
+            "type": "contains",
+            "data": {
+                "type": "contains"
+            }
+        },
+        {
+            "id": "test.py->test.py::SuperAdmin",
+            "source": "test.py",
+            "target": "test.py::SuperAdmin",
+            "type": "contains",
+            "data": {
+                "type": "contains"
+            }
+        },
+        {
+            "id": "auth.py::login->services\\auth_services.py::authenticate",
+            "source": "auth.py::login",
+            "target": "services\\auth_services.py::authenticate",
+            "type": "calls",
+            "data": {
+                "type": "calls"
+            }
+        },
+        {
+            "id": "auth.py::login->auth.py::generate_token",
+            "source": "auth.py::login",
+            "target": "auth.py::generate_token",
+            "type": "calls",
+            "data": {
+                "type": "calls"
+            }
+        },
+        {
+            "id": "ROUTE:/login->app.py::login",
+            "source": "ROUTE:/login",
+            "target": "app.py::login",
+            "type": "handled_by",
+            "data": {
+                "type": "handled_by"
+            }
+        },
+        {
+            "id": "ROUTE:/register->app.py::register",
+            "source": "ROUTE:/register",
+            "target": "app.py::register",
+            "type": "handled_by",
+            "data": {
+                "type": "handled_by"
+            }
+        },
+        {
+            "id": "models.py::User->models.py::User::save",
+            "source": "models.py::User",
+            "target": "models.py::User::save",
+            "type": "has_method",
+            "data": {
+                "type": "has_method"
+            }
+        },
+        {
+            "id": "models.py::User->models.py::User::delete",
+            "source": "models.py::User",
+            "target": "models.py::User::delete",
+            "type": "has_method",
+            "data": {
+                "type": "has_method"
+            }
+        },
+        {
+            "id": "test.py::Admin->test.py::User",
+            "source": "test.py::Admin",
+            "target": "test.py::User",
+            "type": "inherits",
+            "data": {
+                "type": "inherits"
+            }
+        },
+        {
+            "id": "test.py::SuperAdmin->test.py::Admin",
+            "source": "test.py::SuperAdmin",
+            "target": "test.py::Admin",
+            "type": "inherits",
+            "data": {
+                "type": "inherits"
+            }
+        }
+    ]
+}
