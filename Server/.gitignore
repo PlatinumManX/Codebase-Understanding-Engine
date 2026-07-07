@@ -224,3 +224,7 @@ embeddings.json
 
 #Vector Index
 vector_index.faiss
+
+#Temp data
+storage
+storage/
