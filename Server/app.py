@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 # Import routers
 from api.upload import router as upload_router
+from api.repositories import router as repositories_router
 
 # Load env variables
 load_dotenv()
@@ -32,6 +33,7 @@ app.add_middleware(
 
 # Register routers
 app.include_router(upload_router)
+app.include_router(repositories_router)
 
 @app.get("/")
 def read_root():

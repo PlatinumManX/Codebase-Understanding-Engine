@@ -3,8 +3,14 @@ import RepositoryHeader from '../components/RepositoryHeader';
 import RepositoryUploadCard from '../components/RepositoryUploadCard';
 import RepositoryInformationCard from '../components/RepositoryInformationCard';
 import RepositoryHistoryTable from '../components/RepositoryHistoryTable';
+import Card from '../../../shared/components/Card';
 import { useToast } from '../../../shared/context/ToastContext';
-import { uploadRepository } from '../../../shared/api/repositoryApi';
+import { 
+  uploadRepository, 
+  getRepositories, 
+  deleteRepository, 
+  patchRepository 
+} from '../../../shared/api/repositoryApi';
 
 export default function RepositoryPage() {
   const { showToast } = useToast();
@@ -22,21 +28,34 @@ export default function RepositoryPage() {
     tags: ''
   });
 
+  const [repositories, setRepositories] = useState([]);
+  const [loadingRepositories, setLoadingRepositories] = useState(true);
+  const [selectedRepoId, setSelectedRepoId] = useState(localStorage.getItem('active_repository_id') || '');
+
   const abortControllerRef = useRef(null);
 
-  // Abort ongoing requests when the page component unmounts
+  const fetchRepositories = async (signal) => {
+    try {
+      const data = await getRepositories(signal);
+      setRepositories(data || []);
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      showToast('error','Unable to load repositories.');
+    } finally {
+      setLoadingRepositories(false);
+    }
+  };
+
   useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
+    const controller = new AbortController();
+    fetchRepositories(controller.signal);
+    return () => controller.abort();
   }, []);
 
   const handleFileSelected = (selectedFile) => {
     // 1. Only ZIP extension validated
     if (!selectedFile.name.toLowerCase().endsWith('.zip')) {
-      showToast('Only ZIP archives are supported.', 'error');
+      showToast('error','Only ZIP archives are supported.');
       setUploadState('error');
       return;
     }
@@ -44,7 +63,7 @@ export default function RepositoryPage() {
     // 2. Size validation limit to 500 MB
     const maxAllowedSize = 500 * 1024 * 1024;
     if (selectedFile.size > maxAllowedSize) {
-      showToast('File size exceeds the 500 MB limit.', 'error');
+      showToast('error','File size exceeds the 500 MB limit.');
       setUploadState('error');
       return;
     }
@@ -85,6 +104,9 @@ export default function RepositoryPage() {
         setStatistics(response.statistics);
         setUploadState('success');
         showToast('success','Repository parsed successfully.');
+        
+        // Refresh local history list dynamically without refresh page
+        fetchRepositories();
       } else {
         throw new Error(response?.detail || 'Inbound parse error');
       }
@@ -93,12 +115,52 @@ export default function RepositoryPage() {
         return;
       }
       setUploadState('error');
-      showToast(err.message || 'An error occurred during upload', 'error');
+      showToast('error',err.message || 'An error occurred during upload');
     } finally {
       if (abortControllerRef.current === controller) {
         abortControllerRef.current = null;
       }
     }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteRepository(id);
+      showToast('success','Repository deleted successfully.');
+      
+      // If deleted repository is currently selected, clear localStorage and local state
+      if (selectedRepoId === id) {
+        setSelectedRepoId('');
+        localStorage.removeItem('active_repository_id');
+        localStorage.removeItem('active_repository_name');
+      }
+      
+      fetchRepositories();
+    } catch (err) {
+      showToast('error',err.message || 'Failed to delete repository');
+    }
+  };
+
+  const handleRename = async (id, newName) => {
+    try {
+      await patchRepository(id, { repository_name: newName });
+      showToast('success','Repository renamed successfully.');
+      
+      // If renamed repository is currently selected, update localStorage name value
+      if (selectedRepoId === id) {
+        localStorage.setItem('active_repository_name', newName);
+      }
+      
+      fetchRepositories();
+    } catch (err) {
+      showToast('error',err.message || 'Failed to rename repository');
+    }
+  };
+
+  const handleSelect = (repo) => {
+    setSelectedRepoId(repo.repository_id);
+    localStorage.setItem('active_repository_id', repo.repository_id);
+    localStorage.setItem('active_repository_name', repo.repository_name);
   };
 
   const handleRemoveFile = () => {
@@ -156,11 +218,28 @@ export default function RepositoryPage() {
         </div>
       </div>
 
-      {/* Historical List uploads table - rendered empty until listing APIs exist */}
+      {/* Historical List uploads table */}
       <div className="w-full">
-        <RepositoryHistoryTable 
-          repositories={[]} 
-        />
+        {loadingRepositories ? (
+          <Card 
+            title="Recent Repository Uploads" 
+            titleClassName="text-[20px] font-bold text-white font-mono"
+            subtitle="Loading ingested projects..."
+          >
+            <div className="py-12 flex flex-col items-center justify-center font-mono">
+              <span className="w-8 h-8 rounded-full border-2 border-[#00f0ff] border-t-transparent animate-spin mb-3" />
+              <p className="text-xs text-slate-400">Querying database metadata catalog...</p>
+            </div>
+          </Card>
+        ) : (
+          <RepositoryHistoryTable 
+            repositories={repositories} 
+            selectedRepoId={selectedRepoId}
+            onSelect={handleSelect}
+            onDelete={handleDelete}
+            onRename={handleRename}
+          />
+        )}
       </div>
     </div>
   );

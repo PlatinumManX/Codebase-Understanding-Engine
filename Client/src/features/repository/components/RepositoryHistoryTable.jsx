@@ -4,7 +4,13 @@ import Badge from '../../../shared/components/Badge';
 import Button from '../../../shared/components/Button';
 import RepositoryEmptyState from './RepositoryEmptyState';
 
-export default function RepositoryHistoryTable({ repositories }) {
+export default function RepositoryHistoryTable({ 
+  repositories, 
+  selectedRepoId, 
+  onSelect, 
+  onDelete, 
+  onRename 
+}) {
   if (!repositories || repositories.length === 0) {
     return (
       <Card 
@@ -22,7 +28,11 @@ export default function RepositoryHistoryTable({ repositories }) {
       case 'READY':
         return <Badge variant="success" size="sm">READY</Badge>;
       case 'PROCESSING':
-        return <Badge variant="warning" size="sm" className="animate-pulse">PROCESSING</Badge>;
+      case 'UPLOADING':
+      case 'EXTRACTING':
+      case 'PARSING':
+      case 'GENERATING_GRAPH':
+        return <Badge variant="warning" size="sm" className="animate-pulse">{status}</Badge>;
       case 'FAILED':
         return <Badge variant="danger" size="sm">FAILED</Badge>;
       default:
@@ -46,6 +56,22 @@ export default function RepositoryHistoryTable({ repositories }) {
     }
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'Unknown';
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (e) {
+      return dateStr;
+    }
+  };
+
   return (
     <Card 
       title="Recent Repository Uploads" 
@@ -65,56 +91,99 @@ export default function RepositoryHistoryTable({ repositories }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-[#30363d]/40">
-            {repositories.map((repo, idx) => (
-              <tr 
-                key={idx} 
-                className="hover:bg-[#161b22]/20 transition-colors group"
-              >
-                {/* Repo Info */}
-                <td className="py-4 px-4 font-semibold text-white">
-                  <div className="flex items-center gap-2.5">
-                    <svg className="w-4 h-4 text-slate-500 group-hover:text-[#00f0ff] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
-                    </svg>
-                    <span className="truncate max-w-[200px]">{repo.name}</span>
-                  </div>
-                </td>
+            {repositories.map((repo) => {
+              const isSelected = repo.repository_id === selectedRepoId;
+              const fileCount = repo.statistics?.files ?? 0;
+              return (
+                <tr 
+                  key={repo.repository_id} 
+                  onClick={() => onSelect(repo)}
+                  className={`hover:bg-[#161b22]/30 transition-colors group cursor-pointer ${
+                    isSelected 
+                      ? 'bg-[#161b22]/80 border-l-2 border-[#00f0ff]' 
+                      : 'border-l-2 border-transparent'
+                  }`}
+                >
+                  {/* Repo Info */}
+                  <td className="py-4 px-4 font-semibold text-white">
+                    <div className="flex items-center gap-2.5">
+                      <svg className={`w-4 h-4 transition-colors ${isSelected ? 'text-[#00f0ff]' : 'text-slate-500 group-hover:text-[#00f0ff]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
+                      </svg>
+                      <span className="truncate max-w-[200px]" title={repo.repository_name}>
+                        {repo.repository_name}
+                      </span>
+                    </div>
+                  </td>
 
-                {/* Language */}
-                <td className="py-4 px-4">
-                  <span className={`font-semibold ${getLanguageColor(repo.language)}`}>
-                    {repo.language}
-                  </span>
-                </td>
+                  {/* Language */}
+                  <td className="py-4 px-4">
+                    <span className={`font-semibold ${getLanguageColor(repo.language || 'Python')}`}>
+                      {repo.language || 'Python'}
+                    </span>
+                  </td>
 
-                {/* Files */}
-                <td className="py-4 px-4 text-center text-slate-300">
-                  {repo.files}
-                </td>
+                  {/* Files */}
+                  <td className="py-4 px-4 text-center text-slate-300">
+                    {fileCount}
+                  </td>
 
-                {/* Status */}
-                <td className="py-4 px-4 text-center">
-                  {getStatusBadge(repo.status)}
-                </td>
+                  {/* Status */}
+                  <td className="py-4 px-4 text-center">
+                    {getStatusBadge(repo.status || 'READY')}
+                  </td>
 
-                {/* Date */}
-                <td className="py-4 px-4 text-slate-500 font-sans text-xs">
-                  {repo.uploadedAt || 'Just now'}
-                </td>
+                  {/* Date */}
+                  <td className="py-4 px-4 text-slate-500 font-sans text-xs">
+                    {formatDate(repo.created_at)}
+                  </td>
 
-                {/* Actions */}
-                <td className="py-4 px-4 text-right">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    disabled 
-                    className="font-mono text-[11px] cursor-not-allowed opacity-50"
-                  >
-                    View
-                  </Button>
-                </td>
-              </tr>
-            ))}
+                  {/* Actions */}
+                  <td className="py-4 px-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button 
+                        variant={isSelected ? "primary" : "outline"} 
+                        size="sm" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelect(repo);
+                        }}
+                        className="font-mono text-[11px]"
+                      >
+                        {isSelected ? "Active" : "View"}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const newName = prompt("Enter new name for the repository:", repo.repository_name);
+                          if (newName && newName.trim()) {
+                            onRename(repo.repository_id, newName.trim());
+                          }
+                        }}
+                        className="font-mono text-[11px] border-slate-700 hover:border-slate-500"
+                      >
+                        Rename
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm(`Are you sure you want to delete repository "${repo.repository_name}"? This action is permanent.`)) {
+                            onDelete(repo.repository_id);
+                          }
+                        }}
+                        className="font-mono text-[11px] border-red-900/50 text-red-400 hover:bg-red-950/30 hover:text-red-300"
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

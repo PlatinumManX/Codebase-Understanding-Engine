@@ -52,22 +52,84 @@ class MetadataService:
             "routes": total_routes
         }
 
-    def save_repository_record(self, repo_id: str, repo_name: str, workspace_path: Path, metadata_path: Path, statistics: dict, language: str = "Python") -> str:
+    def create_initial_record(self, repo_id: str, repo_name: str, status: str = "UPLOADING", stage: str = "UPLOADING") -> str:
         collection = self.db["repositories"]
-        
         record = {
             "repository_id": repo_id,
             "repository_name": repo_name,
-            "status": "parsed",
-            "storage_path": str(workspace_path.resolve()),
-            "metadata_path": str(metadata_path.resolve()),
+            "description": "",
+            "language": "Python",
+            "status": status,
+            "processing_stage": stage,
+            "statistics": {
+                "files": 0,
+                "functions": 0,
+                "classes": 0,
+                "modules": 0,
+                "routes": 0
+            },
+            "storage_paths": {},
+            "active": True,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        collection.update_one(
+            {"repository_id": repo_id},
+            {"$set": record},
+            upsert=True
+        )
+        return repo_id
+
+    def update_repository_status(self, repo_id: str, status: str, stage: str, statistics: dict = None, storage_paths: dict = None, error: str = None):
+        collection = self.db["repositories"]
+        update_doc = {
+            "status": status,
+            "processing_stage": stage,
+            "updated_at": datetime.utcnow()
+        }
+        if statistics is not None:
+            update_doc["statistics"] = statistics
+        if storage_paths is not None:
+            update_doc["storage_paths"] = storage_paths
+        if error is not None:
+            update_doc["error"] = error
+            
+        collection.update_one(
+            {"repository_id": repo_id},
+            {"$set": update_doc}
+        )
+
+    def save_repository_record(self, repo_id: str, repo_name: str, workspace_path: Path, metadata_path: Path, statistics: dict, language: str = "Python") -> str:
+        # Keep this method for backward compatibility in case other scripts reference it
+        collection = self.db["repositories"]
+        
+        # Calculate relative paths to not expose direct filesystem paths to front-end
+        repo_workspace_rel = f"storage/repositories/{repo_id}"
+        storage_paths = {
+            "source": f"{repo_workspace_rel}/source",
+            "metadata": f"{repo_workspace_rel}/metadata.json",
+            "graph": f"{repo_workspace_rel}/graph/graph.json",
+            "chunks": f"{repo_workspace_rel}/chunks.json",
+            "faiss": f"{repo_workspace_rel}/vector_index.faiss",
+            "mapping": f"{repo_workspace_rel}/id_mapping.json"
+        }
+
+        record = {
+            "repository_id": repo_id,
+            "repository_name": repo_name,
+            "description": "",
+            "status": "READY",
+            "processing_stage": "READY",
+            "storage_path": str(workspace_path.resolve()),  # keeping for legacy compat
+            "metadata_path": str(metadata_path.resolve()),  # keeping for legacy compat
+            "storage_paths": storage_paths,
             "language": language,
             "statistics": statistics,
+            "active": True,
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow()
         }
         
-        # Update if exists, else insert
         collection.update_one(
             {"repository_id": repo_id},
             {"$set": record},

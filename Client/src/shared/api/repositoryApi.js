@@ -39,3 +39,58 @@ export async function uploadRepository(repositoryName, repositoryFile, signal) {
     throw error;
   }
 }
+
+export async function getRepositories(signal) {
+  try {
+    const response = await fetch(`${API_BASE}/api/repositories`, { signal });
+    if (!response.ok) {
+      throw new Error('Failed to fetch repositories');
+    }
+    return await response.json();
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.debug('[repositoryApi] getRepositories failed:', error);
+    }
+    throw error;
+  }
+}
+
+export async function deleteRepository(repositoryId, signal) {
+  try {
+    const response = await fetch(`${API_BASE}/api/repositories/${repositoryId}`, {
+      method: 'DELETE',
+      signal,
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete repository');
+    }
+    return await response.json();
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.debug('[repositoryApi] deleteRepository failed:', error);
+    }
+    throw error;
+  }
+}
+
+export async function patchRepository(repositoryId, updateData, signal) {
+  try {
+    const response = await fetch(`${API_BASE}/api/repositories/${repositoryId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updateData),
+      signal,
+    });
+    if (!response.ok) {
+      throw new Error('Failed to update repository');
+    }
+    return await response.json();
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.debug('[repositoryApi] patchRepository failed:', error);
+    }
+    throw error;
+  }
+}
