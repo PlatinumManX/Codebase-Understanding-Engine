@@ -46,7 +46,13 @@ class ModuleGraphBuilder:
         return graph
     def _add_modules(self, repository):
         for file in repository.files:
-            self.graph.add_node(file.file_path, type=NODE_MODULE, name=file.file_name)
+            self.graph.add_node(
+                file.file_path, 
+                type=NODE_MODULE, 
+                name=file.file_name,
+                path=file.file_path,
+                dependencies=file.dependencies
+            )
     def _add_imports(self, repository):
         for file in repository.files:
             for dependency in file.dependencies:
@@ -55,7 +61,24 @@ class ModuleGraphBuilder:
         for file in repository.files:
             for function in file.functions:
                 function_id = (f"{file.file_path}::{function.name}")
-                self.graph.add_node(function_id,type=NODE_FUNCTION, name=function.name)
+                resolved_calls = []
+                for rc in function.resolved_calls:
+                    resolved_calls.append({
+                        "function": rc.function,
+                        "file": rc.file
+                    })
+                self.graph.add_node(
+                    function_id,
+                    type=NODE_FUNCTION, 
+                    name=function.name,
+                    parameters=function.parameters,
+                    calls=function.calls,
+                    resolved_calls=resolved_calls,
+                    external_api_calls=function.external_api_calls,
+                    source_code=function.source_code,
+                    is_async=function.is_async,
+                    file=file.file_path
+                )
                 self.graph.add_edge(file.file_path,function_id,type=EDGE_CONTAINS)
     def _add_calls(self, repository):
         for file in repository.files:
@@ -66,28 +89,50 @@ class ModuleGraphBuilder:
                     self.graph.add_edge(source_id,target_id,type=EDGE_CALLS)
     def _add_routes(self, repository):
         for file in repository.files:
-
             for route in file.routes:
                 route_id = f"ROUTE:{route.path}"
-                self.graph.add_node(route_id,type=NODE_ROUTE, path=route.path, methods=route.methods)
+                self.graph.add_node(
+                    route_id,
+                    type=NODE_ROUTE, 
+                    path=route.path, 
+                    methods=route.methods,
+                    handler=route.handler,
+                    file=file.file_path
+                )
                 self.graph.add_edge(file.file_path,route_id,type=EDGE_DEFINES_ROUTE)
                 handler_id = f"{file.file_path}::{route.handler}"
                 self.graph.add_edge(route_id,handler_id,type=EDGE_HANDLED_BY)
     def _add_classes(self, repository):
         for file in repository.files:
-
             for cls in file.classes:
                 class_id = f"{file.file_path}::{cls.name}"
-                self.graph.add_node(class_id,type=NODE_CLASS, name=cls.name)
+                self.graph.add_node(
+                    class_id,
+                    type=NODE_CLASS, 
+                    name=cls.name,
+                    methods=cls.methods,
+                    inherits=cls.inherits,
+                    source_code=cls.source_code,
+                    file=file.file_path
+                )
                 self.graph.add_edge(file.file_path,class_id,type=EDGE_CONTAINS)
                 for method in cls.methods:
                     method_id = (f"{class_id}::{method}")
-                    self.graph.add_node(method_id,type=NODE_METHOD, name=method)
+                    self.graph.add_node(
+                        method_id,
+                        type=NODE_METHOD, 
+                        name=method,
+                        class_name=cls.name,
+                        file=file.file_path
+                    )
                     self.graph.add_edge(class_id,method_id,type=EDGE_HAS_METHOD)
                 for parent in cls.inherits:
-
                     parent_id = (f"{file.file_path}::{parent}")
                     if not self.graph.has_node(parent_id):
-                        self.graph.add_node(parent_id,type="external_class",name=parent)
+                        self.graph.add_node(
+                            parent_id,
+                            type="external_class",
+                            name=parent,
+                            file=file.file_path
+                        )
                     self.graph.add_edge(class_id,parent_id,type=EDGE_INHERITS)
-

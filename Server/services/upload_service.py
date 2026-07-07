@@ -10,7 +10,7 @@ from utils.zip_validator import validate_zip_file, is_valid_zip_extension
 from services.storage_service import StorageService
 from services.metadata_service import MetadataService
 from Parser.repository_parser import parse_repository
-from graph_engine.graph_builder import ModuleGraphBuilder
+from services.graph_service import GraphService
 from graph_engine.graph_serializer import GraphSerializer
 
 class UploadService:
@@ -25,7 +25,7 @@ class UploadService:
         # Clean existing handlers
         logger.handlers = []
         
-        log_file = workspace_path / "parser.log"
+        log_file = workspace_path / "logs" / "parser.log"
         fh = logging.FileHandler(log_file, encoding='utf-8')
         fh.setLevel(logging.INFO)
         
@@ -122,21 +122,17 @@ class UploadService:
             self.metadata_service.update_repository_status(
                 repo_id=repo_id,
                 status="GENERATING_GRAPH",
-                stage="GENERATING_GRAPH"
+                stage="GENERATING_GRAPH",
+                parser_status="READY"
             )
             
             logger.info("Generating module dependencies graph...")
-            graph_dir = workspace_path / "graph"
-            graph_dir.mkdir(parents=True, exist_ok=True)
-            graph_json_path = graph_dir / "graph.json"
+            graph_json_path = workspace_path / "graph" / "graph.json"
             
             try:
-                builder = ModuleGraphBuilder()
-                graph = builder.build(metadata)
+                graph = GraphService.build_repository_graph(metadata_path)
                 graph_data = GraphSerializer.to_json(graph)
-                
-                with open(graph_json_path, 'w', encoding='utf-8') as gf:
-                    json.dump(graph_data, gf, indent=2, ensure_ascii=False)
+                GraphService.save_graph(graph_data, graph_json_path)
                 logger.info("Module graph generated successfully at: %s", graph_json_path)
             except Exception as ge:
                 logger.error("Module graph generation failed: %s", str(ge))
@@ -144,7 +140,8 @@ class UploadService:
                     repo_id=repo_id,
                     status="FAILED",
                     stage="GENERATING_GRAPH",
-                    error=str(ge)
+                    error=str(ge),
+                    graph_status="FAILED"
                 )
                 raise HTTPException(status_code=500, detail=f"Graph generation error: {str(ge)}")
 
@@ -155,11 +152,20 @@ class UploadService:
             repo_workspace_rel = f"storage/repositories/{repo_id}"
             storage_paths = {
                 "source": f"{repo_workspace_rel}/source",
-                "metadata": f"{repo_workspace_rel}/metadata.json",
+                "metadata": f"{repo_workspace_rel}/parser/metadata.json",
                 "graph": f"{repo_workspace_rel}/graph/graph.json",
-                "chunks": f"{repo_workspace_rel}/chunks.json",
-                "faiss": f"{repo_workspace_rel}/vector_index.faiss",
-                "mapping": f"{repo_workspace_rel}/id_mapping.json"
+                "chunks": f"{repo_workspace_rel}/retrieval/chunks.json",
+                "faiss": f"{repo_workspace_rel}/retrieval/vector_index.faiss",
+                "mapping": f"{repo_workspace_rel}/retrieval/id_mapping.json"
+            }
+
+            from datetime import datetime
+            graph_metadata = {
+                "status": "READY",
+                "generated_at": datetime.utcnow().isoformat(),
+                "storage_path": f"{repo_workspace_rel}/graph/graph.json",
+                "node_count": len(graph.nodes),
+                "edge_count": len(graph.edges)
             }
 
             logger.info("Finalizing database record configuration...")
@@ -169,7 +175,13 @@ class UploadService:
                     status="READY",
                     stage="READY",
                     statistics=stats,
-                    storage_paths=storage_paths
+                    storage_paths=storage_paths,
+                    graph=graph_metadata,
+                    parser_status="READY",
+                    graph_status="READY",
+                    retrieval_status="PENDING",
+                    execution_flow_status="PENDING",
+                    workspace_path=str(workspace_path.resolve())
                 )
                 # Save backward compatibility fields as well
                 self.metadata_service.save_repository_record(

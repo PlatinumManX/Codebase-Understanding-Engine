@@ -94,3 +94,33 @@ export async function patchRepository(repositoryId, updateData, signal) {
     throw error;
   }
 }
+
+export async function getActiveRepository(signal) {
+  try {
+    const response = await fetch(`${API_BASE}/api/repositories/active`, { signal });
+    if (!response.ok) {
+      throw new Error('No active repository configured');
+    }
+    return await response.json();
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.debug('[repositoryApi] getActiveRepository failed:', error);
+    }
+    throw error;
+  }
+}
+
+export async function getRepositoryGraph(repositoryId, signal) {
+  try {
+    const response = await fetch(`${API_BASE}/api/repositories/${repositoryId}/graph`, { signal });
+    if (!response.ok) {
+      throw new Error('Failed to fetch repository graph');
+    }
+    return await response.json();
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.debug('[repositoryApi] getRepositoryGraph failed:', error);
+    }
+    throw error;
+  }
+}

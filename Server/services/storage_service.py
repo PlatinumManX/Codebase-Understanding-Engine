@@ -23,9 +23,18 @@ class StorageService:
 
     def create_repo_workspace(self, repo_id: str) -> tuple[Path, Path]:
         workspace_path = REPOS_DIR / repo_id
-        source_path = workspace_path / "source"
         workspace_path.mkdir(parents=True, exist_ok=True)
-        source_path.mkdir(parents=True, exist_ok=True)
+        
+        (workspace_path / "source").mkdir(parents=True, exist_ok=True)
+        (workspace_path / "parser").mkdir(parents=True, exist_ok=True)
+        (workspace_path / "graph").mkdir(parents=True, exist_ok=True)
+        (workspace_path / "retrieval").mkdir(parents=True, exist_ok=True)
+        (workspace_path / "flow").mkdir(parents=True, exist_ok=True)
+        (workspace_path / "cache").mkdir(parents=True, exist_ok=True)
+        (workspace_path / "exports").mkdir(parents=True, exist_ok=True)
+        (workspace_path / "logs").mkdir(parents=True, exist_ok=True)
+        
+        source_path = workspace_path / "source"
         return workspace_path, source_path
 
     def extract_zip(self, zip_path: Path, target_path: Path) -> Path:
