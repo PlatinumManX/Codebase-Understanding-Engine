@@ -4,8 +4,8 @@ import SearchBar from '../../../shared/components/SearchBar';
 import GraphToolbar from '../components/GraphToolbar';
 import GraphCanvas from '../components/GraphCanvas';
 import GraphFilters from '../components/GraphFilters';
-import NodeDetailsPanel from '../components/NodeDetailsPanel';
 import GraphLegend from '../components/GraphLegend';
+import NodeDetailsPanel from '../components/NodeDetailsPanel';
 import Card from '../../../shared/components/Card';
 import { 
   getRepositories, 
@@ -18,30 +18,42 @@ export default function GraphExplorerPage() {
   const [activeRepo, setActiveRepo] = useState(null);
   const [graphData, setGraphData] = useState({ nodes: [], edges: [] });
   const [loading, setLoading] = useState(true);
+
+  // Semantic exploration state
+  const [activeMode, setActiveMode] = useState('Architecture'); // Architecture, Modules, Dependency, Classes, Functions, Routes
+  const [expandedNodeIds, setExpandedNodeIds] = useState(new Set());
   
-  const [zoom, setZoom] = useState(1);
-  const [layout, setLayout] = useState('Force-Directed');
+  // Selection states
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
-  const [selectedGroups, setSelectedGroups] = useState(['module', 'class', 'function', 'method', 'route', 'external_class']);
-  const [showFilesOnly, setShowFilesOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Collapsible Filters Panel
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedNodeTypes, setSelectedNodeTypes] = useState([
+    'module', 'class', 'function', 'method', 'route', 'external_class', 'repository'
+  ]);
+  const [showFilesOnly, setShowFilesOnly] = useState(false);
 
-  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.1, 2));
-  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
-  const handleZoomReset = () => setZoom(1);
+  // Camera action triggers
+  const [fitViewTrigger, setFitViewTrigger] = useState(0);
+  const [centerSelectionTrigger, setCenterSelectionTrigger] = useState(0);
 
-  const handleToggleGroup = (groupKey) => {
-    setSelectedGroups(prev =>
-      prev.includes(groupKey)
-        ? prev.filter(g => g !== groupKey)
-        : [...prev, groupKey]
-    );
-  };
+  // Layout engine shifts automatically based on exploration mode
+  const layout = useMemo(() => {
+    switch (activeMode) {
+      case 'Modules':
+        return 'Circular';
+      case 'Classes':
+      case 'Functions':
+      case 'Routes':
+        return 'Hierarchical';
+      default:
+        return 'Force-Directed';
+    }
+  }, [activeMode]);
 
-  const handleToggleFilesOnly = () => setShowFilesOnly(prev => !prev);
-
-  // 1. Fetch repositories and initial active repository graph
+  // Load repositories and initial graph
   useEffect(() => {
     const controller = new AbortController();
     
@@ -62,7 +74,7 @@ export default function GraphExplorerPage() {
           try {
             activeRepoData = await getActiveRepository(controller.signal);
           } catch (e) {
-            // No active repo configured
+            // No active repository configured
           }
         }
         
@@ -76,7 +88,7 @@ export default function GraphExplorerPage() {
         }
       } catch (err) {
         if (err.name !== 'AbortError') {
-          console.error("Failed to load graph explorer metadata:", err);
+          console.error("Failed to load initial graph explorer data:", err);
         }
       } finally {
         setLoading(false);
@@ -96,6 +108,7 @@ export default function GraphExplorerPage() {
       setActiveRepo(selected);
       setSelectedNode(null);
       setSelectedEdge(null);
+      setExpandedNodeIds(new Set());
       localStorage.setItem('active_repository_id', selected.repository_id);
       localStorage.setItem('active_repository_name', selected.repository_name);
       
@@ -108,7 +121,121 @@ export default function GraphExplorerPage() {
     }
   };
 
-  // 2. Compute dynamic stats and node type counts
+  // Node parent mapping helper
+  const nodeParentsMap = useMemo(() => {
+    const parentMap = {};
+    if (!graphData?.edges) return parentMap;
+    
+    graphData.edges.forEach(edge => {
+      if (edge.type === 'contains' || edge.type === 'defines_route' || edge.type === 'has_method') {
+        parentMap[edge.target] = edge.source;
+      }
+    });
+    return parentMap;
+  }, [graphData]);
+
+  // Progressive exploration node resolver
+  const visibleNodes = useMemo(() => {
+    const rawNodes = graphData?.nodes || [];
+    if (rawNodes.length === 0) return [];
+
+    // Filter by type checks
+    const typeFiltered = rawNodes.filter(n => selectedNodeTypes.includes(n.type));
+
+    // Handle Semantic Exploration modes
+    if (activeMode === 'Modules') {
+      return typeFiltered.filter(n => n.type === 'module');
+    }
+    
+    if (activeMode === 'Dependency') {
+      return typeFiltered.filter(n => n.type === 'module' || n.type === 'external_class');
+    }
+
+    if (activeMode === 'Classes') {
+      return typeFiltered.filter(n => n.type === 'class' || n.type === 'external_class');
+    }
+
+    if (activeMode === 'Functions') {
+      if (selectedNode && selectedNode.type === 'function') {
+        const related = new Set([selectedNode.id]);
+        (graphData.edges || []).forEach(e => {
+          if (e.type === 'calls') {
+            if (e.source === selectedNode.id) related.add(e.target);
+            if (e.target === selectedNode.id) related.add(e.source);
+          }
+        });
+        return typeFiltered.filter(n => related.has(n.id));
+      }
+      return typeFiltered.filter(n => n.type === 'function');
+    }
+
+    if (activeMode === 'Routes') {
+      if (selectedNode && selectedNode.type === 'route') {
+        const related = new Set([selectedNode.id]);
+        (graphData.edges || []).forEach(e => {
+          if (e.source === selectedNode.id) related.add(e.target);
+          if (e.target === selectedNode.id) related.add(e.source);
+        });
+        return typeFiltered.filter(n => related.has(n.id));
+      }
+      return typeFiltered.filter(n => n.type === 'route');
+    }
+
+    // Default: 'Architecture' (Progressive Disclosure)
+    return typeFiltered.filter(node => {
+      // Base levels are modules and external classes
+      if (node.type === 'module' || node.type === 'external_class') {
+        return true;
+      }
+      
+      // Node is visible if its parent is expanded
+      const parentId = nodeParentsMap[node.id];
+      if (parentId && expandedNodeIds.has(parentId)) {
+        // If it's a method, we also check if its parent class is expanded
+        if (node.type === 'method') {
+          const grandParentId = nodeParentsMap[parentId];
+          if (grandParentId && expandedNodeIds.has(grandParentId)) {
+            return true;
+          }
+          return false;
+        }
+        return true;
+      }
+      
+      return false;
+    });
+  }, [graphData, activeMode, expandedNodeIds, nodeParentsMap, selectedNode, selectedNodeTypes]);
+
+  const visibleNodeIds = useMemo(() => new Set(visibleNodes.map(n => n.id)), [visibleNodes]);
+
+  // Progressive exploration edge resolver
+  const visibleEdges = useMemo(() => {
+    const rawEdges = graphData?.edges || [];
+    
+    // Filter out edges that connect hidden nodes
+    const boundsFiltered = rawEdges.filter(
+      edge => visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target)
+    );
+
+    // Filters for Class Hierarchy inherits only
+    if (activeMode === 'Classes') {
+      return boundsFiltered.filter(e => e.type === 'inherits');
+    }
+
+    // Filters for Dependency module import calls only
+    if (activeMode === 'Dependency') {
+      return boundsFiltered.filter(e => e.type === 'imports');
+    }
+
+    return boundsFiltered;
+  }, [graphData, visibleNodeIds, activeMode]);
+
+  // Statistics counters
+  const totalNodesCount = graphData?.nodes?.length || 0;
+  const totalEdgesCount = graphData?.edges?.length || 0;
+  const visibleNodesCount = visibleNodes.length;
+  const visibleEdgesCount = visibleEdges.length;
+
   const typeCounts = useMemo(() => {
     const counts = {};
     (graphData?.nodes || []).forEach(n => {
@@ -117,37 +244,103 @@ export default function GraphExplorerPage() {
     return counts;
   }, [graphData]);
 
-  // 3. Filter canvas elements
-  const filteredNodes = useMemo(() => {
-    return (graphData?.nodes || []).filter((node) => {
-      if (!selectedGroups.includes(node.type)) return false;
-      if (showFilesOnly && node.type !== 'module') return false;
-      if (searchQuery.trim() !== '') {
-        return (
-          node.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          node.id.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+  // Action utilities handlers
+  const handleFitView = () => setFitViewTrigger(prev => prev + 1);
+  const handleCenterSelection = () => setCenterSelectionTrigger(prev => prev + 1);
+  
+  const handleExpandAll = () => {
+    const newExpanded = new Set(expandedNodeIds);
+    // Expand all currently visible modules and classes
+    visibleNodes.forEach(node => {
+      if (node.type === 'module' || node.type === 'class') {
+        newExpanded.add(node.id);
       }
-      return true;
     });
-  }, [graphData, selectedGroups, showFilesOnly, searchQuery]);
-
-  const filteredNodeIds = useMemo(() => new Set(filteredNodes.map(n => n.id)), [filteredNodes]);
-
-  const filteredEdges = useMemo(() => {
-    return (graphData?.edges || []).filter(
-      edge => filteredNodeIds.has(edge.source) && filteredNodeIds.has(edge.target)
-    );
-  }, [graphData, filteredNodeIds]);
-
-  const handleSelectEdge = (edge) => {
-    setSelectedNode(null);
-    setSelectedEdge(edge);
+    setExpandedNodeIds(newExpanded);
   };
 
-  const handleSelectNode = (node) => {
-    setSelectedEdge(null);
-    setSelectedNode(node);
+  const handleCollapseAll = () => {
+    setExpandedNodeIds(new Set());
+  };
+
+  // Node click and expand actions
+  const handleNodeAction = (nodeId, action) => {
+    if (action === 'expand') {
+      const node = (graphData?.nodes || []).find(n => n.id === nodeId);
+      if (node?.type === 'function') {
+        setActiveMode('Functions');
+        setSelectedNode(node);
+      } else if (node?.type === 'route') {
+        setActiveMode('Routes');
+        setSelectedNode(node);
+      } else {
+        setExpandedNodeIds(prev => {
+          const next = new Set(prev);
+          next.add(nodeId);
+          return next;
+        });
+      }
+    } else if (action === 'collapse') {
+      setExpandedNodeIds(prev => {
+        const next = new Set(prev);
+        next.delete(nodeId);
+        return next;
+      });
+    } else if (action === 'focus') {
+      const node = (graphData?.nodes || []).find(n => n.id === nodeId);
+      if (node) {
+        setSelectedNode(node);
+        handleCenterSelection();
+      }
+    }
+  };
+
+  const handleToggleNodeType = (type) => {
+    setSelectedNodeTypes(prev =>
+      prev.includes(type)
+        ? prev.filter(t => t !== type)
+        : [...prev, type]
+    );
+  };
+
+  // Search logic
+  const handleSearchSubmit = (query) => {
+    if (!query || query.trim() === '') return;
+    const cleanQuery = query.toLowerCase().trim();
+
+    // Find first matching node in database
+    const match = (graphData?.nodes || []).find(node => 
+      node.label.toLowerCase().includes(cleanQuery) || 
+      node.id.toLowerCase().includes(cleanQuery)
+    );
+
+    if (match) {
+      setSelectedNode(match);
+      
+      // Auto expand parent modules to ensure matching node is visible
+      const parentId = nodeParentsMap[match.id];
+      if (parentId) {
+        setExpandedNodeIds(prev => {
+          const next = new Set(prev);
+          next.add(parentId);
+          const grandParentId = nodeParentsMap[parentId];
+          if (grandParentId) next.add(grandParentId);
+          return next;
+        });
+      }
+
+      // Switch mode if search points to routes or functions specifically
+      if (match.type === 'function') {
+        setActiveMode('Functions');
+      } else if (match.type === 'route') {
+        setActiveMode('Routes');
+      }
+
+      // Center camera
+      setTimeout(() => {
+        handleCenterSelection();
+      }, 50);
+    }
   };
 
   if (loading) {
@@ -190,7 +383,7 @@ export default function GraphExplorerPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-mono">
       {/* Page Header */}
       <PageHeader
         title="Graph Explorer"
@@ -212,7 +405,10 @@ export default function GraphExplorerPage() {
             <SearchBar
               placeholder="Search nodes..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                handleSearchSubmit(e.target.value);
+              }}
               onClear={() => setSearchQuery('')}
               className="w-48 sm:w-56"
             />
@@ -222,46 +418,70 @@ export default function GraphExplorerPage() {
 
       {/* Toolbar */}
       <GraphToolbar
-        zoom={zoom}
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-        onZoomReset={handleZoomReset}
-        layout={layout}
-        onChangeLayout={setLayout}
+        activeMode={activeMode}
+        onChangeMode={(mode) => {
+          setActiveMode(mode);
+          setSelectedNode(null);
+          setSelectedEdge(null);
+        }}
+        zoom={1} // visual representation only
+        onZoomIn={() => {}} // handled locally in Canvas
+        onZoomOut={() => {}}
+        onZoomReset={() => {}}
+        onFitView={handleFitView}
+        onCenterSelection={handleCenterSelection}
+        onExpandAll={handleExpandAll}
+        onCollapseAll={handleCollapseAll}
+        showFilters={showFilters}
+        onToggleFilters={() => setShowFilters(prev => !prev)}
       />
 
-      {/* Main Graph Grid */}
+      {/* Main Graph Grid (Full-width Canvas Hero section) */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        {/* Sidebar Filters */}
-        <div className="space-y-4 lg:col-span-1">
-          <GraphFilters
-            selectedGroups={selectedGroups}
-            onToggleGroup={handleToggleGroup}
-            showFilesOnly={showFilesOnly}
-            onToggleFilesOnly={handleToggleFilesOnly}
-            typeCounts={typeCounts}
-          />
-          <NodeDetailsPanel 
-            node={selectedNode} 
-            edges={graphData?.edges || []} 
-            selectedEdge={selectedEdge}
-            onClearEdge={() => setSelectedEdge(null)}
-          />
-        </div>
-
         {/* Central Canvas Viewport */}
-        <div className="lg:col-span-3 space-y-4">
+        <div className={`${showFilters ? 'lg:col-span-3' : 'lg:col-span-4'} space-y-4`}>
           <GraphCanvas
-            nodes={filteredNodes}
-            edges={filteredEdges}
+            nodes={visibleNodes}
+            edges={visibleEdges}
             selectedNode={selectedNode}
-            onSelectNode={handleSelectNode}
-            zoom={zoom}
+            onSelectNode={setSelectedNode}
             layout={layout}
-            onSelectEdge={handleSelectEdge}
+            onSelectEdge={setSelectedEdge}
+            selectedEdge={selectedEdge}
+            fitViewTrigger={fitViewTrigger}
+            centerSelectionTrigger={centerSelectionTrigger}
+            onNodeAction={handleNodeAction}
           />
           <GraphLegend />
         </div>
+
+        {/* Collapsible Sidebar Filters */}
+        {showFilters && (
+          <div className="lg:col-span-1 space-y-4 animate-slide-in">
+            <GraphFilters
+              selectedGroups={selectedNodeTypes}
+              onToggleGroup={handleToggleNodeType}
+              showFilesOnly={showFilesOnly}
+              onToggleFilesOnly={() => setShowFilesOnly(prev => !prev)}
+              typeCounts={typeCounts}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Inspector panel (Node Details, Statistics, Relationships) */}
+      <div className="w-full">
+        <NodeDetailsPanel
+          node={selectedNode}
+          edges={graphData?.edges || []}
+          selectedEdge={selectedEdge}
+          onClearEdge={() => setSelectedEdge(null)}
+          activeRepo={activeRepo}
+          totalNodesCount={totalNodesCount}
+          totalEdgesCount={totalEdgesCount}
+          visibleNodesCount={visibleNodesCount}
+          visibleEdgesCount={visibleEdgesCount}
+        />
       </div>
     </div>
   );
