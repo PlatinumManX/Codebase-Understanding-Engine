@@ -21,95 +21,39 @@ export default function GraphToolbar({
   onExpandAll, 
   onCollapseAll,
   showFilters,
-  onToggleFilters
+  onToggleFilters,
+  onReloadGraph
 }) {
   return (
     <div className="bg-[#161b22]/70 border border-[#30363d] px-4 py-2.5 rounded-lg flex flex-wrap items-center justify-between gap-4 font-mono text-xs select-none">
       {/* Semantic Exploration Modes */}
       <div className="flex items-center gap-1.5 flex-wrap">
         <span className="text-gray-500 font-semibold uppercase tracking-wider text-[9px] mr-1">Explore:</span>
-        <div className="flex bg-[#0d1117] border border-[#30363d] p-0.5 rounded flex-wrap gap-0.5">
+        <select
+          value={activeMode}
+          onChange={(e) => onChangeMode(e.target.value)}
+          className="bg-[#0d1117] border border-[#30363d] rounded px-3 py-1.5 text-[10px] text-slate-300 font-semibold focus:outline-none focus:border-[#00f0ff] cursor-pointer appearance-none pr-8 relative"
+          style={{ backgroundImage: `url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22%239ca3af%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M8%2011L3%206h10l-5%205z%22%2F%3E%3C%2Fsvg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
+        >
+          <option value="" disabled>Graph Views ▼</option>
           {modes.map((m) => (
-            <button
-              key={m.key}
-              onClick={() => onChangeMode(m.key)}
-              type="button"
-              className={`px-2.5 py-1 rounded text-[10px] font-semibold transition-all cursor-pointer ${
-                activeMode === m.key
-                  ? 'bg-[#30363d] text-[#00f0ff] shadow-sm'
-                  : 'text-gray-400 hover:text-gray-200'
-              }`}
-            >
-              {m.label}
-            </button>
+            <option key={m.key} value={m.key}>{m.label}</option>
           ))}
-        </div>
+        </select>
       </div>
 
-      {/* Action Utilities & Zoom */}
+      {/* Action Utilities & Filters */}
       <div className="flex items-center gap-3 flex-wrap">
-        {/* Camera Utilities */}
-        <div className="flex items-center bg-[#0d1117] border border-[#30363d] p-0.5 rounded gap-0.5">
-          <button
-            onClick={onFitView}
-            type="button"
-            className="px-2 py-0.5 rounded text-[10px] text-gray-400 hover:text-white hover:bg-[#30363d]/50 cursor-pointer"
-            title="Fit graph in viewport"
-          >
-            Fit View
-          </button>
-          <button
-            onClick={onCenterSelection}
-            type="button"
-            className="px-2 py-0.5 rounded text-[10px] text-gray-400 hover:text-white hover:bg-[#30363d]/50 cursor-pointer"
-            title="Center camera on selection"
-          >
-            Center Node
-          </button>
-        </div>
-
-        {/* Tree Expansion Controls */}
-        <div className="flex items-center bg-[#0d1117] border border-[#30363d] p-0.5 rounded gap-0.5">
-          <button
-            onClick={onExpandAll}
-            type="button"
-            className="px-2 py-0.5 rounded text-[10px] text-gray-400 hover:text-white hover:bg-[#30363d]/50 cursor-pointer"
-            title="Expand current visible level"
-          >
-            Expand All
-          </button>
-          <button
-            onClick={onCollapseAll}
-            type="button"
-            className="px-2 py-0.5 rounded text-[10px] text-gray-400 hover:text-white hover:bg-[#30363d]/50 cursor-pointer"
-            title="Collapse back to module level"
-          >
-            Collapse All
-          </button>
-        </div>
-
-        {/* Scale Controls */}
-        <div className="flex items-center bg-[#0d1117] border border-[#30363d] rounded divide-x divide-[#30363d]">
-          <button
-            onClick={onZoomOut}
-            type="button"
-            className="px-2 py-0.5 text-gray-400 hover:text-gray-200 cursor-pointer font-bold"
-            title="Zoom Out"
-          >
-            -
-          </button>
-          <span className="px-1.5 py-0.5 text-[9px] text-gray-300 min-w-[34px] text-center font-bold">
-            {Math.round(zoom * 100)}%
-          </span>
-          <button
-            onClick={onZoomIn}
-            type="button"
-            className="px-2 py-0.5 text-gray-400 hover:text-gray-200 cursor-pointer font-bold"
-            title="Zoom In"
-          >
-            +
-          </button>
-        </div>
+        {/* Graph Reload Button */}
+        <button
+          onClick={onReloadGraph}
+          type="button"
+          className="bg-[#0d1117] border border-[#30363d] px-2.5 py-1 rounded text-[10px] text-gray-400 hover:text-white hover:border-gray-500 transition-all cursor-pointer flex items-center gap-1 font-semibold"
+          title="Reload Graph Canvas"
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          Reload
+        </button>
 
         {/* Filters Panel Toggle */}
         <button
