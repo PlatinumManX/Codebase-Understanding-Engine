@@ -69,6 +69,8 @@ class EmbeddingGenerator:
             f"to {output_path}"
         )
 
+        return output_path
+
 
 from pathlib import Path
 

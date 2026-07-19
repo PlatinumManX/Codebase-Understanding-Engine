@@ -40,6 +40,8 @@ class VectorDatabase:
 
         print(f"Saved FAISS index to {index_path}")
 
+        return index_path
+
     def save_mapping(self, mapping_path="id_mapping.json"):
         with open(mapping_path, "w", encoding="utf-8") as file:
             json.dump(
@@ -49,6 +51,8 @@ class VectorDatabase:
             )
 
         print(f"Saved ID mapping to {mapping_path}")
+
+        return mapping_path
 
 
 from pathlib import Path

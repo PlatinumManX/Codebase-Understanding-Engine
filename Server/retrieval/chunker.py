@@ -140,6 +140,8 @@ class CodeChunker:
 
         print(f"Saved {len(chunks)} chunks to {output_path}")
 
+        return output_path
+
 
 from pathlib import Path
 

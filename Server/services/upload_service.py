@@ -12,11 +12,13 @@ from services.metadata_service import MetadataService
 from Parser.repository_parser import parse_repository
 from services.graph_service import GraphService
 from graph_engine.graph_serializer import GraphSerializer
+from services.retrieval_service import RetrievalService
 
 class UploadService:
     def __init__(self):
         self.storage_service = StorageService()
         self.metadata_service = MetadataService()
+        self.retrieval_service = RetrievalService()
 
     def _setup_workspace_logger(self, workspace_path: Path) -> logging.Logger:
         logger = logging.getLogger(f"parser_{workspace_path.name}")
@@ -144,6 +146,38 @@ class UploadService:
                     graph_status="FAILED"
                 )
                 raise HTTPException(status_code=500, detail=f"Graph generation error: {str(ge)}")
+            
+            self.metadata_service.update_repository_status(
+                repo_id = repo_id,
+                status = "GENERATING_RETRIEVAL",
+                stage = "GENERATING_RETRIEVAL",
+                graph_status = "READY"
+            )
+
+            logger.info("Generating retrieval index...")
+
+            try:
+                retrieval_paths = self.retrieval_service.build_repository_index(
+                    workspace_path
+                )
+
+                logger.info("Retrieval index generated successfully")
+            
+            except Exception as re:
+                logger.error("Retrieval generation failed: %s", str(re))
+
+                self.metadata_service.update_repository_status(
+                    repo_id = repo_id,
+                    status = "FAILED",
+                    stage = "GENERATING_RETRIEVAL",
+                    retrieval_status = "FAILED",
+                    error = str(re)
+                )
+
+                raise HTTPException(
+                    status_code = 500,
+                    detail = f"Retreival generation error : {str(re)}"
+                )
 
             # 10. Calculate stats, prepare relative storage paths & mark READY in MongoDB
             logger.info("Calculating codebase stats metrics...")
@@ -179,7 +213,7 @@ class UploadService:
                     graph=graph_metadata,
                     parser_status="READY",
                     graph_status="READY",
-                    retrieval_status="PENDING",
+                    retrieval_status="READY",
                     execution_flow_status="PENDING",
                     workspace_path=str(workspace_path.resolve())
                 )
