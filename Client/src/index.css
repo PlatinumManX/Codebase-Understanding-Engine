@@ -1,5 +1,47 @@
 @import "tailwindcss";
 
+@theme {
+  /* Stitch UI Design System Variables */
+  --color-canvas: #f1f5f9;
+  --color-surface: #f8f9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #eff4ff;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-high: #dce9ff;
+  --color-surface-container-highest: #d3e4fe;
+  --color-on-surface: #0b1c30;
+  --color-on-surface-variant: #434655;
+  --color-outline: #737686;
+  --color-outline-variant: #c3c6d7;
+  --color-inverse-surface: #213145;
+  --color-inverse-on-surface: #eaf1ff;
+  
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-secondary: #7c3aed;
+  --color-tertiary: #006242;
+  --color-error: #ba1a1a;
+  
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+}
+
+body {
+  background-color: #f1f5f9;
+  font-family: "Inter", sans-serif;
+  color: #0b1c30;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 @keyframes slideIn {
   from {
     transform: translateX(120%);
@@ -14,3 +56,4 @@
 .animate-slide-in {
   animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+

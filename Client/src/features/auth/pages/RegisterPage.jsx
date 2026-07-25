@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import useAuth from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import Input from '../../../shared/components/Input';
-import Button from '../../../shared/components/Button';
+import { useNavigate, NavLink } from 'react-router-dom';
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [inviteTeammates, setInviteTeammates] = useState(false);
   const [errors, setErrors] = useState({});
 
   const { register } = useAuth();
@@ -20,7 +18,7 @@ export default function RegisterPage() {
     const newErrors = {};
 
     if (!fullName.trim()) {
-      newErrors.fullName = 'Full Name is required';
+      newErrors.fullName = 'Full name is required';
     }
 
     if (!email) {
@@ -42,175 +40,190 @@ export default function RegisterPage() {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
-    if (!acceptTerms) {
-      newErrors.acceptTerms = 'You must accept the Terms of Service';
-    }
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
     setErrors({});
-    register(fullName, email, password, confirmPassword, acceptTerms);
+    // Satisfy register backend parameter acceptTerms = true by default
+    register(fullName, email, password, confirmPassword, true);
   };
 
   return (
-    <div className="min-h-screen bg-[#040609] text-gray-200 flex flex-col md:flex-row overflow-hidden font-mono select-none">
-      {/* Left side: branding, product description and ambient animated grid */}
-      <div className="relative w-full md:w-[45%] bg-[#080c14] border-r border-[#1f2937]/30 flex flex-col justify-between p-8 md:p-12 overflow-hidden">
-        {/* Grid Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#161b22_1px,transparent_1px),linear-gradient(to_bottom,#161b22_1px,transparent_1px)] bg-[size:32px_32px] opacity-10 pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#00f0ff]/5 rounded-full blur-[120px] pointer-events-none" />
-
-        {/* Brand Header */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00f0ff]/20 to-[#a855f7]/20 border border-[#00f0ff]/30 flex items-center justify-center">
-            <span className="text-sm font-extrabold text-[#00f0ff]">CM</span>
+    <div className="flex items-center justify-center min-h-screen p-4 bg-canvas font-sans text-on-surface select-none">
+      <main className="w-full max-w-[480px] z-10">
+        
+        {/* Branding Anchor */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-primary/20 text-white">
+            <span className="material-symbols-outlined text-on-primary text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>hub</span>
           </div>
-          <span className="text-base font-bold tracking-wider text-white">CODEMAP<span className="text-[#00f0ff]">AI</span></span>
+          <h1 className="text-lg font-bold font-display text-on-surface tracking-tight">CodeMap AI</h1>
+          <p className="text-xs text-outline mt-1 font-semibold">Intelligent Engine for Modern Teams</p>
         </div>
 
-        {/* Narrative */}
-        <div className="relative z-10 my-auto space-y-6 max-w-sm">
-          <h2 className="text-3xl md:text-[40px] lg:text-[44px] font-extrabold tracking-tight text-white leading-tight">
-            Create your <br /> developer account.
-          </h2>
-          <p className="text-slate-300 font-sans text-lg md:text-[22px] lg:text-[24px] leading-relaxed">
-            Join CodeMap AI to trace workflows, debug modules, and organize software blueprint models interactively.
-          </p>
-
-          {/* SVG path decoration */}
-          <div className="pt-6 relative">
-            <svg className="w-full h-32 text-[#30363d]" viewBox="0 0 300 120">
-              <g stroke="#3e4651" strokeWidth="1.2" strokeDasharray="3 3">
-                <line x1="50" y1="20" x2="150" y2="60" />
-                <line x1="50" y1="100" x2="150" y2="60" />
-                <line x1="150" y1="60" x2="250" y2="20" />
-                <line x1="150" y1="60" x2="250" y2="100" />
-              </g>
-              <circle cx="50" cy="20" r="7.5" fill="#0d1117" stroke="#00f0ff" strokeWidth="3.5" />
-              <circle cx="50" cy="100" r="7.5" fill="#0d1117" stroke="#a855f7" strokeWidth="3.5" />
-              <circle cx="150" cy="60" r="7.5" fill="#0d1117" stroke="#10b981" strokeWidth="3.5" />
-              <circle cx="250" cy="20" r="7.5" fill="#0d1117" stroke="#a855f7" strokeWidth="3.5" />
-              <circle cx="250" cy="100" r="7.5" fill="#0d1117" stroke="#00f0ff" strokeWidth="3.5" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Footer info */}
-        <div className="relative z-10 text-[15px] text-gray-500 font-sans">
-          CodeMap AI © 2026. Premium codebase analytics interface.
-        </div>
-      </div>
-
-      {/* Right side: Register Form */}
-      <div className="w-full md:w-[55%] flex items-center justify-center p-8 md:p-12 relative overflow-y-auto">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#161b22_1px,transparent_1px),linear-gradient(to_bottom,#161b22_1px,transparent_1px)] bg-[size:32px_32px] opacity-5 pointer-events-none" />
-
-        <div className="max-w-[400px] w-full space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-[32px] font-bold tracking-tight text-white">Create Account</h1>
-            <p className="text-[17px] text-slate-300 font-sans">Register your local session profile below.</p>
+        {/* Registration Card */}
+        <div className="bg-white border border-[#e2e8f0] rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-8 md:p-10">
+          <div className="mb-8">
+            <h2 className="text-xl font-bold font-display text-on-surface mb-2">Create Your CodeMap Account</h2>
+            <p className="text-xs text-on-surface-variant">Start mapping your infrastructure with AI-driven precision.</p>
           </div>
 
-          <form onSubmit={handleRegister} className="space-y-4">
+          <form onSubmit={handleRegister} className="space-y-5">
             {/* Full Name */}
-            <Input
-              label="Full Name"
-              id="fullName"
-              type="text"
-              placeholder="e.g. Mukesh Kushwaha"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              error={errors.fullName}
-              required
-              className="font-mono text-xs"
-            />
-
-            {/* Email Field */}
-            <Input
-              label="Email Address"
-              id="email"
-              type="email"
-              placeholder="e.g. user@codemap.ai"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
-              required
-              className="font-mono text-xs"
-            />
-
-            {/* Password Field */}
-            <Input
-              label="Password"
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={errors.password}
-              required
-              className="font-mono text-xs"
-            />
-
-            {/* Confirm Password Field */}
-            <Input
-              label="Confirm Password"
-              id="confirmPassword"
-              type="password"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              error={errors.confirmPassword}
-              required
-              className="font-mono text-xs"
-            />
-
-            {/* Terms checkbox */}
-            <div className="space-y-1">
-              <label className="flex items-start gap-2 cursor-pointer select-none text-xs font-sans text-slate-400">
-                <input
-                  type="checkbox"
-                  checked={acceptTerms}
-                  onChange={(e) => setAcceptTerms(e.target.checked)}
-                  className="rounded border-[#30363d] bg-[#0d1117] text-[#00f0ff] focus:ring-0 mt-0.5"
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant block" htmlFor="name">FULL NAME</label>
+              <div className="relative group">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">person</span>
+                <input 
+                  className={`w-full pl-10 pr-4 py-2.5 bg-white border ${errors.fullName ? 'border-error' : 'border-[#e2e8f0]'} rounded-lg text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all`}
+                  id="name" 
+                  name="name" 
+                  placeholder="John Doe" 
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                  type="text"
                 />
-                <span>
-                  I agree to the{' '}
-                  <button type="button" onClick={() => alert('Demo Terms Policy')} className="text-cyan-400 hover:underline">Terms of Service</button>
-                  {' '}and{' '}
-                  <button type="button" onClick={() => alert('Demo Privacy Policy')} className="text-cyan-400 hover:underline">Privacy Policy</button>
-                </span>
-              </label>
-              {errors.acceptTerms && (
-                <p className="text-xs text-red-400 mt-1 font-mono">{errors.acceptTerms}</p>
-              )}
+              </div>
+              {errors.fullName && <p className="text-xs text-error mt-1">{errors.fullName}</p>}
             </div>
 
-            {/* Register button */}
-            <div className="space-y-3 pt-2">
-              <Button
-                type="submit"
-                variant="primary"
-                className="w-full py-2.5 font-mono text-xs cursor-pointer shadow-[0_0_15px_rgba(0,240,255,0.15)] border-[#00f0ff]/40"
-              >
-                Create Account
-              </Button>
-              <div className="text-center font-sans text-xs text-slate-400 pt-1">
-                <span>Already have an account? </span>
-                <button
-                  type="button"
-                  onClick={() => navigate('/login')}
-                  className="text-cyan-400 hover:underline cursor-pointer font-mono"
-                >
-                  Sign In
-                </button>
+            {/* Email */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-on-surface-variant block" htmlFor="email">EMAIL ADDRESS</label>
+              <div className="relative group">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">mail</span>
+                <input 
+                  className={`w-full pl-10 pr-4 py-2.5 bg-white border ${errors.email ? 'border-error' : 'border-[#e2e8f0]'} rounded-lg text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all`}
+                  id="email" 
+                  name="email" 
+                  placeholder="name@company.com" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  type="email"
+                />
+              </div>
+              {errors.email && <p className="text-xs text-error mt-1">{errors.email}</p>}
+            </div>
+
+            {/* Password Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-on-surface-variant block" htmlFor="password">PASSWORD</label>
+                <div className="relative group">
+                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">lock</span>
+                  <input 
+                    className={`w-full pl-10 pr-4 py-2.5 bg-white border ${errors.password ? 'border-error' : 'border-[#e2e8f0]'} rounded-lg text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all`}
+                    id="password" 
+                    name="password" 
+                    placeholder="••••••••" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    type="password"
+                  />
+                </div>
+                {errors.password && <p className="text-xs text-error mt-1">{errors.password}</p>}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-on-surface-variant block" htmlFor="confirm_password">CONFIRM</label>
+                <div className="relative group">
+                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">lock_reset</span>
+                  <input 
+                    className={`w-full pl-10 pr-4 py-2.5 bg-white border ${errors.confirmPassword ? 'border-error' : 'border-[#e2e8f0]'} rounded-lg text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all`}
+                    id="confirm_password" 
+                    name="confirm_password" 
+                    placeholder="••••••••" 
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    type="password"
+                  />
+                </div>
+                {errors.confirmPassword && <p className="text-xs text-error mt-1">{errors.confirmPassword}</p>}
               </div>
             </div>
+
+            {/* Checkbox */}
+            <div className="flex items-start gap-3 pt-2">
+              <div className="flex items-center h-5">
+                <input 
+                  className="w-5 h-5 rounded border-[#e2e8f0] text-primary focus:ring-primary/20 cursor-pointer" 
+                  id="invite_teammates" 
+                  name="invite_teammates" 
+                  type="checkbox"
+                  checked={inviteTeammates}
+                  onChange={(e) => setInviteTeammates(e.target.checked)}
+                />
+              </div>
+              <div className="text-sm">
+                <label className="text-xs text-on-surface-variant cursor-pointer select-none" htmlFor="invite_teammates">
+                  Invite teammates to this workspace
+                  <p className="text-[11px] text-outline mt-0.5 font-normal">We'll help you set up your team directory in the next step.</p>
+                </label>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-4">
+              <button 
+                className="w-full bg-primary hover:bg-primary-hover active:scale-[0.98] transition-all text-white py-3.5 rounded-lg flex items-center justify-center gap-2 shadow-md shadow-primary/10 cursor-pointer text-xs font-bold" 
+                type="submit"
+              >
+                SIGN UP FOR FREE
+                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+            </div>
           </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-4 my-8">
+            <div className="h-px flex-1 bg-[#e2e8f0]"></div>
+            <span className="text-xs font-bold text-outline">OR REGISTER WITH</span>
+            <div className="h-px flex-1 bg-[#e2e8f0]"></div>
+          </div>
+
+          {/* Social Signup Buttons */}
+          <div className="grid grid-cols-2 gap-4">
+            <button className="flex items-center justify-center gap-2 border border-[#e2e8f0] rounded-lg py-2.5 hover:bg-[#eff4ff] transition-colors text-xs font-semibold text-on-surface cursor-pointer">
+              <div className="w-5 h-5 overflow-hidden flex items-center justify-center">
+                <img className="w-full h-full object-contain" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAeMjUvVf02zOrK0YMI77PSUXQr9UUWmpPJXKkseeqBP0dXJgeBKjrgZSw-trMNsTMD8doHLF3nbLRBtZv2DfF8_bImWSApr-AA819DFa2tPWaZYVbXE5yHUzSLvngNUow-Ar65W89snfzv0asXkIMccGxFT5Hdy9Gnis8AySqtgDXMeDIPzgZk6-kmzsvSNAa6rhFF9hzCTf9iLJOh_EEleWXzsG3KHqRJPd7MV8xFtskTjDf-ZubQfCSFIb9L51NvFKLwxSe1zX0')" }} />
+              </div>
+              GitHub
+            </button>
+            <button className="flex items-center justify-center gap-2 border border-[#e2e8f0] rounded-lg py-2.5 hover:bg-[#eff4ff] transition-colors text-xs font-semibold text-on-surface cursor-pointer">
+              <div className="w-5 h-5 overflow-hidden flex items-center justify-center">
+                <img className="w-full h-full object-contain" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC56CaFhiUELjIMi3oUHssoknTHTtgthx5NHuAHH4l1rbNn9RogemCGax1OLJ_B2FKyEoVEACdVSpnFm7hjXotqYoFCCgIiwR4-NHJ6tJM2x7pgzSDhfr0QKoQTSNFUXvqBfLu8WzSJfOKQLS3zbwVID84FHJwNIfT11UYRyZs7VOpEc1nEXAL0OMRkk7gwnZlqi2wkOv3uniOMKksMo7S_dQFJpypyAgsJ2HWeDmOGQpSqZQHt0uqlGLIf8hrNQRyVFqUlKCYRaVw')" }} />
+              </div>
+              Google
+            </button>
+          </div>
         </div>
-      </div>
+
+        {/* Footer Link */}
+        <div className="text-center mt-8">
+          <p className="text-xs text-on-surface-variant">
+            Already have an account? 
+            <NavLink className="text-primary font-bold hover:underline ml-1" to="/login">Sign in</NavLink>
+          </p>
+        </div>
+
+        {/* System Status Mini-Indicator */}
+        <div className="mt-12 flex items-center justify-center gap-6 opacity-40">
+          <div className="flex items-center gap-1.5 text-[11px] font-mono font-semibold">
+            <span className="w-2 h-2 rounded-full bg-tertiary"></span>
+            API ONLINE
+          </div>
+          <div className="flex items-center gap-1.5 text-[11px] font-mono font-semibold">
+            <span className="w-2 h-2 rounded-full bg-tertiary"></span>
+            AUTH V2.4
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

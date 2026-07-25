@@ -13,35 +13,47 @@ if (!cytoscape.prototype.hasInitialised) {
 
 // Icon data URIs (Lucide icons rendered as white SVG, colored via styling or kept monochrome white/gray)
 const ICONS = {
-  repository: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>`,
-  module: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>`,
-  package: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`,
-  class: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`,
-  function: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>`,
-  method: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>`,
-  route: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>`,
-  external: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`,
-  unknown: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`
+  repository: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%232563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>`,
+  module: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%232563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>`,
+  package: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%237c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`,
+  class: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%237c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`,
+  function: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23006242" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>`,
+  method: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23006242" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>`,
+  route: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>`,
+  external: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23434655" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`,
+  unknown: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23737686" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`
 };
 
 const COLORS = {
-  repository: '#3b82f6', // Blue
-  package: '#4f46e5',    // Indigo
-  module: '#3b82f6',     // Blue
-  class: '#a855f7',      // Purple
-  function: '#22c55e',   // Green
-  method: '#06b6d4',     // Cyan
-  route: '#f97316',      // Orange
-  external: '#64748b',   // Gray
-  unknown: '#94a3b8',    // Muted
+  repository: '#ffffff',
+  package: '#ffffff',
+  module: '#ffffff',
+  class: '#ffffff',
+  function: '#ffffff',
+  method: '#ffffff',
+  route: '#ffffff',
+  external: '#ffffff',
+  unknown: '#ffffff',
+};
+
+const BORDERS = {
+  repository: '#2563eb',
+  package: '#7c3aed',
+  module: '#2563eb',
+  class: '#7c3aed',
+  function: '#006242',
+  method: '#006242',
+  route: '#f97316',
+  external: '#737686',
+  unknown: '#c3c6d7'
 };
 
 const SHAPES = {
   repository: 'roundrectangle',
-  package: 'roundrectangle', // Or cut-rectangle
+  package: 'roundrectangle',
   module: 'roundrectangle',
   class: 'hexagon',
-  function: 'roundrectangle', // Will use high border radius for pill shape
+  function: 'roundrectangle',
   method: 'roundrectangle',
   route: 'diamond',
   external: 'roundrectangle',
@@ -49,15 +61,15 @@ const SHAPES = {
 };
 
 const SIZES = {
-  repository: { width: 80, height: 80, font: 16 },
-  package: { width: 70, height: 70, font: 14 },
-  module: { width: 60, height: 60, font: 13 },
-  class: { width: 50, height: 50, font: 12 },
-  function: { width: 45, height: 45, font: 11 },
-  method: { width: 40, height: 40, font: 10 },
-  route: { width: 50, height: 50, font: 12 },
-  external: { width: 50, height: 50, font: 12 },
-  unknown: { width: 40, height: 40, font: 10 },
+  repository: { width: 80, height: 80, font: 14 },
+  package: { width: 70, height: 70, font: 12 },
+  module: { width: 60, height: 60, font: 11 },
+  class: { width: 55, height: 55, font: 10 },
+  function: { width: 45, height: 45, font: 9 },
+  method: { width: 40, height: 40, font: 9 },
+  route: { width: 50, height: 50, font: 10 },
+  external: { width: 50, height: 50, font: 10 },
+  unknown: { width: 40, height: 40, font: 9 },
 };
 
 const STYLESHEET = [
@@ -66,78 +78,78 @@ const STYLESHEET = [
     selector: 'node',
     style: {
       'label': 'data(label)',
-      'background-color': (ele) => COLORS[ele.data('type')] || COLORS.unknown,
-      'border-width': 0,
-      'color': '#f8fafc',
-      'font-weight': '500',
-      'text-outline-color': '#0f172a',
-      'text-outline-width': 2,
-      'font-family': 'monospace',
-      'font-size': (ele) => SIZES[ele.data('type')]?.font || 12,
+      'background-color': '#ffffff',
+      'border-width': 1.5,
+      'border-color': (ele) => BORDERS[ele.data('type')] || BORDERS.unknown,
+      'color': '#0b1c30',
+      'font-weight': '600',
+      'text-outline-width': 0,
+      'font-family': 'Inter, sans-serif',
+      'font-size': (ele) => SIZES[ele.data('type')]?.font || 11,
       'text-valign': 'bottom',
       'text-halign': 'center',
       'text-margin-y': 6,
       'shape': (ele) => SHAPES[ele.data('type')] || 'ellipse',
       'width': (ele) => SIZES[ele.data('type')]?.width || 50,
       'height': (ele) => SIZES[ele.data('type')]?.height || 50,
-      'shadow-blur': 10,
+      'shadow-blur': 4,
       'shadow-color': '#000000',
-      'shadow-opacity': 0.3,
+      'shadow-opacity': 0.04,
       'shadow-offset-x': 0,
-      'shadow-offset-y': 4,
-      'background-image': (ele) => ICONS[ele.data('type') === 'external_class' ? 'external' : ele.data('type')] || ICONS.unknown,
-      'background-width': '50%',
-      'background-height': '50%',
-      'background-image-opacity': 0.95,
+      'shadow-offset-y': 2,
+      'background-image': (ele) => ICONS[ele.data('type')] || ICONS.unknown,
+      'background-width': '45%',
+      'background-height': '45%',
+      'background-image-opacity': 0.9,
       'transition-property': 'background-color, border-color, opacity, border-width, transform',
       'transition-duration': 200,
     }
   },
-  // Label hiding logic for small nodes (if zoom is low, we could use cytoscape's min-zoomed-font-size, but let's rely on that)
+  // Label hiding logic for small nodes
   {
     selector: 'node[type = "function"], node[type = "method"]',
     style: {
-      'min-zoomed-font-size': 6 // hides text when zoomed out
+      'min-zoomed-font-size': 7
     }
   },
   // Selected Node Style
   {
     selector: 'node:selected',
     style: {
-      'border-color': '#0ea5e9',
+      'border-color': '#06b6d4',
       'border-width': 3,
-      'color': '#ffffff',
       'font-weight': 'bold',
-      'text-outline-width': 0,
-      'text-background-color': '#0f172a',
-      'text-background-opacity': 0.85,
+      'text-background-color': '#e5eeff',
+      'text-background-opacity': 0.9,
       'text-background-padding': 4,
       'text-background-shape': 'roundrectangle',
-      'shadow-blur': 15,
-      'shadow-color': '#0ea5e9',
-      'shadow-opacity': 0.3
+      'shadow-blur': 12,
+      'shadow-color': '#06b6d4',
+      'shadow-opacity': 0.25
     }
   },
   // Hovered Node
   {
     selector: 'node.hover',
     style: {
-      'background-color': '#1e293b',
-      'border-color': '#38bdf8'
+      'background-color': '#eff4ff',
+      'border-color': '#2563eb',
+      'border-width': 2.5
     }
   },
   // Muted Node (when another is highlighted)
   {
     selector: 'node.muted',
     style: {
-      'opacity': 0.15
+      'opacity': 0.08
     }
   },
   // Highlighted Neighbor Node
   {
     selector: 'node.highlighted',
     style: {
-      'border-color': '#7dd3fc',
+      'border-color': '#06b6d4',
+      'border-width': 2.5,
       'opacity': 1
     }
   },
@@ -146,12 +158,12 @@ const STYLESHEET = [
   {
     selector: 'edge',
     style: {
-      'width': 1.5,
-      'line-color': '#334155',
+      'width': 1.2,
+      'line-color': '#c3c6d7',
       'curve-style': 'bezier',
       'target-arrow-shape': 'triangle',
-      'target-arrow-color': '#334155',
-      'arrow-scale': 1.2,
+      'target-arrow-color': '#cbd5e1',
+      'arrow-scale': 1.1,
       'transition-property': 'line-color, target-arrow-color, width, opacity',
       'transition-duration': 200,
     }
@@ -172,13 +184,17 @@ const STYLESHEET = [
   {
     selector: 'edge[type = "inherits"]',
     style: {
-      'width': 2.5
+      'width': 2.2,
+      'line-color': '#7c3aed',
+      'target-arrow-color': '#7c3aed'
     }
   },
   {
     selector: 'edge[type = "calls"]',
     style: {
-      'line-style': 'solid'
+      'line-style': 'solid',
+      'line-color': '#06b6d4',
+      'target-arrow-color': '#06b6d4'
     }
   },
   {
@@ -186,25 +202,25 @@ const STYLESHEET = [
     style: {
       'line-color': '#f97316',
       'target-arrow-color': '#f97316',
-      'width': 2
+      'width': 1.8
     }
   },
   // Selected Edge
   {
     selector: 'edge:selected',
     style: {
-      'line-color': '#38bdf8',
-      'target-arrow-color': '#38bdf8',
-      'width': 3
+      'line-color': '#06b6d4',
+      'target-arrow-color': '#06b6d4',
+      'width': 2.5
     }
   },
   // Highlighted Edge (when neighbor is selected)
   {
     selector: 'edge.highlighted',
     style: {
-      'line-color': '#38bdf8',
-      'target-arrow-color': '#38bdf8',
-      'width': 2.5,
+      'line-color': '#06b6d4',
+      'target-arrow-color': '#06b6d4',
+      'width': 2,
       'opacity': 1
     }
   },
@@ -212,7 +228,7 @@ const STYLESHEET = [
   {
     selector: 'edge.muted',
     style: {
-      'opacity': 0.08
+      'opacity': 0.05
     }
   }
 ];
@@ -487,7 +503,7 @@ export default function GraphCanvas({
   }, [centerSelectionTrigger, selectedNode]);
 
   return (
-    <div className="bg-[#0f172a] border border-[#1e293b] rounded-lg overflow-hidden h-[550px] relative">
+    <div className="bg-white border border-[#e2e8f0] rounded-lg overflow-hidden h-[550px] relative">
       <div 
         ref={containerRef} 
         className="w-full h-full cursor-grab active:cursor-grabbing"
@@ -495,7 +511,7 @@ export default function GraphCanvas({
       />
       
       {/* Floating helper */}
-      <div className="absolute bottom-3 left-3 bg-[#0f172a]/85 border border-[#1e293b] px-3 py-1.5 rounded-md text-[10px] font-mono text-slate-400 select-none z-20 pointer-events-none shadow-lg">
+      <div className="absolute bottom-3 left-3 bg-white/90 border border-[#e2e8f0] px-3 py-1.5 rounded-md text-[10px] font-sans text-on-surface-variant font-semibold select-none z-20 pointer-events-none shadow-sm">
         🖱️ Drag canvas to pan • Wheel to zoom • Double click node to expand
       </div>
     </div>
