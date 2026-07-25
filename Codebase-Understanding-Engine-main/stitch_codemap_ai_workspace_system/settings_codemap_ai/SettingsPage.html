@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - CodeMap AI</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Outfit:wght@600;700;800&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#213145",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "secondary-container": "#8a4cfc",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#434655",
+                        "secondary-fixed": "#eaddff",
+                        "inverse-primary": "#b4c5ff",
+                        "on-secondary-fixed": "#25005a",
+                        "on-background": "#0b1c30",
+                        "tertiary-fixed": "#6ffbbe",
+                        "secondary-fixed-dim": "#d2bbff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary": "#004ac6",
+                        "surface-tint": "#0053db",
+                        "background": "#f8f9ff",
+                        "surface": "#f8f9ff",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#712ae2",
+                        "on-secondary-container": "#fffbff",
+                        "primary-fixed": "#dbe1ff",
+                        "surface-variant": "#d3e4fe",
+                        "on-tertiary-fixed": "#002113",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-fixed-variant": "#5a00c6",
+                        "surface-container-low": "#eff4ff",
+                        "tertiary-container": "#007d55",
+                        "tertiary": "#006242",
+                        "primary-container": "#2563eb",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#bdffdb",
+                        "outline": "#737686",
+                        "surface-dim": "#cbdbf5",
+                        "surface-container-high": "#dce9ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-surface": "#0b1c30",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-primary-container": "#eeefff",
+                        "on-primary-fixed": "#00174b",
+                        "surface-container": "#e5eeff",
+                        "surface-bright": "#f8f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "header_height": "64px",
+                        "sidebar_width": "240px",
+                        "gutter": "1rem",
+                        "container_gap": "1.5rem",
+                        "main_padding": "2rem",
+                        "stack_md": "1rem",
+                        "stack_sm": "0.5rem"
+                    },
+                    "fontFamily": {
+                        "code-sm": ["JetBrains Mono"],
+                        "body-base": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display-lg-mobile": ["Outfit"],
+                        "display-lg": ["Outfit"],
+                        "code-base": ["JetBrains Mono"],
+                        "label-bold": ["Inter"],
+                        "headline-md": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "code-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "body-base": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "code-base": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+                        "label-bold": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #F1F5F9; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .sidebar-active { border-left: 4px solid #004ac6; }
+        .tab-active { border-bottom: 2px solid #004ac6; color: #004ac6; font-weight: 600; }
+        .storage-gauge {
+            --percentage: 42;
+            background: radial-gradient(closest-side, white 79%, transparent 80% 100%),
+                        conic-gradient(#004ac6 calc(var(--percentage) * 1%), #e2e8f0 0);
+        }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-sidebar_width bg-surface-container-low border-r border-outline-variant flex flex-col h-full py-4 z-50">
+<div class="px-6 mb-8 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl">smart_toy</span>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">CodeMap AI</h1>
+<p class="text-[10px] text-outline uppercase tracking-widest font-bold">Intelligent Engine</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">upload_file</span>
+<span class="font-body-sm text-body-sm">Upload ZIP</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-body-sm text-body-sm">Graph Explorer</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-body-sm text-body-sm">Execution Flow</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="font-body-sm text-body-sm">AI Assistant</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-primary border-l-4 border-primary font-label-bold bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-sm text-body-sm">Docs</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-4">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-body-sm text-body-sm">Profile</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 h-header_height w-[calc(100%-theme(spacing.sidebar_width))] bg-surface border-b border-outline-variant shadow-sm flex justify-between items-center px-main_padding z-40">
+<div class="flex items-center flex-1 max-w-xl">
+<div class="relative w-full group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-10 pr-4 py-1.5 text-body-sm font-body-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all" placeholder="Search config or keys..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-4">
+<button class="material-symbols-outlined text-on-surface-variant cursor-pointer active:scale-95 transition-transform">help</button>
+<button class="material-symbols-outlined text-on-surface-variant cursor-pointer active:scale-95 transition-transform relative">
+                    notifications
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+</div>
+<div class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A high-quality professional portrait of a software engineer in a modern tech office environment. The person is dressed in smart-casual attire, with warm, soft office lighting and a shallow depth of field, creating a professional and approachable aesthetic consistent with a corporate workspace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_AbBVtbYm1FhC8VzuwQoxL4q3uJOFvPQolxSYboMjJBvyLP6AmA0NgubkSnTCUYZZaW9sNWP3NjAkMFTDzHppCmr6CcOrpK_qhNx8TugISHbM2H_Lrc5vDb4jJLQBPymqgG9VBYrtPlbm963Nn4It2FO6yCqLnw_NxV9-rDsB0BTIhqbSfeSxD9523pjw0epqJWcqLmXVYY-3UGQ9LTeBzlF95W_LI-afDOdPLoPvPe6XtCMjXGKBQ5KxSPSJREVU4U5kd1qUBQY"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-[240px] pt-[64px] min-h-screen p-main_padding">
+<div class="max-w-6xl mx-auto">
+<!-- Header Section -->
+<div class="mb-8">
+<h2 class="font-display-lg text-display-lg text-on-surface">Settings</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Configure your workspace, database connections, and AI provider credentials.</p>
+</div>
+<!-- Horizontal Tabs -->
+<div class="flex gap-8 border-b border-outline-variant mb-8 overflow-x-auto">
+<button class="pb-4 font-body-base text-body-base text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Account</button>
+<button class="pb-4 font-body-base text-body-base text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Database Config</button>
+<button class="pb-4 font-body-base text-body-base text-primary border-b-2 border-primary font-bold whitespace-nowrap">Gemini API Keys</button>
+<button class="pb-4 font-body-base text-body-base text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Storage</button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-container_gap">
+<!-- Main Settings Column -->
+<div class="lg:col-span-2 space-y-container_gap">
+<!-- Key Table Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<h3 class="font-headline-md text-headline-md text-on-surface">Active Keys</h3>
+<span class="font-label-bold text-label-bold text-outline uppercase tracking-wider">3 Keys in Pool</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="px-6 py-3 font-label-bold text-label-bold text-outline">Label / Model</th>
+<th class="px-6 py-3 font-label-bold text-label-bold text-outline">API Key</th>
+<th class="px-6 py-3 font-label-bold text-label-bold text-outline">Status</th>
+<th class="px-6 py-3 font-label-bold text-label-bold text-outline">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-lg">auto_awesome</span>
+<span class="font-body-sm text-body-sm font-semibold">Gemini 1.5 Pro</span>
+</div>
+</td>
+<td class="px-6 py-4 font-code-sm text-code-sm text-on-surface-variant">••••••••••••4x9k</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-full bg-tertiary-container/10 text-tertiary text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Active
+                                            </span>
+</td>
+<td class="px-6 py-4">
+<button class="text-error hover:bg-error-container/20 p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-lg">bolt</span>
+<span class="font-body-sm text-body-sm font-semibold">Gemini 1.5 Flash</span>
+</div>
+</td>
+<td class="px-6 py-4 font-code-sm text-code-sm text-on-surface-variant">••••••••••••m3j2</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-full bg-tertiary-container/10 text-tertiary text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Active
+                                            </span>
+</td>
+<td class="px-6 py-4">
+<button class="text-error hover:bg-error-container/20 p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-lg">auto_awesome</span>
+<span class="font-body-sm text-body-sm font-semibold">Gemini 1.5 Pro</span>
+</div>
+</td>
+<td class="px-6 py-4 font-code-sm text-code-sm text-on-surface-variant">••••••••••••92p1</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 rounded-full bg-orange-100 text-orange-700 text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 w-fit">
+<span class="w-1.5 h-1.5 rounded-full bg-orange-700"></span> Quota Alert
+                                            </span>
+</td>
+<td class="px-6 py-4">
+<button class="text-error hover:bg-error-container/20 p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Form to Add New Key -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm p-6">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-2xl">key</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Add Gemini Key</h3>
+<p class="text-body-sm text-on-surface-variant">Add a new key to the intelligent rotation pool.</p>
+</div>
+</div>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label-bold text-label-bold text-outline">SELECT MODEL</label>
+<select class="w-full bg-surface-container-low border-outline-variant rounded-lg p-2.5 font-body-sm text-body-sm focus:ring-2 focus:ring-primary focus:border-primary">
+<option>Gemini 1.5 Pro</option>
+<option>Gemini 1.5 Flash</option>
+<option>Gemini Ultra (Legacy)</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-label-bold text-label-bold text-outline">API KEY</label>
+<input class="w-full bg-surface-container-low border-outline-variant rounded-lg p-2.5 font-body-sm text-body-sm focus:ring-2 focus:ring-primary focus:border-primary" placeholder="AIzaSy..." type="password"/>
+</div>
+<div class="md:col-span-2 flex justify-end">
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-label-bold font-bold hover:bg-on-primary-fixed-variant transition-colors flex items-center gap-2 shadow-sm" type="button">
+<span class="material-symbols-outlined text-lg">add</span>
+                                    Add to Pool
+                                </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Right Sidebar / Info Column -->
+<div class="space-y-container_gap">
+<!-- Storage Gauge Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm p-6 flex flex-col items-center text-center">
+<h4 class="font-label-bold text-label-bold text-outline mb-6 uppercase tracking-widest">Workspace Storage</h4>
+<div class="relative w-40 h-40 flex items-center justify-center storage-gauge rounded-full mb-6">
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-display-lg text-display-lg text-primary">42%</span>
+<span class="text-[10px] text-outline font-bold">USED</span>
+</div>
+</div>
+<div class="space-y-2">
+<p class="font-headline-md text-headline-md text-on-surface">4.2 GB of 10.0 GB</p>
+<p class="text-body-sm text-on-surface-variant">Your database and file indices are currently within standard limits.</p>
+</div>
+<button class="mt-8 w-full border border-outline-variant text-on-surface-variant font-label-bold py-2 rounded-lg hover:bg-surface-container-high transition-colors">
+                            Manage Storage
+                        </button>
+</div>
+<!-- Quick Help Card -->
+<div class="bg-secondary-container text-on-secondary rounded-xl p-6 shadow-lg relative overflow-hidden">
+<!-- Abstract Pattern -->
+<div class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 opacity-20">
+<span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'FILL' 1;">help_center</span>
+</div>
+<h4 class="font-headline-md text-headline-md mb-2 relative z-10">Need more keys?</h4>
+<p class="text-body-sm opacity-90 mb-4 relative z-10 leading-relaxed">Adding multiple keys allows CodeMap AI to bypass individual model rate limits by rotating requests across your pool.</p>
+<a class="inline-flex items-center gap-2 text-on-secondary font-bold text-body-sm underline relative z-10" href="#">
+                            Visit Google AI Studio
+                            <span class="material-symbols-outlined text-sm">open_in_new</span>
+</a>
+</div>
+<!-- Usage Stats -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm p-6">
+<h4 class="font-label-bold text-label-bold text-outline mb-4 uppercase tracking-widest">Daily API Consumption</h4>
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<div class="flex flex-col">
+<span class="text-[11px] text-outline font-bold">TOKENS IN</span>
+<span class="font-body-base font-semibold">1.2M / 5M</span>
+</div>
+<div class="w-2/3 bg-surface-container-low h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[24%]"></div>
+</div>
+</div>
+<div class="flex justify-between items-end">
+<div class="flex flex-col">
+<span class="text-[11px] text-outline font-bold">TOKENS OUT</span>
+<span class="font-body-base font-semibold">450k / 1M</span>
+</div>
+<div class="w-2/3 bg-surface-container-low h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[45%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Global Floating Help FAB (Contextual suppression applied on settings per rules, but showing for interactive feel if desired - though logic says suppress) -->
+<!-- Suppressed per Contextual FAB Suppression rule: "You MUST suppress the FAB on Settings..." -->
+<script>
+        // Micro-interaction for key visibility or toggle effects
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.classList.add('bg-surface-container-low');
+            });
+            row.addEventListener('mouseleave', () => {
+                row.classList.remove('bg-surface-container-low');
+            });
+        });
+    </script>
+</body></html>

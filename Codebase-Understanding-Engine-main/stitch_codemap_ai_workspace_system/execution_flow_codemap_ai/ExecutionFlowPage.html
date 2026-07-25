@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CodeMap AI - Execution Flow Analysis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@600&family=JetBrains+Mono:wght@400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Outfit:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#213145",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "secondary-container": "#8a4cfc",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#434655",
+                    "secondary-fixed": "#eaddff",
+                    "inverse-primary": "#b4c5ff",
+                    "on-secondary-fixed": "#25005a",
+                    "on-background": "#0b1c30",
+                    "tertiary-fixed": "#6ffbbe",
+                    "secondary-fixed-dim": "#d2bbff",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "primary": "#004ac6",
+                    "surface-tint": "#0053db",
+                    "background": "#f8f9ff",
+                    "surface": "#f8f9ff",
+                    "error": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "secondary": "#712ae2",
+                    "on-secondary-container": "#fffbff",
+                    "primary-fixed": "#dbe1ff",
+                    "surface-variant": "#d3e4fe",
+                    "on-tertiary-fixed": "#002113",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#4edea3",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#d3e4fe",
+                    "outline-variant": "#c3c6d7",
+                    "on-secondary-fixed-variant": "#5a00c6",
+                    "surface-container-low": "#eff4ff",
+                    "tertiary-container": "#007d55",
+                    "tertiary": "#006242",
+                    "primary-container": "#2563eb",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-container": "#bdffdb",
+                    "outline": "#737686",
+                    "surface-dim": "#cbdbf5",
+                    "surface-container-high": "#dce9ff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-surface": "#0b1c30",
+                    "on-tertiary-fixed-variant": "#005236",
+                    "on-primary-container": "#eeefff",
+                    "on-primary-fixed": "#00174b",
+                    "surface-container": "#e5eeff",
+                    "surface-bright": "#f8f9ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "header_height": "64px",
+                    "sidebar_width": "240px",
+                    "gutter": "1rem",
+                    "container_gap": "1.5rem",
+                    "main_padding": "2rem",
+                    "stack_md": "1rem",
+                    "stack_sm": "0.5rem"
+            },
+            "fontFamily": {
+                    "code-sm": ["JetBrains Mono"],
+                    "body-base": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "display-lg": ["Outfit"],
+                    "code-base": ["JetBrains Mono"],
+                    "label-bold": ["Inter"],
+                    "headline-md": ["Outfit"]
+            },
+            "fontSize": {
+                    "code-sm": ["12px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "code-base": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                    "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+        .flow-line {
+            position: absolute;
+            left: 24px;
+            width: 2px;
+            background: linear-gradient(180deg, #2563EB 0%, #D3E4FE 100%);
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-base overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-sidebar_width bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex flex-col h-full py-4 z-50">
+<div class="px-6 mb-8">
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">CodeMap AI</h1>
+<p class="font-body-sm text-body-sm text-outline">Intelligent Engine</p>
+</div>
+<nav class="flex-grow space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">upload_file</span>
+<span class="font-body-sm text-body-sm">Upload ZIP</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-body-sm text-body-sm">Graph Explorer</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-primary dark:text-primary-fixed border-l-4 border-primary font-label-bold bg-surface-container-high dark:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-body-sm text-body-sm">Execution Flow</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="font-body-sm text-body-sm">AI Assistant</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-sm text-body-sm">Docs</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-body-sm text-body-sm">Profile</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 h-header_height w-[calc(100%-theme(spacing.sidebar_width))] bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm flex justify-between items-center px-main_padding z-40">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg pl-10 pr-4 py-1.5 text-body-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" placeholder="Search flow components..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors active:scale-95">help</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors active:scale-95">notifications</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Professional user profile avatar, clean studio lighting, high resolution, minimalist tech aesthetic, corporate photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9rifLY5POEoVuhyjKWGI6WFejo4ohGoRv6cYQILrx3c1kAssYgKjrywR4FHIFBsITiKcHeWd9ZlqUWi2rvThZyuc00JgPSa5D41r6jF2J4pFyzcnvHdcHjf9KDCqeZTDPaQ-Yrgl3gfFO_SJUhSike8IyUVxQ_9W9E_9r3XDKgKrX-yaJ1ynXMqZsJZ_QcT9Ylv1aEKOPLU43dtWiyD7p2O8OBGnqb2AoefIXnKU1gdfTyeUmyCZUzbTjNIF_DWuS3V8HyCI-eyE"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[240px] pt-[64px] h-screen overflow-hidden flex flex-col bg-slate-50">
+<!-- Dashboard Header -->
+<div class="px-main_padding py-6 flex justify-between items-center bg-white border-b border-outline-variant">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-surface">Execution Flow Analysis</h2>
+<p class="text-on-surface-variant text-body-sm">Tracing runtime dependencies and call stacks for high-performance optimization.</p>
+</div>
+<div class="flex items-center gap-3">
+<label class="text-label-bold text-outline uppercase tracking-wider">Endpoint</label>
+<div class="relative">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant px-4 py-2 pr-10 rounded-lg text-body-sm font-medium focus:ring-2 focus:ring-primary focus:outline-none cursor-pointer">
+<option>POST /api/auth/login</option>
+<option>GET /api/user/profile</option>
+<option>PUT /api/orders/update</option>
+<option>DELETE /api/session/clear</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-bold flex items-center gap-2 hover:bg-on-primary-fixed-variant transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">play_circle</span>
+                    RUN TRACE
+                </button>
+</div>
+</div>
+<!-- Content Area: Split View -->
+<div class="flex-grow flex overflow-hidden">
+<!-- Left: Timeline Panel -->
+<div class="w-1/2 border-r border-outline-variant overflow-y-auto custom-scrollbar bg-slate-50 relative p-main_padding">
+<div class="relative">
+<!-- The vertical connector line -->
+<div class="flow-line top-6 bottom-6"></div>
+<div class="space-y-12 relative">
+<!-- Node 1 -->
+<div class="flex gap-6 group cursor-pointer" onclick="updateCode('login')">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-on-primary z-10 shadow-md transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">login</span>
+</div>
+<div class="bg-white p-4 rounded-xl border border-outline-variant shadow-sm flex-grow hover:border-primary transition-all">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-label-bold text-primary">POST /api/auth/login</h4>
+<span class="text-code-sm text-outline">12ms</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Entry point for authentication service. Handles payload validation and rate limiting.</p>
+<div class="mt-3 flex gap-2">
+<span class="px-2 py-0.5 bg-surface-container text-primary text-[10px] rounded font-bold uppercase">Controller</span>
+<span class="px-2 py-0.5 bg-tertiary-container/10 text-tertiary text-[10px] rounded font-bold uppercase">Active</span>
+</div>
+</div>
+</div>
+<!-- Node 2 -->
+<div class="flex gap-6 group cursor-pointer ml-8" onclick="updateCode('validate')">
+<div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-primary z-10 shadow-sm transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">rule</span>
+</div>
+<div class="bg-white p-4 rounded-xl border border-outline-variant shadow-sm flex-grow hover:border-primary transition-all">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-label-bold text-on-surface">validate_user_request</h4>
+<span class="text-code-sm text-outline">4ms</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Joi schema validation for email and password presence/format.</p>
+</div>
+</div>
+<!-- Node 3 -->
+<div class="flex gap-6 group cursor-pointer ml-16" onclick="updateCode('db')">
+<div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-primary z-10 shadow-sm transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">database</span>
+</div>
+<div class="bg-white p-4 rounded-xl border border-outline-variant shadow-sm flex-grow hover:border-primary transition-all">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-label-bold text-on-surface">query_db_by_email</h4>
+<span class="text-code-sm text-outline">142ms</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">PostgreSQL query to fetch user record. Performance bottleneck detected.</p>
+<div class="mt-2 flex items-center gap-2 text-error">
+<span class="material-symbols-outlined text-sm">warning</span>
+<span class="text-[10px] font-bold uppercase">Slow Query</span>
+</div>
+</div>
+</div>
+<!-- Node 4 -->
+<div class="flex gap-6 group cursor-pointer ml-8" onclick="updateCode('hash')">
+<div class="w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center text-primary z-10 shadow-sm transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">lock_open</span>
+</div>
+<div class="bg-white p-4 rounded-xl border border-outline-variant shadow-sm flex-grow hover:border-primary transition-all">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-label-bold text-on-surface">bcrypt_compare</h4>
+<span class="text-code-sm text-outline">85ms</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Verifying supplied password against salt/hash in database.</p>
+</div>
+</div>
+<!-- Node 5 -->
+<div class="flex gap-6 group cursor-pointer" onclick="updateCode('response')">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary z-10 shadow-md transition-transform group-hover:scale-110">
+<span class="material-symbols-outlined">send</span>
+</div>
+<div class="bg-white p-4 rounded-xl border border-outline-variant shadow-sm flex-grow hover:border-primary transition-all">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-label-bold text-secondary">generate_jwt_response</h4>
+<span class="text-code-sm text-outline">8ms</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Signing session token and returning 200 OK status.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Code Preview Panel -->
+<div class="w-1/2 flex flex-col bg-inverse-surface border-l border-outline">
+<div class="flex items-center justify-between px-4 py-2 bg-on-surface-variant/30 text-white border-b border-white/10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">javascript</span>
+<span class="font-code-sm text-code-sm opacity-80" id="file-path">services/auth.service.js</span>
+</div>
+<div class="flex gap-2">
+<div class="w-3 h-3 rounded-full bg-red-400/50"></div>
+<div class="w-3 h-3 rounded-full bg-yellow-400/50"></div>
+<div class="w-3 h-3 rounded-full bg-green-400/50"></div>
+</div>
+</div>
+<div class="flex-grow p-6 overflow-auto custom-scrollbar font-code-base text-code-base leading-relaxed text-slate-300" id="code-container">
+<pre><code class="block"><span class="text-blue-400">async function</span> <span class="text-yellow-300">login</span>(req, res) {
+  <span class="text-gray-500">// Initialize trace span</span>
+  <span class="text-blue-400">const</span> span = tracer.<span class="text-yellow-300">startSpan</span>(<span class="text-green-300">'auth_login'</span>);
+  
+  <span class="text-blue-400">try</span> {
+    <span class="text-blue-400">const</span> { email, password } = req.body;
+    
+    <span class="text-gray-500">// Step 1: Validation</span>
+    <span class="text-blue-400">await</span> <span class="text-yellow-300">validate_user_request</span>(email, password);
+    
+    <span class="text-gray-500">// Step 2: Database lookup</span>
+    <span class="text-blue-400">const</span> user = <span class="text-blue-400">await</span> <span class="text-yellow-300">query_db_by_email</span>(email);
+    
+    <span class="text-blue-400">if</span> (!user) {
+      <span class="text-blue-400">throw new</span> <span class="text-red-400">Error</span>(<span class="text-green-300">'User not found'</span>);
+    }
+    
+    <span class="text-gray-500">// Step 3: Password verification</span>
+    <span class="text-blue-400">const</span> isValid = <span class="text-blue-400">await</span> <span class="text-yellow-300">bcrypt_compare</span>(password, user.hash);
+    
+    <span class="text-blue-400">if</span> (isValid) {
+      <span class="text-blue-400">return</span> <span class="text-yellow-300">generate_jwt_response</span>(user);
+    }
+  } <span class="text-blue-400">catch</span> (err) {
+    span.<span class="text-yellow-300">setTag</span>(<span class="text-green-300">'error'</span>, <span class="text-blue-400">true</span>);
+    <span class="text-blue-400">return</span> res.<span class="text-yellow-300">status</span>(<span class="text-orange-400">401</span>).<span class="text-yellow-300">send</span>(err.message);
+  } <span class="text-blue-400">finally</span> {
+    span.<span class="text-yellow-300">finish</span>();
+  }
+}</code></pre>
+</div>
+<!-- Mini Log Bar -->
+<div class="h-24 bg-black/40 border-t border-white/5 p-4">
+<div class="flex items-center gap-2 mb-2 text-white/50 text-label-bold uppercase tracking-widest text-[10px]">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+                        Runtime Output
+                    </div>
+<div class="text-[11px] font-code-sm text-green-400/80 space-y-0.5">
+<div class="flex gap-3">
+<span class="opacity-50">[10:42:01]</span>
+<span>TRACE: Entering auth.service.login</span>
+</div>
+<div class="flex gap-3">
+<span class="opacity-50">[10:42:02]</span>
+<span class="text-yellow-400">WARN: DB query execution time (142ms) exceeds threshold (100ms)</span>
+</div>
+<div class="flex gap-3">
+<span class="opacity-50">[10:42:02]</span>
+<span>TRACE: Context propagated to bcrypt worker thread</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        const codeSnippets = {
+            login: `async function login(req, res) {
+  const span = tracer.startSpan('auth_login');
+  try {
+    const { email, password } = req.body;
+    await validate_user_request(email, password);
+    const user = await query_db_by_email(email);
+    // ... logic continues
+  } catch (err) {
+    span.setTag('error', true);
+  }
+}`,
+            validate: `async function validate_user_request(email, password) {
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().min(8).required()
+  });
+  
+  const { error } = schema.validate({ email, password });
+  if (error) throw new ValidationError(error.details[0].message);
+}`,
+            db: `async function query_db_by_email(email) {
+  const query = 'SELECT * FROM users WHERE email = $1';
+  // Optimization note: Check if index exists on email column
+  const start = Date.now();
+  const result = await pool.query(query, [email]);
+  console.log(\`Query took \${Date.now() - start}ms\`);
+  return result.rows[0];
+}`,
+            hash: `async function bcrypt_compare(plain, hashed) {
+  // Uses native C++ bindings for heavy lifting
+  // Cost factor is currently set to 12
+  return await bcrypt.compare(plain, hashed);
+}`,
+            response: `function generate_jwt_response(user) {
+  const token = jwt.sign(
+    { id: user.id, role: user.role }, 
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' }
+  );
+  return { status: 'success', token };
+}`
+        };
+
+        const filePaths = {
+            login: 'services/auth.service.js',
+            validate: 'middleware/validator.js',
+            db: 'data/db.client.js',
+            hash: 'utils/crypto.js',
+            response: 'utils/auth.utils.js'
+        };
+
+        function updateCode(key) {
+            const container = document.getElementById('code-container');
+            const pathDisplay = document.getElementById('file-path');
+            
+            // Simple syntax highlighting simulation for display
+            let code = codeSnippets[key];
+            pathDisplay.innerText = filePaths[key];
+            
+            // Replace keywords for color coding
+            const formatted = code
+                .replace(/async|function|const|let|var|return|await|if|else|throw|new|try|catch|finally/g, '<span class="text-blue-400">$&</span>')
+                .replace(/('.*?'|".*?"|`.*?`)/g, '<span class="text-green-300">$&</span>')
+                .replace(/(\/\/.+)/g, '<span class="text-gray-500">$&</span>');
+
+            container.innerHTML = `<pre><code class="block">${formatted}</code></pre>`;
+            
+            // Add a subtle flicker effect on change
+            container.style.opacity = 0;
+            setTimeout(() => {
+                container.style.opacity = 1;
+                container.style.transition = 'opacity 0.2s ease-in';
+            }, 50);
+        }
+    </script>
+</body></html>

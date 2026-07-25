@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CodeMap AI - AI Assistant</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Outfit:wght@600&amp;family=JetBrains+Mono:wght@400&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Outfit:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#213145",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "secondary-container": "#8a4cfc",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#434655",
+                        "secondary-fixed": "#eaddff",
+                        "inverse-primary": "#b4c5ff",
+                        "on-secondary-fixed": "#25005a",
+                        "on-background": "#0b1c30",
+                        "tertiary-fixed": "#6ffbbe",
+                        "secondary-fixed-dim": "#d2bbff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "primary": "#004ac6",
+                        "surface-tint": "#0053db",
+                        "background": "#f8f9ff",
+                        "surface": "#f8f9ff",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#712ae2",
+                        "on-secondary-container": "#fffbff",
+                        "primary-fixed": "#dbe1ff",
+                        "surface-variant": "#d3e4fe",
+                        "on-tertiary-fixed": "#002113",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-fixed-variant": "#5a00c6",
+                        "surface-container-low": "#eff4ff",
+                        "tertiary-container": "#007d55",
+                        "tertiary": "#006242",
+                        "primary-container": "#2563eb",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#bdffdb",
+                        "outline": "#737686",
+                        "surface-dim": "#cbdbf5",
+                        "surface-container-high": "#dce9ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-surface": "#0b1c30",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "on-primary-container": "#eeefff",
+                        "on-primary-fixed": "#00174b",
+                        "surface-container": "#e5eeff",
+                        "surface-bright": "#f8f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "header_height": "64px",
+                        "sidebar_width": "240px",
+                        "gutter": "1rem",
+                        "container_gap": "1.5rem",
+                        "main_padding": "2rem",
+                        "stack_md": "1rem",
+                        "stack_sm": "0.5rem"
+                    },
+                    "fontFamily": {
+                        "code-sm": ["JetBrains Mono"],
+                        "body-base": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Outfit"],
+                        "code-base": ["JetBrains Mono"],
+                        "label-bold": ["Inter"],
+                        "headline-md": ["Outfit"]
+                    },
+                    "fontSize": {
+                        "code-sm": ["12px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "code-base": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #F1F5F9;
+            color: #0b1c30;
+            overflow: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid #E2E8F0;
+        }
+    </style>
+</head>
+<body class="font-body-base text-body-base">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-screen w-sidebar_width bg-surface-container-low border-r border-outline-variant flex flex-col h-full py-4 z-50">
+<div class="px-6 mb-8 flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-lg">smart_toy</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">CodeMap AI</h1>
+<p class="font-label-bold text-label-bold text-outline uppercase tracking-widest">Intelligent Engine</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">upload_file</span>
+<span class="font-body-sm text-body-sm">Upload ZIP</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-body-sm text-body-sm">Graph Explorer</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-body-sm text-body-sm">Execution Flow</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-primary border-l-4 border-primary font-label-bold bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="font-body-sm text-body-sm">AI Assistant</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-sm text-body-sm">Docs</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-4">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-colors active:opacity-80" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-body-sm text-body-sm">Profile</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 right-0 h-header_height w-[calc(100%-theme(spacing.sidebar_width))] bg-surface border-b border-outline-variant shadow-sm flex justify-between items-center px-main_padding z-40">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body-sm" placeholder="Search context, files, or queries..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors cursor-pointer active:scale-95">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors cursor-pointer active:scale-95 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a software engineer in a modern, bright office environment. The lighting is natural and soft, creating a clean light-mode aesthetic. The individual has a friendly expression, wearing minimalist tech-casual attire. Background shows blurred computer screens and sleek architectural details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZvuZhMeO84ihIvdnteCzGIfx35lBRkd-It-2ytdrfrpK1GtVtk-QuhzRjENFhAqPT0U35Whdw2XybMCe3MaQwaHC_v-pD9lB3ObtLVod9kGRkOet4V5DVzQiVXTfXo2yLu8d9IaUm9CuOySaLZAFJFhiBiFuCiSmjTyAQD8gYcBvbaCMNHjy-6p-0RN0N70KPaPWnL3XWhdRbJOUZ1NF0bSUiC0SxMWvukORSIzj-kL3Q0XBDmjjZ8PTEEzMhVrG3UCfvt1_CmH8"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[240px] mt-[64px] h-[calc(100vh-64px)] flex overflow-hidden">
+<!-- Left: File Directory & Code View (35%) -->
+<section class="w-[35%] flex flex-col border-r border-outline-variant bg-surface-container-low">
+<!-- Directory Header -->
+<div class="p-4 border-b border-outline-variant flex items-center justify-between">
+<span class="font-label-bold text-label-bold text-on-surface uppercase tracking-wider">Project Explorer</span>
+<span class="material-symbols-outlined text-outline cursor-pointer">filter_list</span>
+</div>
+<!-- Directory Tree -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-2">
+<div class="space-y-1">
+<div class="flex items-center gap-2 px-2 py-1 text-on-surface-variant font-body-sm cursor-pointer hover:bg-surface-container-high rounded">
+<span class="material-symbols-outlined text-amber-500" style="font-variation-settings: 'FILL' 1;">folder</span>
+<span>src</span>
+</div>
+<div class="ml-4 space-y-1">
+<div class="flex items-center gap-2 px-2 py-1 text-on-surface-variant font-body-sm cursor-pointer hover:bg-surface-container-high rounded bg-surface-container-highest border-l-2 border-primary">
+<span class="material-symbols-outlined text-primary">description</span>
+<span>main.py</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1 text-on-surface-variant font-body-sm cursor-pointer hover:bg-surface-container-high rounded">
+<span class="material-symbols-outlined text-primary">description</span>
+<span>utils.py</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1 text-on-surface-variant font-body-sm cursor-pointer hover:bg-surface-container-high rounded">
+<span class="material-symbols-outlined text-amber-500" style="font-variation-settings: 'FILL' 1;">folder</span>
+<span>models</span>
+</div>
+</div>
+<div class="flex items-center gap-2 px-2 py-1 text-on-surface-variant font-body-sm cursor-pointer hover:bg-surface-container-high rounded">
+<span class="material-symbols-outlined text-outline">description</span>
+<span>README.md</span>
+</div>
+</div>
+</div>
+<!-- Read-only Code Preview -->
+<div class="h-1/2 border-t border-outline-variant bg-[#F8FAFC] flex flex-col">
+<div class="px-4 py-2 border-b border-outline-variant bg-white flex justify-between items-center">
+<span class="font-code-sm text-code-sm text-outline">Preview: main.py</span>
+<span class="material-symbols-outlined text-outline text-sm">fullscreen</span>
+</div>
+<div class="flex-1 overflow-auto p-4 font-code-sm text-code-sm leading-relaxed">
+<pre class="text-[#334155]"><code><span class="text-secondary">import</span> os
+<span class="text-secondary">import</span> sys
+
+<span class="text-tertiary-container">def</span> <span class="text-primary font-bold">initialize_engine</span>():
+    <span class="text-outline italic"># Connect to the local context engine</span>
+    engine = Engine(config=<span class="text-error">"dev"</span>)
+    <span class="text-secondary">return</span> engine.start()
+
+<span class="text-secondary">if</span> __name__ == <span class="text-error">"__main__"</span>:
+    initialize_engine()</code></pre>
+</div>
+</div>
+</section>
+<!-- Right: Chat Window (65%) -->
+<section class="flex-1 flex flex-col bg-surface overflow-hidden relative">
+<!-- Chat Container -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-main_padding space-y-container_gap" id="chat-container">
+<!-- Assistant Welcome Message -->
+<div class="flex items-start gap-4">
+<div class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary text-lg">smart_toy</span>
+</div>
+<div class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm max-w-[85%]">
+<p class="font-body-base text-body-base mb-2">Hello! I've analyzed your current ZIP archive. I can help you with:</p>
+<ul class="list-disc ml-5 space-y-1 font-body-sm text-on-surface-variant">
+<li>Explaining the overall architecture.</li>
+<li>Identifying performance bottlenecks in <code class="bg-surface-container-low px-1 rounded">main.py</code>.</li>
+<li>Suggesting refactoring for the execution flow.</li>
+</ul>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex items-start justify-end gap-4">
+<div class="bg-primary text-white rounded-xl p-4 shadow-sm max-w-[85%]">
+<p class="font-body-base text-body-base">Can you explain the <code class="bg-white/20 px-1 rounded">initialize_engine</code> function in <code class="bg-white/20 px-1 rounded">main.py</code>?</p>
+</div>
+<div class="w-8 h-8 rounded overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist circular profile avatar for a tech user. The style is modern, professional, and follows a light-mode color scheme with subtle blues and greys. The lighting is even and optimistic, fitting the systematic AI workspace brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1TydKNGUX-_lBUYSfhCEHMgMtqJErJePyhyVR496tAzROuhNlSxzaJIPJe3ThNyay_KJsZxzXFL6d4VJOI-0QZlSZH3nc_HSljSXt52hSMisH9rdLD0sskFzxFWoqsvmFHCxDUBia9BxeFouSgJk_Rf5fjiZIuPGv1D7p50BqPZUn6bkmV6akhwV_s_DrT7qlaYJ3HGrr9lr1sZuoYV1PIOhfRTMHflZ7tnqmqMWA93ECnzVEPEnV8kocqBz1FUT3t1blHyAlHSA"/>
+</div>
+</div>
+<!-- Assistant Response with Code Block -->
+<div class="flex items-start gap-4">
+<div class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary text-lg">smart_toy</span>
+</div>
+<div class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm max-w-[85%]">
+<p class="font-body-base text-body-base mb-3">Certainly! The <code class="bg-surface-container-low px-1 rounded text-primary">initialize_engine</code> function is the entry point for your application logic. Here's a breakdown:</p>
+<div class="space-y-3 mb-4">
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+<p class="font-body-sm text-on-surface-variant"><strong>Environment Setup:</strong> It reads the configuration for the "dev" environment.</p>
+</div>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+<p class="font-body-sm text-on-surface-variant"><strong>Instantiation:</strong> Creates a new <code class="bg-surface-container-low px-1 rounded">Engine</code> instance.</p>
+</div>
+</div>
+<!-- Code Block with Copy -->
+<div class="rounded-lg overflow-hidden border border-outline-variant bg-[#F8FAFC]">
+<div class="bg-surface-container px-4 py-2 flex justify-between items-center border-b border-outline-variant">
+<span class="font-code-sm text-code-sm text-outline">python</span>
+<button class="flex items-center gap-1 text-primary font-label-bold hover:underline transition-all">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+<span>Copy Code</span>
+</button>
+</div>
+<div class="p-4 font-code-sm text-code-sm">
+<pre><code><span class="text-secondary">def</span> <span class="text-primary">initialize_engine</span>():
+    engine = Engine(config=<span class="text-error">"dev"</span>)
+    <span class="text-secondary">return</span> engine.start()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Bar -->
+<div class="p-6 bg-surface border-t border-outline-variant">
+<div class="max-w-4xl mx-auto flex items-end gap-3 glass-panel p-3 rounded-xl shadow-lg">
+<button class="p-2 text-outline hover:text-primary transition-colors active:scale-90">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<textarea class="flex-1 bg-transparent border-none focus:ring-0 resize-none font-body-base py-2 max-h-32 min-h-[44px]" placeholder="Ask anything about your codebase..." rows="1"></textarea>
+<button class="bg-primary text-white p-3 rounded-lg shadow-md hover:bg-on-primary-fixed-variant transition-all active:scale-95 flex items-center justify-center">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+<div class="mt-2 text-center">
+<p class="font-label-bold text-[10px] text-outline uppercase tracking-widest">AI responses may vary based on ZIP context complexity</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Atmosphere Elements -->
+<div class="fixed bottom-24 right-8 pointer-events-none opacity-20">
+
+</div>
+<script>
+        // Auto-expand textarea
+        const tx = document.getElementsByTagName("textarea");
+        for (let i = 0; i < tx.length; i++) {
+            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+            tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput() {
+            this.style.height = 0;
+            this.style.height = (this.scrollHeight) + "px";
+        }
+
+        // Micro-interactions for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                btn.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+    </script>
+</body></html>
