@@ -86,6 +86,7 @@ class UploadService:
             logger = self._setup_workspace_logger(workspace_path)
             logger.info("Upload started for repository: %s (ID: %s)", repository_name, repo_id)
             logger.info("ZIP validation successful: %s", validation_msg)
+            print("zip validation finished")
             
             # Extract ZIP
             logger.info("Extracting repository ZIP...")
