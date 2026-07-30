@@ -47,10 +47,10 @@ class StorageService:
             # Split the ZIP path into components
                 parts = Path(member.filename).parts
 
-            # Skip files/folders inside ignored directories
-                ignored = next((part for part in parts if part in IGNORE_DIRS), None)
-                if ignored:
-                    ignored_dirs.add(ignored)
+                if any(
+                    part.startswith(".") or part in IGNORE_DIRS
+                    for part in parts[:-1]
+                ):
                     continue
 
                 zf.extract(member, target_path)

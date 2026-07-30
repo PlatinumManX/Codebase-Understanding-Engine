@@ -1,5 +1,7 @@
 IGNORE_DIRS = {
     ".git",
+    ".devcontainer",
+    ".gitignore",
     ".github",
     ".venv",
     "venv",
