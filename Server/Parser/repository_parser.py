@@ -64,12 +64,11 @@ def parse_repository(repo_path):
     files = get_python_files(repo_path)
     file_index = build_file_index(files, repo_path)
     for file in files:
-        try:
-            metadata = parse_file(file, repo_path)
-        except Exception:
-            print(f"Error parsing: {file}")
-            raise
+
+        metadata = parse_file(file, repo_path)
+
         repository.files.append(metadata)
+        # Dependency Resolution
 
     for metadata in repository.files:
 
