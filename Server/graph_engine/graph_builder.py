@@ -34,7 +34,7 @@ class ModuleGraphBuilder:
     @classmethod
     def from_metadata_json(cls, metadata_path):
 
-        with open(metadata_path, "r") as file:
+        with open(metadata_path, "r", encoding="utf-8") as file:
             data = json.load(file)
 
         repository = RepositoryMetadata.from_dict(data)
