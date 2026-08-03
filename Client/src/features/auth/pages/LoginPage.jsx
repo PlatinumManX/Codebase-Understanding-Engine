@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import useAuth from '../hooks/useAuth';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Input from '../../../shared/components/Input';
+import Button from '../../../shared/components/Button';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -41,124 +43,167 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 bg-canvas font-sans text-on-surface select-none">
-      <main className="w-full max-w-[440px] z-10">
-        {/* Center Card */}
-        <div className="bg-white border border-[#e2e8f0] rounded-xl p-10 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.05)] transition-all duration-300">
-          
-          {/* Logo Section */}
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4 shadow-sm text-white">
-              <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>hub</span>
-            </div>
-            <h1 className="text-xl font-bold font-display text-on-surface text-center">Access Your CodeMap Workspace</h1>
-            <p className="text-xs text-on-surface-variant mt-2 text-center">Enter your credentials to continue to the intelligent engine.</p>
+    <div className="min-h-screen bg-[#040609] text-gray-200 flex flex-col md:flex-row overflow-hidden font-mono select-none">
+      {/* Left side: branding, product description and ambient animated grid */}
+      <div className="relative w-full md:w-[45%] bg-[#080c14] border-r border-[#1f2937]/30 flex flex-col justify-between p-8 md:p-12 overflow-hidden">
+        {/* Grid Background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#161b22_1px,transparent_1px),linear-gradient(to_bottom,#161b22_1px,transparent_1px)] bg-[size:32px_32px] opacity-10 pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#00f0ff]/5 rounded-full blur-[120px] pointer-events-none" />
+
+        {/* Brand Header */}
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00f0ff]/20 to-[#a855f7]/20 border border-[#00f0ff]/30 flex items-center justify-center">
+            <span className="text-sm font-extrabold text-[#00f0ff]">CM</span>
+          </div>
+          <span className="text-base font-bold tracking-wider text-white">CODEMAP<span className="text-[#00f0ff]">AI</span></span>
+        </div>
+
+        {/* Narrative and Animated Visual */}
+        <div className="relative z-10 my-auto space-y-6 max-w-sm">
+          <h2 className="text-3xl md:text-[40px] lg:text-[44px] font-extrabold tracking-tight text-white leading-tight">
+            Decode software <br /> architecture.
+          </h2>
+          <p className="text-slate-300 font-sans text-lg md:text-[22px] lg:text-[24px] leading-relaxed">
+            Sign in to start index call graphs, trace transaction paths, and resolve circular dependencies automatically.
+          </p>
+
+          {/* Ambient SVG decoration */}
+          <div className="pt-6 relative">
+            <svg className="w-full h-32 text-[#30363d]" viewBox="0 0 300 120">
+              <g stroke="#3e4651" strokeWidth="1.2" strokeDasharray="3 3">
+                <line x1="50" y1="60" x2="150" y2="20" />
+                <line x1="50" y1="60" x2="150" y2="100" />
+                <line x1="150" y1="20" x2="250" y2="60" />
+                <line x1="150" y1="100" x2="250" y2="60" />
+              </g>
+              <circle cx="50" cy="60" r="7.5" fill="#0d1117" stroke="#00f0ff" strokeWidth="3.5" />
+              <circle cx="150" cy="20" r="7.5" fill="#0d1117" stroke="#a855f7" strokeWidth="3.5" />
+              <circle cx="150" cy="100" r="7.5" fill="#0d1117" stroke="#10b981" strokeWidth="3.5" />
+              <circle cx="250" cy="60" r="7.5" fill="#0d1117" stroke="#00f0ff" strokeWidth="3.5" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Footer info */}
+        <div className="relative z-10 text-[15px] text-gray-500 font-sans">
+          CodeMap AI © 2026. Premium codebase analytics interface.
+        </div>
+      </div>
+
+      {/* Right side: Login Form */}
+      <div className="w-full md:w-[55%] flex items-center justify-center p-8 md:p-12 relative">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#161b22_1px,transparent_1px),linear-gradient(to_bottom,#161b22_1px,transparent_1px)] bg-[size:32px_32px] opacity-5 pointer-events-none" />
+
+        <div className="max-w-[400px] w-full space-y-6">
+          <div className="space-y-2">
+            <h1 className="text-[32px] font-bold tracking-tight text-white">Sign In</h1>
+            <p className="text-[17px] text-slate-300 font-sans">Enter your credentials to manage workspace environments.</p>
           </div>
 
-          {/* Login Form */}
-          <form onSubmit={handleLogin} className="space-y-6">
-            
+          <form onSubmit={handleLogin} className="space-y-4">
             {/* Email Field */}
-            <div>
-              <label className="block text-xs font-bold text-on-surface-variant mb-1.5" htmlFor="email">Email Address</label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">mail</span>
-                <input 
-                  className={`w-full pl-10 pr-4 py-2.5 bg-white border ${errors.email ? 'border-error' : 'border-[#e2e8f0]'} rounded-lg text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all`}
-                  id="email" 
-                  name="email" 
-                  placeholder="name@company.com" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required 
-                  type="email"
-                />
-              </div>
-              {errors.email && <p className="text-xs text-error mt-1">{errors.email}</p>}
-            </div>
+            <Input
+              label="Email Address"
+              id="email"
+              type="email"
+              placeholder="e.g. admin@codemap.ai"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              error={errors.email}
+              required
+              className="font-mono text-xs"
+            />
 
             {/* Password Field */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-bold text-on-surface-variant" htmlFor="password">Password</label>
-                <a className="text-xs font-bold text-primary hover:underline transition-all" href="#forgot">Forgot Password?</a>
-              </div>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">lock</span>
-                <input 
-                  className={`w-full pl-10 pr-12 py-2.5 bg-white border ${errors.password ? 'border-error' : 'border-[#e2e8f0]'} rounded-lg text-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all`}
-                  id="password" 
-                  name="password" 
-                  placeholder="••••••••" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required 
-                  type={showPassword ? 'text' : 'password'}
-                />
-                <button 
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface-variant cursor-pointer" 
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  <span className="material-symbols-outlined text-[20px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
-                </button>
-              </div>
-              {errors.password && <p className="text-xs text-error mt-1">{errors.password}</p>}
-            </div>
-
-            {/* Remember Me */}
-            <div className="flex items-center">
-              <input 
-                className="w-4 h-4 rounded border-[#e2e8f0] text-primary focus:ring-primary cursor-pointer" 
-                id="remember" 
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
+            <div className="relative">
+              <Input
+                label="Password"
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                error={errors.password}
+                required
+                className="font-mono text-xs pr-10"
               />
-              <label className="ml-2 text-xs text-on-surface-variant cursor-pointer select-none" htmlFor="remember">Remember me for 30 days</label>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-[32px] text-slate-400 hover:text-white cursor-pointer select-none"
+              >
+                {showPassword ? (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                )}
+              </button>
             </div>
 
-            {/* Action Button */}
-            <button 
-              className="w-full bg-primary text-white py-3 rounded-lg text-sm font-semibold hover:bg-primary-hover active:scale-[0.98] transition-all shadow-sm cursor-pointer" 
-              type="submit"
-            >
-              Sign In to Workspace
-            </button>
+            {/* Remember Me and Forgot Password (UI only) */}
+            <div className="flex items-center justify-between text-xs font-sans text-slate-400">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="rounded border-[#30363d] bg-[#0d1117] text-[#00f0ff] focus:ring-0"
+                />
+                <span>Remember Me</span>
+              </label>
+              <button 
+                type="button" 
+                onClick={() => alert('Demo Feature: Forgot password UI simulation')}
+                className="hover:text-white transition-colors cursor-pointer"
+              >
+                Forgot Password?
+              </button>
+            </div>
+
+            {/* Action buttons */}
+            <div className="space-y-3 pt-2">
+              <Button
+                type="submit"
+                variant="primary"
+                className="w-full py-2.5 font-mono text-xs cursor-pointer shadow-[0_0_15px_rgba(0,240,255,0.15)] border-[#00f0ff]/40"
+              >
+                Sign In
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate('/register')}
+                className="w-full py-2.5 font-mono text-xs cursor-pointer border-[#3e4651]"
+              >
+                Create Account
+              </Button>
+            </div>
           </form>
 
-          {/* Divider */}
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center"><span class="w-full border-t border-[#e2e8f0]"></span></div>
-            <div className="relative flex justify-center text-xs font-bold uppercase"><span class="bg-white px-4 text-outline">Or continue with</span></div>
+          {/* Social Separator */}
+          <div className="relative flex items-center justify-center my-4">
+            <div className="absolute inset-x-0 border-t border-[#30363d]/40" />
+            <span className="relative px-3 bg-[#040609] text-[10px] text-gray-500 uppercase tracking-widest font-sans">Or continue with</span>
           </div>
 
-          {/* Social/SSO Buttons */}
-          <div className="grid grid-cols-2 gap-4">
-            <button className="flex items-center justify-center gap-2 py-2.5 border border-[#e2e8f0] rounded-lg bg-white hover:bg-[#eff4ff] transition-colors active:scale-[0.98] cursor-pointer">
-              <div className="w-5 h-5 bg-contain bg-center bg-no-repeat" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAeMjUvVf02zOrK0YMI77PSUXQr9UUWmpPJXKkseeqBP0dXJgeBKjrgZSw-trMNsTMD8doHLF3nbLRBtZv2DfF8_bImWSApr-AA819DFa2tPWaZYVbXE5yHUzSLvngNUow-Ar65W89snfzv0asXkIMccGxFT5Hdy9Gnis8AySqtgDXMeDIPzgZk6-kmzsvSNAa6rhFF9hzCTf9iLJOh_EEleWXzsG3KHqRJPd7MV8xFtskTjDf-ZubQfCSFIb9L51NvFKLwxSe1zX0')" }}></div>
-              <span className="text-xs font-semibold text-on-surface">GitHub</span>
-            </button>
-            <button className="flex items-center justify-center gap-2 py-2.5 border border-[#e2e8f0] rounded-lg bg-white hover:bg-[#eff4ff] transition-colors active:scale-[0.98] cursor-pointer">
-              <div className="w-5 h-5 bg-contain bg-center bg-no-repeat" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuD7UkajfwY7dwfjEqJxj_G5et6TXmOqgQUDv6iwZ_gwPhsiw27Z-B_QWuk-2kcyBrsRfcuw0fbcvPh6glpwl-zZpMc_yNoJ2jOVHTkfQ_1jADPB0W_gQP4iIJysqvj8T7hRc6YdlPYlFEtFxakk2jFAqVDqT-UqaxgB2PsgVE5gq8siFgkJHLIfZwrPLaS-NSTnCtKLQhCG5mvXQxcna9D924yWhrGZJt7q1Q8a7c8o5YI4C9x8UV5maKxJImR15FUuWIzapad9GHc')" }}></div>
-              <span className="text-xs font-semibold text-on-surface">Google</span>
-            </button>
-          </div>
+          {/* Google login placeholder */}
+          <button
+            disabled
+            type="button"
+            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-md border border-[#30363d]/30 bg-[#0d1117]/30 text-gray-500 text-xs cursor-not-allowed select-none"
+          >
+            <svg className="w-4 h-4 shrink-0 opacity-40" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.859-3.578-7.859-8s3.53-8 7.859-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C17.955 2.192 15.34 1 12.24 1 6.033 1 1 6.033 1 12.24s5.033 11.24 11.24 11.24c6.478 0 10.793-4.537 10.793-10.978 0-.74-.08-1.3-.178-1.86H12.24z"/>
+            </svg>
+            <span className="font-sans">Sign in with Google (disabled)</span>
+          </button>
         </div>
-
-        {/* Footer Link */}
-        <p className="text-center mt-8 text-xs text-on-surface-variant">
-          New to CodeMap? 
-          <NavLink className="text-primary font-bold hover:underline ml-1" to="/register">Create an account</NavLink>
-        </p>
-
-        {/* Terms & Privacy */}
-        <div className="flex justify-center gap-4 mt-12 opacity-60 text-xs">
-          <a className="font-bold text-on-surface-variant hover:text-on-surface transition-colors" href="#privacy">Privacy Policy</a>
-          <span className="text-outline">•</span>
-          <a className="font-bold text-on-surface-variant hover:text-on-surface transition-colors" href="#terms">Terms of Service</a>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }

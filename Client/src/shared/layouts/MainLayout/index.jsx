@@ -4,7 +4,7 @@ import Navbar from '../Navbar';
 
 export default function MainLayout({ children }) {
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-canvas text-on-surface">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#0b0e14] text-gray-200">
       {/* Sidebar navigation */}
       <Sidebar />
 
@@ -14,7 +14,7 @@ export default function MainLayout({ children }) {
         <Navbar />
 
         {/* Dynamic Content scroll viewport */}
-        <main className="flex-1 overflow-y-auto bg-canvas p-6">
+        <main className="flex-1 overflow-y-auto bg-[#0b0e14] p-4 sm:p-5">
           {children}
         </main>
       </div>

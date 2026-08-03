@@ -1,77 +1,55 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import SearchBar from '../../components/SearchBar';
 import Badge from '../../components/Badge';
-import useAuth from '../../../features/auth/hooks/useAuth';
 
 export default function Navbar() {
-  const { user } = useAuth();
-  const [activeRepoName, setActiveRepoName] = useState('codemap-ai-core');
-
-  useEffect(() => {
-    // Listen for changes in localStorage for active repo name updates
-    const handleStorageChange = () => {
-      const name = localStorage.getItem('active_repository_name');
-      if (name) setActiveRepoName(name);
-    };
-
-    handleStorageChange();
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
   return (
-    <header className="h-16 bg-white border-b border-[#e2e8f0] flex justify-between items-center px-6 z-40 select-none shrink-0">
-      {/* Left: Active Repository Status */}
-      <div className="flex items-center gap-3 min-w-0">
-        <span className="text-[10px] font-bold text-outline uppercase tracking-wider shrink-0">
+    <header className="bg-[#161b22]/80 backdrop-blur-md border-b border-[#30363d] text-gray-200 h-14 px-4 flex items-center justify-between shrink-0 select-none z-10">
+      {/* Left: Project & Active Repo Name */}
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="text-[10px] font-semibold text-gray-400 font-mono tracking-wider shrink-0 uppercase">
           CodeMap AI
         </span>
-        <span className="text-[#c3c6d7] text-sm shrink-0">/</span>
-        <div className="flex items-center gap-2 min-w-0 bg-[#eff4ff] px-2.5 py-1 rounded-lg border border-primary/10">
-          <span className="material-symbols-outlined text-primary text-[16px]">folder</span>
-          <span className="text-xs font-semibold text-primary truncate">
-            {activeRepoName}
+        <span className="text-gray-600 text-sm font-mono shrink-0">/</span>
+        <div className="flex items-center gap-1.5 min-w-0">
+          <svg className="w-4 h-4 text-[#00f0ff] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2" />
+          </svg>
+          <span className="text-xs font-medium text-white font-mono truncate">
+            codemap-ai-core
           </span>
-          <Badge variant="success" size="sm" className="hidden sm:inline-flex shrink-0 font-sans">
+          <Badge variant="success" size="sm" className="hidden sm:inline-flex shrink-0">
             active
           </Badge>
         </div>
       </div>
 
-      {/* Middle: Search Bar (hidden on mobile) */}
+      {/* Middle: Custom Search Bar (hidden on mobile) */}
       <div className="hidden md:flex flex-1 justify-center max-w-xs px-4">
         <SearchBar placeholder="Search codebase..." />
       </div>
 
-      {/* Right: Actions and Profile */}
-      <div className="flex items-center gap-4 shrink-0">
-        {/* Help Cog */}
-        <button 
-          onClick={() => alert('Demo Help: Checkout docs page inside settings.')}
-          className="p-2 text-on-surface-variant hover:bg-[#eff4ff] hover:text-primary transition-colors rounded-full cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[20px]">help</span>
+      {/* Right: Actions / Notification placeholder / User Profile details */}
+      <div className="flex items-center gap-3 shrink-0">
+        {/* Branch selector mock */}
+        <div className="hidden sm:flex items-center gap-1.5 bg-[#0d1117] border border-[#30363d] px-2 py-0.5 rounded text-[10px] font-mono text-gray-400 select-none">
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7v8a2 2 0 002 2h6M8 7a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm8 2a2 2 0 100-4 2 2 0 000 4z" />
+          </svg>
+          <span>main</span>
+        </div>
+
+        {/* Notification placeholder */}
+        <button className="text-gray-400 hover:text-gray-200 p-1 hover:bg-[#30363d]/30 rounded transition-colors relative cursor-pointer">
+          <span className="absolute top-1.5 right-1.5 w-1 h-1 bg-[#00f0ff] rounded-full"></span>
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
         </button>
 
-        {/* Notifications */}
-        <button 
-          onClick={() => alert('Demo Notifications: No new alerts.')}
-          className="p-2 text-on-surface-variant hover:bg-[#eff4ff] hover:text-primary transition-colors rounded-full relative cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[20px]">notifications</span>
-          <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-white"></span>
-        </button>
-
-        <div className="h-6 w-[1px] bg-[#e2e8f0] mx-1"></div>
-
-        {/* User Profile display */}
-        <div className="flex items-center gap-3 cursor-pointer group">
-          <div className="w-8 h-8 rounded-full overflow-hidden bg-[#dbe1ff] border border-primary/20 flex items-center justify-center font-bold text-xs text-primary font-display shrink-0 transition-all group-hover:border-primary">
-            {user?.name ? user.name[0].toUpperCase() : 'D'}
-          </div>
-          <span className="font-sans text-xs font-semibold text-on-surface-variant group-hover:text-primary transition-colors hidden sm:inline">
-            {user?.name || 'Developer'}
-          </span>
+        {/* User avatar */}
+        <div className="w-6 h-6 rounded bg-[#00f0ff]/20 border border-[#00f0ff]/40 flex items-center justify-center font-bold text-xs text-[#00f0ff] font-mono select-none">
+          D
         </div>
       </div>
     </header>

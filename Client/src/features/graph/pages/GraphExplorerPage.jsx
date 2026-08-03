@@ -1,40 +1,67 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from '../../../shared/context/ToastContext';
+//import React,
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import PageHeader from '../../../shared/components/PageHeader';
+import SearchBar from '../../../shared/components/SearchBar';
+import GraphToolbar from '../components/GraphToolbar';
 import GraphCanvas from '../components/GraphCanvas';
+import GraphFilters from '../components/GraphFilters';
+import GraphLegend from '../components/GraphLegend';
+import NodeDetailsPanel from '../components/NodeDetailsPanel';
+import Card from '../../../shared/components/Card';
 import { 
   getRepositories, 
+  getActiveRepository, 
   getRepositoryGraph 
 } from '../../../shared/api/repositoryApi';
 
 export default function GraphExplorerPage() {
-  const navigate = useNavigate();
-  const { showToast } = useToast();
-  
   const [repositories, setRepositories] = useState([]);
   const [activeRepo, setActiveRepo] = useState(null);
   const [graphData, setGraphData] = useState({ nodes: [], edges: [] });
   const [loading, setLoading] = useState(true);
 
-  // Layout mode: Architecture (Standard), Classes, Dependency
-  const [activeMode, setActiveMode] = useState('Architecture');
+  // Semantic exploration state
+  const [activeMode, setActiveMode] = useState('Architecture'); // Architecture, Modules, Dependency, Classes, Functions, Routes
+  const [expandedNodeIds, setExpandedNodeIds] = useState(new Set());
   
   // Selection states
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Collapsible Filters Panel
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedNodeTypes, setSelectedNodeTypes] = useState(['module']);
+  const [showFilesOnly, setShowFilesOnly] = useState(false);
 
   // Camera action triggers
   const [fitViewTrigger, setFitViewTrigger] = useState(0);
   const [centerSelectionTrigger, setCenterSelectionTrigger] = useState(0);
   const [reloadTrigger, setReloadTrigger] = useState(0);
 
-  // Load repositories and initial graph data
+  // Layout engine shifts automatically based on exploration mode
+  const layout = useMemo(() => {
+    switch (activeMode) {
+      case 'Modules':
+      case 'Architecture':
+      case 'Classes':
+      case 'Functions':
+      case 'Routes':
+        return 'Hierarchical';
+      case 'Dependency':
+      default:
+        return 'Force-Directed'; // Maps to fcose in GraphCanvas
+    }
+  }, [activeMode]);
+
+  // Load repositories and initial graph
   useEffect(() => {
+    const controller = new AbortController();
+    
     const loadInitialData = async () => {
       try {
         setLoading(true);
-        const reposList = await getRepositories();
+        const reposList = await getRepositories(controller.signal);
         setRepositories(reposList || []);
         
         let targetId = localStorage.getItem('active_repository_id');
@@ -44,8 +71,12 @@ export default function GraphExplorerPage() {
           activeRepoData = reposList.find(r => r.repository_id === targetId);
         }
         
-        if (!activeRepoData && reposList.length > 0) {
-          activeRepoData = reposList[0];
+        if (!activeRepoData) {
+          try {
+            activeRepoData = await getActiveRepository(controller.signal);
+          } catch {
+            // No active repository configured
+          }
         }
         
         if (activeRepoData) {
@@ -53,17 +84,20 @@ export default function GraphExplorerPage() {
           localStorage.setItem('active_repository_id', activeRepoData.repository_id);
           localStorage.setItem('active_repository_name', activeRepoData.repository_name);
           
-          const graph = await getRepositoryGraph(activeRepoData.repository_id);
+          const graph = await getRepositoryGraph(activeRepoData.repository_id, controller.signal);
           setGraphData(graph || { nodes: [], edges: [] });
         }
       } catch (err) {
-        showToast('error', 'Failed to load initial graph data.');
+        if (err.name !== 'AbortError') {
+          console.error("Failed to load initial graph explorer data:", err);
+        }
       } finally {
         setLoading(false);
       }
     };
     
     loadInitialData();
+    return () => controller.abort();
   }, []);
 
   const handleSelectRepository = async (repoId) => {
@@ -75,44 +109,160 @@ export default function GraphExplorerPage() {
       setActiveRepo(selected);
       setSelectedNode(null);
       setSelectedEdge(null);
+      setExpandedNodeIds(new Set());
       localStorage.setItem('active_repository_id', selected.repository_id);
       localStorage.setItem('active_repository_name', selected.repository_name);
-      window.dispatchEvent(new Event('storage'));
       
       const graph = await getRepositoryGraph(selected.repository_id);
       setGraphData(graph || { nodes: [], edges: [] });
     } catch (err) {
-      showToast('error', 'Failed to change repository graph.');
+      console.error("Failed to load switched graph:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Filter nodes and edges based on active mode
-  const visibleNodes = useMemo(() => {
-    return graphData?.nodes || [];
+  const reloadGraphData = async () => {
+    if (!activeRepo) return;
+    try {
+      const graph = await getRepositoryGraph(activeRepo.repository_id);
+      setGraphData(graph || { nodes: [], edges: [] });
+      // Trigger canvas rebuild after fetching new data
+      setReloadTrigger(prev => prev + 1);
+    } catch (err) {
+      console.error("Failed to reload graph:", err);
+    }
+  };
+
+  // Node parent mapping helper
+  const nodeParentsMap = useMemo(() => {
+    const parentMap = {};
+    if (!graphData?.edges) return parentMap;
+    
+    graphData.edges.forEach(edge => {
+      if (edge.type === 'contains' || edge.type === 'defines_route' || edge.type === 'has_method') {
+        parentMap[edge.target] = edge.source;
+      }
+    });
+    return parentMap;
   }, [graphData]);
 
+  // Progressive exploration node resolver
+  const visibleNodes = useMemo(() => {
+    const rawNodes = graphData?.nodes || [];
+    if (rawNodes.length === 0) return [];
+
+    const typeFiltered = rawNodes.filter(n => selectedNodeTypes.includes(n.type));
+    // In all modes, the structural graph is determined entirely by the active mode and selected node types.
+    // We no longer filter nodes dynamically based on the current user selection.
+    // Selection state is completely separated and purely triggers visual CSS classes in the canvas.
+    return typeFiltered;
+  }, [graphData, activeMode, selectedNodeTypes]);
+
+  const visibleNodeIds = useMemo(() => new Set(visibleNodes.map(n => n.id)), [visibleNodes]);
+
+  // Progressive exploration edge resolver
   const visibleEdges = useMemo(() => {
     const rawEdges = graphData?.edges || [];
-    if (activeMode === 'Classes') {
-      return rawEdges.filter(e => e.type === 'inherits' || e.type === 'contains');
-    }
-    if (activeMode === 'Dependency') {
-      return rawEdges.filter(e => e.type === 'imports' || e.type === 'depends_on' || e.type === 'dependencies');
-    }
-    return rawEdges;
-  }, [graphData, activeMode]);
+    
+    const boundsFiltered = rawEdges.filter(
+      edge => visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target)
+    );
 
-  // Extract file list from nodes of type 'module'
-  const fileNodes = useMemo(() => {
-    return (graphData?.nodes || []).filter(n => n.type === 'module');
+    if (activeMode === 'Classes') {
+      return boundsFiltered.filter(e => e.type === 'inherits' || e.type === 'contains');
+    }
+    
+    if (activeMode === 'Dependency') {
+      return boundsFiltered.filter(e => e.type === 'imports' || e.type === 'depends_on' || e.type === 'dependencies');
+    }
+
+    if (activeMode === 'Functions' || activeMode === 'Routes') {
+      return boundsFiltered.filter(e => e.type === 'calls' || e.type === 'defines_route' || e.type === 'contains');
+    }
+
+    return boundsFiltered;
+  }, [graphData, visibleNodeIds, activeMode]);
+
+  // Statistics counters
+  const totalNodesCount = graphData?.nodes?.length || 0;
+  const totalEdgesCount = graphData?.edges?.length || 0;
+  const visibleNodesCount = visibleNodes.length;
+  const visibleEdgesCount = visibleEdges.length;
+
+  const typeCounts = useMemo(() => {
+    const counts = {};
+    (graphData?.nodes || []).forEach(n => {
+      counts[n.type] = (counts[n.type] || 0) + 1;
+    });
+    return counts;
   }, [graphData]);
 
+  // Action utilities handlers
+  const handleFitView = () => setFitViewTrigger(prev => prev + 1);
+  const handleCenterSelection = () => setCenterSelectionTrigger(prev => prev + 1);
+  
+  const handleExpandAll = () => {
+    const newExpanded = new Set(expandedNodeIds);
+    // Expand all currently visible modules and classes
+    visibleNodes.forEach(node => {
+      if (node.type === 'module' || node.type === 'class') {
+        newExpanded.add(node.id);
+      }
+    });
+    setExpandedNodeIds(newExpanded);
+  };
+
+  const handleCollapseAll = () => {
+    setExpandedNodeIds(new Set());
+  };
+
+  // Node click and expand actions
+  const handleNodeAction = useCallback((nodeId, action) => {
+    if (action === 'expand') {
+      const node = (graphData?.nodes || []).find(n => n.id === nodeId);
+      if (node?.type === 'function') {
+        setActiveMode('Functions');
+        setSelectedNode(node);
+      } else if (node?.type === 'route') {
+        setActiveMode('Routes');
+        setSelectedNode(node);
+      } else {
+        setExpandedNodeIds(prev => {
+          const next = new Set(prev);
+          next.add(nodeId);
+          return next;
+        });
+      }
+    } else if (action === 'collapse') {
+      setExpandedNodeIds(prev => {
+        const next = new Set(prev);
+        next.delete(nodeId);
+        return next;
+      });
+    } else if (action === 'focus') {
+      const node = (graphData?.nodes || []).find(n => n.id === nodeId);
+      if (node) {
+        setSelectedNode(node);
+        handleCenterSelection();
+      }
+    }
+  });
+
+  const handleToggleNodeType = (type) => {
+    setSelectedNodeTypes(prev =>
+      prev.includes(type)
+        ? prev.filter(t => t !== type)
+        : [...prev, type]
+    );
+  };
+
+  // Search logic
   const handleSearchSubmit = (query) => {
     if (!query || query.trim() === '') return;
     const cleanQuery = query.toLowerCase().trim();
 
+    // Find first matching node in database
     const match = (graphData?.nodes || []).find(node => 
       node.label.toLowerCase().includes(cleanQuery) || 
       node.id.toLowerCase().includes(cleanQuery)
@@ -120,331 +270,180 @@ export default function GraphExplorerPage() {
 
     if (match) {
       setSelectedNode(match);
-      setTimeout(() => {
-        setCenterSelectionTrigger(prev => prev + 1);
-      }, 50);
-    } else {
-      showToast('info', 'No matching codebase node found.');
-    }
-  };
-
-  const handleFileClick = (node) => {
-    setSelectedNode(node);
-    setSelectedEdge(null);
-    setTimeout(() => {
-      setCenterSelectionTrigger(prev => prev + 1);
-    }, 50);
-  };
-
-  const handleNodeAction = (nodeId, action) => {
-    if (action === 'expand' || action === 'focus') {
-      const match = (graphData?.nodes || []).find(n => n.id === nodeId);
-      if (match) {
-        setSelectedNode(match);
-        setTimeout(() => {
-          setCenterSelectionTrigger(prev => prev + 1);
-        }, 50);
+      
+      // Auto expand parent modules to ensure matching node is visible
+      const parentId = nodeParentsMap[match.id];
+      if (parentId) {
+        setExpandedNodeIds(prev => {
+          const next = new Set(prev);
+          next.add(parentId);
+          const grandParentId = nodeParentsMap[parentId];
+          if (grandParentId) next.add(grandParentId);
+          return next;
+        });
       }
+
+      // Switch mode if search points to routes or functions specifically
+      if (match.type === 'function') {
+        setActiveMode('Functions');
+      } else if (match.type === 'route') {
+        setActiveMode('Routes');
+      }
+
+      // Center camera
+      setTimeout(() => {
+        handleCenterSelection();
+      }, 50);
     }
   };
 
   if (loading) {
     return (
-      <div className="p-main_padding flex flex-col items-center justify-center min-h-[400px]">
-        <span className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4" />
-        <p className="text-xs text-on-surface-variant font-semibold">Loading dependency graph elements...</p>
+      <div className="space-y-4 font-mono">
+        <PageHeader
+          title="Graph Explorer"
+          description="Visualize dependency charts, import maps, and class inheritance networks."
+          breadcrumbs={['Home', 'Graph Explorer']}
+        />
+        <div className="py-32 flex flex-col items-center justify-center">
+          <span className="w-10 h-10 rounded-full border-2 border-[#00f0ff] border-t-transparent animate-spin mb-4" />
+          <p className="text-xs text-slate-400">Loading codebase dependency graph layout...</p>
+        </div>
       </div>
     );
   }
 
   if (!activeRepo) {
     return (
-      <div className="p-main_padding text-center">
-        <span className="material-symbols-outlined text-5xl text-outline mb-3">folder_open</span>
-        <h3 className="text-base font-bold text-on-surface mb-2">No Active Repository</h3>
-        <p className="text-xs text-on-surface-variant max-w-sm mx-auto mb-6">
-          Please upload a ZIP file first to index your code structure.
-        </p>
-        <button 
-          onClick={() => navigate('/repository')}
-          className="bg-primary text-white px-6 py-2.5 rounded-lg text-xs font-bold shadow-md hover:bg-primary-hover active:scale-95 cursor-pointer"
-        >
-          Go to Upload ZIP
-        </button>
+      <div className="space-y-4">
+        <PageHeader
+          title="Graph Explorer"
+          description="Visualize dependency charts, import maps, and class inheritance networks."
+          breadcrumbs={['Home', 'Graph Explorer']}
+        />
+        <Card title="No Repository Loaded" subtitle="Get started by uploading a codebase">
+          <div className="py-16 flex flex-col items-center justify-center font-mono text-center">
+            <svg className="w-12 h-12 text-slate-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <h3 className="text-white font-semibold mb-2">No Active Repository Mapped</h3>
+            <p className="text-xs text-slate-500 max-w-[280px] leading-relaxed mb-6">
+              Go to the Repository page, select a project, or upload a new codebase to generate a module graph.
+            </p>
+          </div>
+        </Card>
       </div>
     );
   }
 
-  // Get selected node's imports and connections
-  const nodeConnections = selectedNode ? visibleEdges.filter(
-    e => e.source === selectedNode.id || e.target === selectedNode.id
-  ) : [];
-
-  const nodeImports = nodeConnections.filter(e => e.type === 'imports' || e.type === 'depends_on');
-  const nodeMethods = selectedNode?.data?.methods || [];
-  const nodeParams = selectedNode?.data?.parameters || [];
-
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] overflow-hidden font-sans text-on-surface bg-canvas">
-      
-      {/* Top Controls Toolbar */}
-      <div className="h-14 border-b border-[#e2e8f0] bg-white flex justify-between items-center px-6 shrink-0 shadow-sm">
-        <div className="flex items-center gap-4">
-          <select
-            value={activeRepo?.repository_id || ''}
-            onChange={(e) => handleSelectRepository(e.target.value)}
-            className="bg-white border border-[#e2e8f0] rounded-lg px-3 py-1.5 text-xs font-bold text-on-surface focus:outline-none focus:border-primary cursor-pointer shadow-sm"
-          >
-            {repositories.map(r => (
-              <option key={r.repository_id} value={r.repository_id}>
-                {r.repository_name}
-              </option>
-            ))}
-          </select>
-
-          {/* Mode Switch Tabs */}
-          <nav className="flex items-center gap-6 ml-4">
-            <button 
-              onClick={() => { setActiveMode('Architecture'); setSelectedNode(null); }}
-              className={`text-xs font-bold transition-all cursor-pointer ${
-                activeMode === 'Architecture' ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
-              }`}
+    <div className="space-y-4 font-mono">
+      {/* Page Header */}
+      <PageHeader
+        title="Graph Explorer"
+        description="Visualize dependency charts, import maps, and class inheritance networks."
+        breadcrumbs={['Home', 'Graph Explorer']}
+        actions={
+          <div className="flex items-center gap-3">
+            <select
+              value={activeRepo?.repository_id || ''}
+              onChange={(e) => handleSelectRepository(e.target.value)}
+              className="bg-[#0d1117] border border-[#30363d] rounded px-3 py-1.5 text-xs text-slate-300 font-mono focus:outline-none focus:border-[#00f0ff] cursor-pointer"
             >
-              Module Graph
-            </button>
-            <button 
-              onClick={() => { setActiveMode('Classes'); setSelectedNode(null); }}
-              className={`text-xs font-bold transition-all cursor-pointer ${
-                activeMode === 'Classes' ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
-              }`}
-            >
-              Class Inheritances
-            </button>
-            <button 
-              onClick={() => { setActiveMode('Dependency'); setSelectedNode(null); }}
-              className={`text-xs font-bold transition-all cursor-pointer ${
-                activeMode === 'Dependency' ? 'text-primary' : 'text-on-surface-variant hover:text-primary'
-              }`}
-            >
-              Import Map
-            </button>
-          </nav>
-        </div>
-
-        {/* Search */}
-        <div className="relative w-64">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
-          <input 
-            className="w-full bg-[#eff4ff] border border-[#e2e8f0] rounded-lg pl-10 pr-4 py-1.5 text-xs font-semibold focus:outline-none focus:border-primary transition-all outline-none"
-            placeholder="Search classes or methods..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit(searchQuery)}
-            type="text"
-          />
-        </div>
-      </div>
-
-      {/* Split Pane Workspace */}
-      <div className="flex-1 flex overflow-hidden">
-        
-        {/* Left Column: Project Files Directory Tree */}
-        <aside className="w-[240px] border-r border-[#e2e8f0] bg-[#eff4ff] flex flex-col shrink-0 select-none">
-          <div className="p-4 border-b border-[#e2e8f0] bg-white">
-            <h2 className="text-xs font-bold text-outline uppercase tracking-wider">Project Files</h2>
-          </div>
-          <div className="flex-grow overflow-y-auto p-3 space-y-1 text-xs">
-            <div className="flex items-center gap-2 p-1.5 hover:bg-[#dce9ff]/50 rounded cursor-pointer transition-colors font-bold text-on-surface">
-              <span className="material-symbols-outlined text-sm text-outline">keyboard_arrow_down</span>
-              <span className="material-symbols-outlined text-primary">folder</span>
-              <span>src</span>
-            </div>
-            
-            <ul className="ml-6 border-l border-[#c3c6d7] pl-2 space-y-1">
-              {fileNodes.map(node => {
-                const isSelected = selectedNode?.id === node.id;
-                return (
-                  <li key={node.id}>
-                    <div 
-                      onClick={() => handleFileClick(node)}
-                      className={`flex items-center gap-2 p-1.5 rounded cursor-pointer transition-colors ${
-                        isSelected 
-                          ? 'bg-[#dce9ff] text-primary font-bold' 
-                          : 'text-on-surface-variant hover:bg-[#dce9ff]/45'
-                      }`}
-                    >
-                      <span className={`material-symbols-outlined text-sm ${isSelected ? 'text-primary' : 'text-outline'}`} style={{ fontVariationSettings: isSelected ? "'FILL' 1" : "" }}>
-                        description
-                      </span>
-                      <span className="truncate max-w-[150px]">{node.label}</span>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </aside>
-
-        {/* Center Section: Graph Canvas & Toolbar overlay */}
-        <section className="flex-1 relative bg-white overflow-hidden flex flex-col">
-          {/* Zoom Overlay Tools */}
-          <div className="absolute top-4 left-4 z-10 flex gap-2">
-            <button 
-              onClick={() => setFitViewTrigger(prev => prev + 1)}
-              className="bg-white border border-[#e2e8f0] p-2 rounded-lg shadow-sm hover:bg-[#eff4ff] transition-colors cursor-pointer text-on-surface-variant hover:text-primary flex items-center justify-center" 
-              title="Recenter Fit View"
-            >
-              <span className="material-symbols-outlined text-[18px]">center_focus_strong</span>
-            </button>
-            <button 
-              onClick={() => setReloadTrigger(prev => prev + 1)}
-              className="bg-white border border-[#e2e8f0] p-2 rounded-lg shadow-sm hover:bg-[#eff4ff] transition-colors cursor-pointer text-on-surface-variant hover:text-primary flex items-center justify-center" 
-              title="Re-layout Graph"
-            >
-              <span className="material-symbols-outlined text-[18px]">refresh</span>
-            </button>
-          </div>
-
-          {/* Cytoscape Canvas viewport */}
-          <div className="flex-grow">
-            <GraphCanvas
-              nodes={visibleNodes}
-              edges={visibleEdges}
-              selectedNode={selectedNode}
-              onSelectNode={(node) => {
-                setSelectedNode(node);
-                setSelectedEdge(null);
+              {repositories.map(r => (
+                <option key={r.repository_id} value={r.repository_id}>
+                  {r.repository_name}
+                </option>
+              ))}
+            </select>
+            <SearchBar
+              placeholder="Search nodes..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                handleSearchSubmit(e.target.value);
               }}
-              layout="Hierarchical"
-              onSelectEdge={(edge) => {
-                setSelectedEdge(edge);
-                setSelectedNode(null);
-              }}
-              selectedEdge={selectedEdge}
-              fitViewTrigger={fitViewTrigger}
-              centerSelectionTrigger={centerSelectionTrigger}
-              reloadTrigger={reloadTrigger}
-              onNodeAction={handleNodeAction}
+              onClear={() => setSearchQuery('')}
+              className="w-48 sm:w-56"
             />
           </div>
+        }
+      />
 
-          {/* Graph Legend overlay */}
-          <div className="absolute bottom-4 left-4 bg-white/95 border border-[#e2e8f0] p-3 rounded-lg shadow-sm pointer-events-none z-10">
-            <div className="flex items-center gap-4 text-[10px] font-bold text-on-surface-variant">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-white border border-primary"></span>
-                <span>Module File</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-white border border-[#7c3aed]"></span>
-                <span>Class</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-white border border-[#006242]"></span>
-                <span>Function</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-white border border-[#f97316]"></span>
-                <span>Route</span>
-              </div>
-            </div>
+      {/* Toolbar */}
+      <GraphToolbar
+        activeMode={activeMode}
+        onChangeMode={(mode) => {
+          setActiveMode(mode);
+          setSelectedNode(null);
+          setSelectedEdge(null);
+        }}
+        zoom={1} // visual representation only
+        onZoomIn={() => {}} // handled locally in Canvas
+        onZoomOut={() => {}}
+        onZoomReset={() => {}}
+        onFitView={handleFitView}
+        onCenterSelection={handleCenterSelection}
+        onExpandAll={handleExpandAll}
+        onCollapseAll={handleCollapseAll}
+        showFilters={showFilters}
+        onToggleFilters={() => setShowFilters(prev => !prev)}
+        onReloadGraph={reloadGraphData}
+      />
+
+      {/* Main Graph Grid (Full-width Canvas Hero section) */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        {/* Central Canvas Viewport */}
+        <div className={`${showFilters ? 'lg:col-span-3' : 'lg:col-span-4'} space-y-4`}>
+          <GraphCanvas
+            nodes={visibleNodes}
+            edges={visibleEdges}
+            selectedNode={selectedNode}
+            onSelectNode={(node) => {
+              setSelectedNode(node);
+              setSelectedEdge(null);
+            }}
+            layout={layout}
+            onSelectEdge={(edge) => {
+              setSelectedEdge(edge);
+              setSelectedNode(null);
+            }}
+            selectedEdge={selectedEdge}
+            fitViewTrigger={fitViewTrigger}
+            centerSelectionTrigger={centerSelectionTrigger}
+            reloadTrigger={reloadTrigger}
+            onNodeAction={handleNodeAction}
+          />
+          <GraphLegend />
+        </div>
+
+        {/* Collapsible Sidebar Filters */}
+        {showFilters && (
+          <div className="lg:col-span-1 space-y-4 animate-slide-in">
+            <GraphFilters
+              selectedGroups={selectedNodeTypes}
+              onToggleGroup={handleToggleNodeType}
+              showFilesOnly={showFilesOnly}
+              onToggleFilesOnly={() => setShowFilesOnly(prev => !prev)}
+              typeCounts={typeCounts}
+            />
           </div>
-        </section>
+        )}
+      </div>
 
-        {/* Right Column: Slide-out Details Inspector Drawer */}
-        <aside 
-          className={`w-[300px] border-l border-[#e2e8f0] bg-white h-full shrink-0 shadow-2xl transition-transform duration-300 overflow-y-auto ${
-            selectedNode ? 'translate-x-0' : 'translate-x-full'
-          } absolute md:relative right-0 top-0 z-20`}
-        >
-          {selectedNode && (
-            <div className="p-6 h-full flex flex-col justify-between">
-              <div>
-                <div className="flex justify-between items-center mb-6 border-b border-[#e2e8f0] pb-3">
-                  <h3 className="text-sm font-bold text-primary truncate max-w-[200px]">{selectedNode.label}</h3>
-                  <button 
-                    onClick={() => setSelectedNode(null)}
-                    className="p-1 hover:bg-[#eff4ff] text-outline hover:text-primary rounded-full transition-all cursor-pointer flex items-center justify-center"
-                  >
-                    <span className="material-symbols-outlined text-[20px]">close</span>
-                  </button>
-                </div>
-
-                <div className="space-y-6 text-xs leading-normal">
-                  {/* Module Name */}
-                  <div>
-                    <label className="text-[10px] font-bold text-outline uppercase tracking-wider block mb-1">Symbol Type</label>
-                    <span className="bg-[#eff4ff] text-primary px-2.5 py-1 rounded-full font-bold text-[10px] uppercase">
-                      {selectedNode.type}
-                    </span>
-                  </div>
-
-                  {/* Node Source File */}
-                  {selectedNode.data?.file && (
-                    <div>
-                      <label className="text-[10px] font-bold text-outline uppercase tracking-wider block mb-1">Source File</label>
-                      <p className="font-mono bg-[#eff4ff]/60 border border-[#e2e8f0] p-2 rounded text-[11px] text-on-surface break-all">
-                        {selectedNode.data.file}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Exposed Parameters / Details */}
-                  {nodeParams.length > 0 && (
-                    <div>
-                      <label className="text-[10px] font-bold text-outline uppercase tracking-wider block mb-1">Parameters</label>
-                      <p className="font-mono text-on-surface-variant text-[11px]">
-                        ({nodeParams.join(', ')})
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Exposed Methods */}
-                  {nodeMethods.length > 0 && (
-                    <div>
-                      <label className="text-[10px] font-bold text-outline uppercase tracking-wider block mb-2">Exposed Methods ({nodeMethods.length})</label>
-                      <div className="space-y-1.5">
-                        {nodeMethods.map((m, idx) => (
-                          <div key={idx} className="flex items-center justify-between p-2 bg-[#eff4ff]/60 border border-[#e2e8f0] rounded">
-                            <span className="font-mono text-[11px] text-secondary font-semibold">{m}</span>
-                            <span className="material-symbols-outlined text-sm text-outline">bolt</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Dependencies/Imports List */}
-                  {nodeImports.length > 0 && (
-                    <div>
-                      <label className="text-[10px] font-bold text-outline uppercase tracking-wider block mb-2">Imports ({nodeImports.length})</label>
-                      <ul className="space-y-1.5">
-                        {nodeImports.slice(0, 5).map((edge, idx) => (
-                          <li key={idx} className="flex items-center gap-2 text-on-surface-variant font-semibold">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#06b6d4]"></span>
-                            <span className="truncate max-w-[200px]" title={edge.target}>{edge.target}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* View Source Trigger */}
-              <div className="pt-6 border-t border-[#e2e8f0] mt-8">
-                <button 
-                  onClick={() => navigate('/assistant', { state: { initialFile: selectedNode.data?.file || selectedNode.id } })}
-                  className="w-full bg-primary hover:bg-primary-hover text-white text-xs font-bold py-3 rounded-lg flex items-center justify-center gap-2 shadow-sm cursor-pointer transition-colors"
-                >
-                  <span className="material-symbols-outlined text-[16px]">code</span>
-                  View Source Code
-                </button>
-              </div>
-            </div>
-          )}
-        </aside>
-
+      {/* Bottom Inspector panel (Node Details, Statistics, Relationships) */}
+      <div className="w-full">
+        <NodeDetailsPanel
+          node={selectedNode}
+          edges={graphData?.edges || []}
+          selectedEdge={selectedEdge}
+          onClearEdge={() => setSelectedEdge(null)}
+          activeRepo={activeRepo}
+          totalNodesCount={totalNodesCount}
+          totalEdgesCount={totalEdgesCount}
+          visibleNodesCount={visibleNodesCount}
+          visibleEdgesCount={visibleEdgesCount}
+        />
       </div>
     </div>
   );
