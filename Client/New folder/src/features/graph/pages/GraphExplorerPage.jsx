@@ -391,9 +391,10 @@ export default function GraphExplorerPage() {
         onReloadGraph={reloadGraphData}
       />
 
-      {/* Developer workspace: graph stays visible while the selected symbol is inspected. */}
-      <div className="flex flex-col xl:flex-row gap-4 items-stretch">
-        <div className="min-w-0 flex-1 space-y-4">
+      {/* Main Graph Grid (Full-width Canvas Hero section) */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        {/* Central Canvas Viewport */}
+        <div className={`${showFilters ? 'lg:col-span-3' : 'lg:col-span-4'} space-y-4`}>
           <GraphCanvas
             nodes={visibleNodes}
             edges={visibleEdges}
@@ -416,34 +417,33 @@ export default function GraphExplorerPage() {
           <GraphLegend />
         </div>
 
-        {(selectedNode || selectedEdge || showFilters) && (
-          <aside className="w-full xl:w-[390px] 2xl:w-[430px] shrink-0 space-y-4 animate-slide-in">
-            {(selectedNode || selectedEdge) && (
-              <NodeDetailsPanel
-                node={selectedNode}
-                edges={graphData?.edges || []}
-                selectedEdge={selectedEdge}
-                onClearEdge={() => setSelectedEdge(null)}
-                onClearNode={() => setSelectedNode(null)}
-                activeRepo={activeRepo}
-                totalNodesCount={totalNodesCount}
-                totalEdgesCount={totalEdgesCount}
-                visibleNodesCount={visibleNodesCount}
-                visibleEdgesCount={visibleEdgesCount}
-              />
-            )}
-
-            {showFilters && (
-              <GraphFilters
-                selectedGroups={selectedNodeTypes}
-                onToggleGroup={handleToggleNodeType}
-                showFilesOnly={showFilesOnly}
-                onToggleFilesOnly={() => setShowFilesOnly(prev => !prev)}
-                typeCounts={typeCounts}
-              />
-            )}
-          </aside>
+        {/* Collapsible Sidebar Filters */}
+        {showFilters && (
+          <div className="lg:col-span-1 space-y-4 animate-slide-in">
+            <GraphFilters
+              selectedGroups={selectedNodeTypes}
+              onToggleGroup={handleToggleNodeType}
+              showFilesOnly={showFilesOnly}
+              onToggleFilesOnly={() => setShowFilesOnly(prev => !prev)}
+              typeCounts={typeCounts}
+            />
+          </div>
         )}
+      </div>
+
+      {/* Bottom Inspector panel (Node Details, Statistics, Relationships) */}
+      <div className="w-full">
+        <NodeDetailsPanel
+          node={selectedNode}
+          edges={graphData?.edges || []}
+          selectedEdge={selectedEdge}
+          onClearEdge={() => setSelectedEdge(null)}
+          activeRepo={activeRepo}
+          totalNodesCount={totalNodesCount}
+          totalEdgesCount={totalEdgesCount}
+          visibleNodesCount={visibleNodesCount}
+          visibleEdgesCount={visibleEdgesCount}
+        />
       </div>
     </div>
   );
