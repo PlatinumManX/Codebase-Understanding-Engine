@@ -22,6 +22,8 @@ export default function GraphToolbar({
   onCollapseAll,
   showFilters,
   onToggleFilters,
+  showChat,
+  onToggleChat,
   onReloadGraph
 }) {
   return (
@@ -64,8 +66,26 @@ export default function GraphToolbar({
               ? 'bg-[#00f0ff]/10 border-[#00f0ff] text-[#00f0ff]' 
               : 'bg-[#30363d]/50 hover:bg-[#30363d] border-[#30363d] hover:border-gray-500 text-gray-300'
           }`}
+          title="Filters Panel"
         >
           Filters
+        </button>
+
+        {/* Chat Panel Toggle */}
+        <button
+          onClick={onToggleChat}
+          type="button"
+          className={`border px-2.5 py-1 rounded text-[10px] font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+            showChat 
+              ? 'bg-[#00f0ff]/10 border-[#00f0ff] text-[#00f0ff]' 
+              : 'bg-[#30363d]/50 hover:bg-[#30363d] border-[#30363d] hover:border-gray-500 text-gray-300'
+          }`}
+          title="AI Chat"
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          Chat
         </button>
       </div>
     </div>

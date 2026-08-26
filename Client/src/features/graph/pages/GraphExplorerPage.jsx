@@ -7,6 +7,7 @@ import GraphCanvas from '../components/GraphCanvas';
 import GraphFilters from '../components/GraphFilters';
 import GraphLegend from '../components/GraphLegend';
 import NodeDetailsPanel from '../components/NodeDetailsPanel';
+import GraphChatPanel from '../components/GraphChatPanel';
 import Card from '../../../shared/components/Card';
 import { 
   getRepositories, 
@@ -31,6 +32,7 @@ export default function GraphExplorerPage() {
   
   // Collapsible Filters Panel
   const [showFilters, setShowFilters] = useState(false);
+  const [showChat, setShowChat] = useState(false);
   const [selectedNodeTypes, setSelectedNodeTypes] = useState(['module']);
   const [showFilesOnly, setShowFilesOnly] = useState(false);
 
@@ -387,7 +389,15 @@ export default function GraphExplorerPage() {
         onExpandAll={handleExpandAll}
         onCollapseAll={handleCollapseAll}
         showFilters={showFilters}
-        onToggleFilters={() => setShowFilters(prev => !prev)}
+        onToggleFilters={() => {
+          setShowFilters(prev => !prev);
+          setShowChat(false);
+        }}
+        showChat={showChat}
+        onToggleChat={() => {
+          setShowChat(prev => !prev);
+          setShowFilters(false);
+        }}
         onReloadGraph={reloadGraphData}
       />
 
@@ -416,9 +426,17 @@ export default function GraphExplorerPage() {
           <GraphLegend />
         </div>
 
-        {(selectedNode || selectedEdge || showFilters) && (
+        {(selectedNode || selectedEdge || showFilters || showChat) && (
           <aside className="w-full xl:w-[390px] 2xl:w-[430px] shrink-0 space-y-4 animate-slide-in">
-            {(selectedNode || selectedEdge) && (
+            {showChat && (
+              <GraphChatPanel
+                activeRepo={activeRepo}
+                selectedNode={selectedNode}
+                onClose={() => setShowChat(false)}
+              />
+            )}
+
+            {!showChat && (selectedNode || selectedEdge) && (
               <NodeDetailsPanel
                 node={selectedNode}
                 edges={graphData?.edges || []}
@@ -433,7 +451,7 @@ export default function GraphExplorerPage() {
               />
             )}
 
-            {showFilters && (
+            {!showChat && showFilters && (
               <GraphFilters
                 selectedGroups={selectedNodeTypes}
                 onToggleGroup={handleToggleNodeType}
