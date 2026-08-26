@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import PageHeader from '../../../shared/components/PageHeader';
 import StatCard from '../../../shared/components/StatCard';
 import ProjectOverviewCard from '../components/ProjectOverviewCard';
@@ -71,14 +72,14 @@ export default function DashboardPage() {
         description={<span className="text-[13px] text-gray-400 font-sans block mt-0.5">Overview of your indexed repository code metrics and visual intelligence.</span>}
         breadcrumbs={['Home', 'Dashboard']}
         actions={
-          <a href="#repository" className="inline-flex">
+          <Link to="/repository" className="inline-flex">
             <button className="bg-[#00f0ff]/10 hover:bg-[#00f0ff]/20 text-[#00f0ff] border border-[#00f0ff]/30 hover:border-[#00f0ff]/50 px-3.5 py-2 rounded-lg text-xs font-semibold font-mono flex items-center gap-1.5 transition-all duration-300 cursor-pointer shadow-[0_0_15px_rgba(0,240,255,0.05)] hover:shadow-[0_0_15px_rgba(0,240,255,0.15)]">
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
               Add Repository
             </button>
-          </a>
+          </Link>
         }
       />
 

@@ -22,10 +22,10 @@ export const dashboardData = {
     activeBranch: 'main',
   },
   quickActions: [
-    { title: 'Upload Repository', description: 'Analyze a new repository via Git URL or ZIP file.', actionHash: '#repository', icon: 'upload' },
-    { title: 'Explore Codebase Graph', description: 'Interact with visual class inheritance and dependency graphs.', actionHash: '#graph', icon: 'graph' },
-    { title: 'Analyze Request Flow', description: 'Track step-by-step function calling hierarchies.', actionHash: '#flow', icon: 'flow' },
-    { title: 'Ask Copilot', description: 'Query the AI Assistant about structural bottlenecks or code questions.', actionHash: '#ai', icon: 'ai' },
+    { title: 'Upload Repository', description: 'Analyze a new repository via Git URL or ZIP file.', actionHash: '/repository', icon: 'upload' },
+    { title: 'Explore Codebase Graph', description: 'Interact with visual class inheritance and dependency graphs.', actionHash: '/graph', icon: 'graph' },
+    { title: 'Analyze Request Flow', description: 'Track step-by-step function calling hierarchies.', actionHash: '/flow', icon: 'flow' },
+    { title: 'Ask Copilot', description: 'Query the AI Assistant about structural bottlenecks or code questions.', actionHash: '/assistant', icon: 'ai' },
   ],
   recentQueries: [
     { id: 1, query: 'Show me all circular dependencies in auth module', timestamp: '2 hours ago', status: 'resolved' },

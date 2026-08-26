@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from '../../../shared/components/Card';
+import { Link } from "react-router-dom";
 
 export default function QuickActionsCard({ actions }) {
   const getIconAndStyle = (iconName) => {
@@ -69,7 +70,7 @@ export default function QuickActionsCard({ actions }) {
       {actions.map((action, idx) => {
         const style = getIconAndStyle(action.icon);
         return (
-          <a key={idx} href={action.actionHash} className="group block">
+          <Link key={idx} to={action.actionHash} className="group block">
             <Card
               className={`h-[92px] border-[#30363d] bg-[#161b22]/30 backdrop-blur-sm cursor-pointer transition-all duration-300 ${style.hoverClass}`}
               bodyClassName="p-3 h-full flex items-center justify-between gap-3"
@@ -97,7 +98,7 @@ export default function QuickActionsCard({ actions }) {
                 </svg>
               </div>
             </Card>
-          </a>
+          </Link>
         );
       })}
     </div>
