@@ -2,77 +2,189 @@ class PromptBuilder:
 
     SYSTEM_PROMPT = (
         "You are an expert software architect.\n"
-        "Answer the user's question using ONLY the provided code and flow information.\n"
+        "Answer the user's question using ONLY the provided context.\n"
+        "The provided context may include conversation history, graph context, "
+        "and relevant code retrieved from the repository.\n"
         "Do not invent implementation details.\n"
-        "If the provided context is insufficient, clearly state that more code or "
-        "project information is required."
+        "If the provided context is insufficient, clearly state that more code "
+        "or project information is required."
     )
 
-    def build_prompt(self, question, retrieved_chunks, flow=None):
+    def build_prompt(
+        self,
+        question,
+        retrieved_chunks,
+        graph_context=None,
+        conversation_history=None
+    ):
         """
         Build a structured prompt for the LLM.
+
+        Context provided to the LLM:
+            Conversation History
+            +
+            Current Question
+            +
+            Graph Context
+            +
+            Retrieved Code
         """
 
         prompt = self.SYSTEM_PROMPT
-
         prompt += "\n\n"
-        prompt += "QUESTION:\n"
+
+        # ---------------------------------
+        # Conversation History
+        # ---------------------------------
+
+        if conversation_history:
+            prompt += "CONVERSATION HISTORY:\n"
+
+            for message in conversation_history:
+
+                role = message.get(
+                    "role",
+                    "user"
+                ).upper()
+
+                content = message.get(
+                    "content",
+                    ""
+                ).strip()
+
+                if content:
+                    prompt += f"{role}: {content}\n"
+
+        # ---------------------------------
+        # Current Question
+        # ---------------------------------
+
+        prompt += "\nCURRENT QUESTION:\n"
         prompt += f"{question}\n"
 
-        if flow:
-            prompt += "\nFLOW:\n"
-            prompt += f"{flow}\n"
+        # ---------------------------------
+        # Graph Context
+        # ---------------------------------
+
+        if graph_context:
+
+            selected = graph_context.get(
+                "selected"
+            )
+
+            highlighted = graph_context.get(
+                "highlighted"
+            )
+
+            if selected or highlighted:
+
+                prompt += "\nGRAPH CONTEXT:\n"
+
+                if selected:
+
+                    prompt += (
+                        "SELECTED GRAPH ELEMENT:\n"
+                    )
+
+                    prompt += (
+                        f"ID: {selected.get('id', 'unknown')}\n"
+                    )
+
+                    prompt += (
+                        f"TYPE: {selected.get('type', 'unknown')}\n"
+                    )
+
+                    prompt += (
+                        f"NAME: {selected.get('name', 'unknown')}\n"
+                    )
+
+                    if selected.get("file"):
+                        prompt += (
+                            f"FILE: {selected['file']}\n"
+                        )
+
+                    if selected.get("path"):
+                        prompt += (
+                            f"PATH: {selected['path']}\n"
+                        )
+
+                if highlighted:
+
+                    prompt += (
+                        "\nHIGHLIGHTED GRAPH ELEMENT:\n"
+                    )
+
+                    if isinstance(highlighted, list):
+
+                        for element in highlighted:
+                            prompt += (
+                                f"{element}\n"
+                            )
+
+                    else:
+                        prompt += (
+                            f"{highlighted}\n"
+                        )
+
+        # ---------------------------------
+        # Relevant Code
+        # ---------------------------------
 
         prompt += "\nRELEVANT CODE:\n"
 
-        for result in retrieved_chunks:
+        if retrieved_chunks:
 
-            chunk = result["chunk"]
+            for result in retrieved_chunks:
 
-            prompt += "\n------------------------------\n"
-            prompt += f"ID: {chunk['id']}\n"
-            prompt += f"TYPE: {chunk['type']}\n"
-            prompt += f"NAME: {chunk['name']}\n"
-            prompt += f"FILE: {chunk['file']}\n\n"
+                chunk = result["chunk"]
 
-            prompt += "CODE:\n"
-            prompt += f"{chunk['code']}\n"
+                prompt += (
+                    "\n------------------------------\n"
+                )
+
+                prompt += (
+                    f"ID: {chunk['id']}\n"
+                )
+
+                prompt += (
+                    f"TYPE: {chunk['type']}\n"
+                )
+
+                prompt += (
+                    f"NAME: {chunk['name']}\n"
+                )
+
+                prompt += (
+                    f"FILE: {chunk['file']}\n"
+                )
+
+                prompt += "\nCODE:\n"
+
+                prompt += (
+                    f"{chunk['code']}\n"
+                )
+
+        else:
+
+            prompt += (
+                "No relevant code was retrieved.\n"
+            )
+
+        # ---------------------------------
+        # Instructions
+        # ---------------------------------
 
         prompt += (
             "\nINSTRUCTIONS:\n"
-            "- Explain the requested functionality clearly.\n"
-            "- Use only the supplied context.\n"
-            "- Mention interactions between modules when evident.\n"
-            "- If information is missing, say so instead of guessing.\n"
+            "- Answer the user's current question clearly.\n"
+            "- Use previous conversation when relevant to the current question.\n"
+            "- Treat the selected or highlighted graph element as important context.\n"
+            "- Use retrieved repository code as the primary source for implementation details.\n"
+            "- Use graph context to understand the relationship or location of the relevant code.\n"
+            "- Use only the supplied repository context.\n"
+            "- Do not assume or invent implementation details.\n"
+            "- If the supplied context is insufficient, clearly say so.\n"
         )
 
         return prompt
 
-
-if __name__ == "__main__":
-
-    sample_chunks = [
-        {
-            "chunk": {
-                "id": "auth_login",
-                "type": "function",
-                "name": "login",
-                "file": "auth.py",
-                "code": (
-                    "def login(username, password):\n"
-                    "    authenticate(username, password)"
-                )
-            },
-            "score": 0.94
-        }
-    ]
-
-    builder = PromptBuilder()
-
-    prompt = builder.build_prompt(
-        question="Explain the login workflow.",
-        retrieved_chunks=sample_chunks,
-        flow="/login -> login() -> authenticate()"
-    )
-
-    print(prompt)

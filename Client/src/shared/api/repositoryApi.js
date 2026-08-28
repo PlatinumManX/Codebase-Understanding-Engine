@@ -21,7 +21,7 @@ export async function uploadRepository(repositoryName, repositoryFile, signal) {
       try {
         const errJson = await response.json();
         errorDetail = errJson.detail || errorDetail;
-      } catch (e) {
+      } catch {
         // fallback
       }
       throw new Error(errorDetail);
@@ -121,6 +121,53 @@ export async function getRepositoryGraph(repositoryId, signal) {
     if (import.meta.env.DEV) {
       console.debug('[repositoryApi] getRepositoryGraph failed:', error);
     }
+    throw error;
+  }
+}
+
+export async function sendAIQuery(
+  repositoryId,
+  query,
+  conversationId = null,
+  selectedNode = null,
+  highlighted = null,
+  signal
+) {
+  try {
+    const response = await fetch(`${API_BASE}/api/query`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        repository_id: repositoryId,
+        query,
+        conversation_id: conversationId,
+        selected: selectedNode,
+        highlighted,
+      }),
+      signal,
+    });
+
+    if (!response.ok) {
+      let errorDetail = 'AI query failed';
+
+      try {
+        const errorJson = await response.json();
+        errorDetail = errorJson.detail || errorDetail;
+      } catch {
+        // Use default error message
+      }
+
+      throw new Error(errorDetail);
+    }
+
+    return await response.json();
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.debug('[repositoryApi] sendAIQuery failed:', error);
+    }
+
     throw error;
   }
 }

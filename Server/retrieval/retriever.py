@@ -1,15 +1,18 @@
 import json
+from pathlib import Path
+
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
 
 class Retriever:
+
     def __init__(
         self,
-        chunks_path="chunks.json",
-        index_path="vector_index.faiss",
-        mapping_path="id_mapping.json",
+        chunks_path,
+        index_path,
+        mapping_path,
         model_name="BAAI/bge-base-en-v1.5"
     ):
         self.chunks = self.load_chunks(chunks_path)
@@ -17,31 +20,59 @@ class Retriever:
         self.id_mapping = self.load_mapping(mapping_path)
         self.model = SentenceTransformer(model_name)
 
+    @classmethod
+    def from_repository(
+        cls,
+        repository_id,
+        storage_root="storage/repositories"
+    ):
+        """
+        Create a Retriever for a specific repository.
+        """
+
+        server_root = Path(__file__).resolve().parent.parent
+        repository_path = server_root / storage_root / repository_id
+        retrieval_path = repository_path / "retrieval"
+
+        return cls(
+            chunks_path=retrieval_path / "chunks.json",
+            index_path=retrieval_path / "vector_index.faiss",
+            mapping_path=retrieval_path / "id_mapping.json"
+        )
+
     def load_chunks(self, chunks_path):
         """Load chunks.json"""
+
         with open(chunks_path, "r", encoding="utf-8") as file:
             return json.load(file)
 
     def load_index(self, index_path):
         """Load FAISS index"""
+
         return faiss.read_index(str(index_path))
 
     def load_mapping(self, mapping_path):
         """Load ID mapping"""
+
         with open(mapping_path, "r", encoding="utf-8") as file:
             return json.load(file)
 
     def embed_query(self, query):
         """Generate normalized embedding for the user query"""
+
         embedding = self.model.encode(
             query,
             normalize_embeddings=True
         )
 
-        return np.array([embedding], dtype=np.float32)
+        return np.array(
+            [embedding],
+            dtype=np.float32
+        )
 
     def search(self, query_embedding, top_k):
         """Search the FAISS index"""
+
         scores, indices = self.index.search(
             query_embedding,
             top_k
@@ -91,16 +122,12 @@ class Retriever:
         return results
 
 
-from pathlib import Path
-
 if __name__ == "__main__":
 
-    base_dir = Path(__file__).resolve().parent.parent
+    repository_id = input("Enter repository ID: ")
 
-    retriever = Retriever(
-        chunks_path=base_dir / "chunks.json",
-        index_path=base_dir / "vector_index.faiss",
-        mapping_path=base_dir / "id_mapping.json"
+    retriever = Retriever.from_repository(
+        repository_id
     )
 
     query = input("Enter your query: ")
