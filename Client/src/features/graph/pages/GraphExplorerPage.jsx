@@ -426,42 +426,45 @@ export default function GraphExplorerPage() {
           <GraphLegend />
         </div>
 
-        {(selectedNode || selectedEdge || showFilters || showChat) && (
-          <aside className="w-full xl:w-[390px] 2xl:w-[430px] shrink-0 space-y-4 animate-slide-in">
-            {showChat && (
-              <GraphChatPanel
-                activeRepo={activeRepo}
-                selectedNode={selectedNode}
-                onClose={() => setShowChat(false)}
-              />
-            )}
+       {(selectedNode || selectedEdge || showFilters || showChat) && (
+        <aside className="w-full xl:w-[390px] 2xl:w-[430px] shrink-0 space-y-4 animate-slide-in">
 
-            {!showChat && (selectedNode || selectedEdge) && (
-              <NodeDetailsPanel
-                node={selectedNode}
-                edges={graphData?.edges || []}
-                selectedEdge={selectedEdge}
-                onClearEdge={() => setSelectedEdge(null)}
-                onClearNode={() => setSelectedNode(null)}
-                activeRepo={activeRepo}
-                totalNodesCount={totalNodesCount}
-                totalEdgesCount={totalEdgesCount}
-                visibleNodesCount={visibleNodesCount}
-                visibleEdgesCount={visibleEdgesCount}
-              />
-            )}
+          {/* Keep Chat mounted so its conversation state survives panel switching */}
+          <div className={showChat ? 'block' : 'hidden'}>
+            <GraphChatPanel
+              activeRepo={activeRepo}
+              selectedNode={selectedNode}
+              onClose={() => setShowChat(false)}
+            />
+          </div>
 
-            {!showChat && showFilters && (
-              <GraphFilters
-                selectedGroups={selectedNodeTypes}
-                onToggleGroup={handleToggleNodeType}
-                showFilesOnly={showFilesOnly}
-                onToggleFilesOnly={() => setShowFilesOnly(prev => !prev)}
-                typeCounts={typeCounts}
-              />
-            )}
-          </aside>
-        )}
+          {!showChat && (selectedNode || selectedEdge) && (
+            <NodeDetailsPanel
+              node={selectedNode}
+              edges={graphData?.edges || []}
+              selectedEdge={selectedEdge}
+              onClearEdge={() => setSelectedEdge(null)}
+              onClearNode={() => setSelectedNode(null)}
+              activeRepo={activeRepo}
+              totalNodesCount={totalNodesCount}
+              totalEdgesCount={totalEdgesCount}
+              visibleNodesCount={visibleNodesCount}
+              visibleEdgesCount={visibleEdgesCount}
+            />
+          )}
+
+          {!showChat && showFilters && (
+            <GraphFilters
+              selectedGroups={selectedNodeTypes}
+              onToggleGroup={handleToggleNodeType}
+              showFilesOnly={showFilesOnly}
+              onToggleFilesOnly={() => setShowFilesOnly(prev => !prev)}
+              typeCounts={typeCounts}
+            />
+          )}
+
+        </aside>
+      )}
       </div>
     </div>
   );
