@@ -67,6 +67,11 @@ class PromptBuilder:
         # ---------------------------------
 
         if graph_context:
+            prompt += "\nGRAPH CONTEXT:\n"
+
+            # ---------------------------------
+            # Existing selected/highlighted context
+            # ---------------------------------
 
             selected = graph_context.get(
                 "selected"
@@ -76,55 +81,108 @@ class PromptBuilder:
                 "highlighted"
             )
 
-            if selected or highlighted:
+            if selected:
+                prompt += (
+                    "SELECTED GRAPH ELEMENT:\n"
+                )
 
-                prompt += "\nGRAPH CONTEXT:\n"
+                prompt += (
+                    f"ID: {selected.get('id', 'unknown')}\n"
+                )
 
-                if selected:
+                prompt += (
+                    f"TYPE: {selected.get('type', 'unknown')}\n"
+                )
 
+                prompt += (
+                    f"NAME: {selected.get('name', 'unknown')}\n"
+                )
+
+                if selected.get("file"):
                     prompt += (
-                        "SELECTED GRAPH ELEMENT:\n"
+                        f"FILE: {selected['file']}\n"
                     )
 
+                if selected.get("path"):
                     prompt += (
-                        f"ID: {selected.get('id', 'unknown')}\n"
+                        f"PATH: {selected['path']}\n"
                     )
 
-                    prompt += (
-                        f"TYPE: {selected.get('type', 'unknown')}\n"
-                    )
+            if highlighted:
+                prompt += (
+                    "\nHIGHLIGHTED GRAPH ELEMENT:\n"
+                )
 
-                    prompt += (
-                        f"NAME: {selected.get('name', 'unknown')}\n"
-                    )
-
-                    if selected.get("file"):
+                if isinstance(highlighted, list):
+                    for element in highlighted:
                         prompt += (
-                            f"FILE: {selected['file']}\n"
+                            f"{element}\n"
+                        )
+                else:
+                    prompt += (
+                        f"{highlighted}\n"
+                    )
+
+            # ---------------------------------
+            # Graph operation context
+            # ---------------------------------
+
+            operation = graph_context.get(
+                "operation"
+            )
+
+            target = graph_context.get(
+                "target"
+            )
+
+            subgraph = graph_context.get(
+                "subgraph"
+            )
+
+            if operation:
+                prompt += (
+                    "\nGRAPH OPERATION:\n"
+                    f"{operation}\n"
+                )
+
+            if target:
+                prompt += (
+                    f"GRAPH TARGET:\n"
+                    f"{target}\n"
+                )
+
+            if subgraph:
+                nodes = list(
+                    subgraph.nodes(data=True)
+                )
+
+                edges = list(
+                    subgraph.edges(data=True)
+                )
+
+                prompt += "\nGRAPH NODES:\n"
+
+                for node_id, data in nodes:
+                    prompt += (
+                        f"- {node_id} "
+                        f"({data.get('type', 'unknown')})"
+                    )
+
+                    if data.get("name"):
+                        prompt += (
+                            f" name={data['name']}"
                         )
 
-                    if selected.get("path"):
-                        prompt += (
-                            f"PATH: {selected['path']}\n"
-                        )
+                    prompt += "\n"
 
-                if highlighted:
+                prompt += "\nGRAPH RELATIONSHIPS:\n"
 
+                for source, target_node, data in edges:
                     prompt += (
-                        "\nHIGHLIGHTED GRAPH ELEMENT:\n"
+                        f"- {source} "
+                        f"--[{data.get('type', 'unknown')}]--> "
+                        f"{target_node}\n"
                     )
-
-                    if isinstance(highlighted, list):
-
-                        for element in highlighted:
-                            prompt += (
-                                f"{element}\n"
-                            )
-
-                    else:
-                        prompt += (
-                            f"{highlighted}\n"
-                        )
 
         # ---------------------------------
         # Relevant Code

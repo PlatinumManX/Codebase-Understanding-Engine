@@ -228,7 +228,10 @@ export default function GraphCanvas({
   fitViewTrigger = 0,
   centerSelectionTrigger = 0,
   reloadTrigger = 0,
-  onNodeAction
+  onNodeAction,
+  aiHighlightedNodeIds = [],
+  aiHighlightedEdgeIds = [],
+  onUserInteraction
 }) {
   const containerRef = useRef(null);
   const cyRef = useRef(null);
@@ -236,10 +239,10 @@ export default function GraphCanvas({
 
   
   // Store latest callbacks to avoid re-binding or re-initializing
-  const callbacksRef = useRef({ onSelectNode, onSelectEdge, onNodeAction });
+  const callbacksRef = useRef({ onSelectNode, onSelectEdge, onNodeAction, onUserInteraction });
   useEffect(() => {
-    callbacksRef.current = { onSelectNode, onSelectEdge, onNodeAction };
-  }, [onSelectNode, onSelectEdge, onNodeAction]);
+    callbacksRef.current = { onSelectNode, onSelectEdge, onNodeAction, onUserInteraction };
+  }, [onSelectNode, onSelectEdge, onNodeAction, onUserInteraction]);
 
   // Initialize Cytoscape
   useEffect(() => {
@@ -257,14 +260,24 @@ export default function GraphCanvas({
     
     // Event listeners
     cy.on('tap', 'node', (e) => {
+      if (callbacksRef.current.onUserInteraction) {
+        callbacksRef.current.onUserInteraction();
+      }
+
       const nodeData = e.target.data();
+
       if (callbacksRef.current.onSelectNode) {
         callbacksRef.current.onSelectNode(nodeData.originalData);
       }
     });
     
     cy.on('tap', 'edge', (e) => {
+      if (callbacksRef.current.onUserInteraction) {
+        callbacksRef.current.onUserInteraction();
+      }
+
       const edgeData = e.target.data();
+
       if (callbacksRef.current.onSelectEdge) {
         callbacksRef.current.onSelectEdge(edgeData.originalData);
       }
@@ -272,6 +285,9 @@ export default function GraphCanvas({
     
     cy.on('tap', (e) => {
       if (e.target === cy) {
+        if (callbacksRef.current.onUserInteraction) {
+          callbacksRef.current.onUserInteraction();
+        }
         if (callbacksRef.current.onSelectNode) callbacksRef.current.onSelectNode(null);
         if (callbacksRef.current.onSelectEdge) callbacksRef.current.onSelectEdge(null);
       }
@@ -418,40 +434,90 @@ export default function GraphCanvas({
     }
   }, [nodes, edges, layout]);
 
-  // Handle Selection Highlights
+  // Handle Selection and AI Highlights
   useEffect(() => {
     const cy = cyRef.current;
     if (!cy) return;
-    
+
     cy.elements().removeClass('selected highlighted muted');
-    
+
+    // AI graph highlight takes priority over manual selection
+    if (aiHighlightedNodeIds.length > 0 || aiHighlightedEdgeIds.length > 0) {
+      cy.elements().addClass('muted');
+
+      aiHighlightedNodeIds.forEach(nodeId => {
+        const cyNode = cy.getElementById(nodeId);
+
+        if (cyNode.length) {
+          cyNode.removeClass('muted').addClass('highlighted');
+
+          cyNode
+          .neighborhood()
+          .removeClass('muted')
+          .addClass('highlighted');
+        }
+      });
+
+      aiHighlightedEdgeIds.forEach(edgeId => {
+        const cyEdge = cy.getElementById(edgeId);
+
+        if (cyEdge.length) {
+          cyEdge.removeClass('muted').addClass('highlighted');
+
+          cyEdge
+          .connectedNodes()
+          .removeClass('muted')
+          .addClass('highlighted');
+        }
+      });
+
+      return;
+    }
+
     if (selectedNode) {
       const cyNode = cy.getElementById(selectedNode.id);
+
       if (cyNode.length) {
         cyNode.select();
-        
+
         // Mute all
         cy.elements().addClass('muted');
-        
+
         // Highlight node and its neighborhood
         cyNode.removeClass('muted');
+
         const neighborhood = cyNode.neighborhood();
-        neighborhood.removeClass('muted').addClass('highlighted');
+
+        neighborhood
+          .removeClass('muted')
+          .addClass('highlighted');
       }
     } else if (selectedEdge) {
-      const cyEdge = cy.getElementById(selectedEdge.id || `${selectedEdge.source}-${selectedEdge.target}-${selectedEdge.type}`);
+      const cyEdge = cy.getElementById(
+        selectedEdge.id ||
+        `${selectedEdge.source}-${selectedEdge.target}-${selectedEdge.type}`
+      );
+
       if (cyEdge.length) {
         cyEdge.select();
-        
+
         // Mute all
         cy.elements().addClass('muted');
-        
+
         // Highlight edge and its connected nodes
         cyEdge.removeClass('muted').addClass('highlighted');
-        cyEdge.connectedNodes().removeClass('muted').addClass('highlighted');
+
+        cyEdge.connectedNodes()
+          .removeClass('muted')
+          .addClass('highlighted');
       }
     }
-  }, [selectedNode, selectedEdge]);
+  }, [
+    selectedNode,
+    selectedEdge,
+    aiHighlightedNodeIds,
+    aiHighlightedEdgeIds
+  ]);
 
   // Fit View
   useEffect(() => {

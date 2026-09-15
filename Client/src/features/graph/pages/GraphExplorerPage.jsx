@@ -28,11 +28,17 @@ export default function GraphExplorerPage() {
   // Selection states
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
+  const [aiHighlightedNodeIds, setAiHighlightedNodeIds] = useState([]);
+  const [aiHighlightedEdgeIds, setAiHighlightedEdgeIds] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   
   // Collapsible Filters Panel
   const [showFilters, setShowFilters] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const clearAIHighlighting = useCallback(() => {
+    setAiHighlightedNodeIds([]);
+    setAiHighlightedEdgeIds([]);
+  }, []);
   const [selectedNodeTypes, setSelectedNodeTypes] = useState(['module']);
   const [showFilesOnly, setShowFilesOnly] = useState(false);
 
@@ -126,9 +132,16 @@ export default function GraphExplorerPage() {
 
   const reloadGraphData = async () => {
     if (!activeRepo) return;
+
     try {
       const graph = await getRepositoryGraph(activeRepo.repository_id);
+
       setGraphData(graph || { nodes: [], edges: [] });
+
+      //Clear any previoud AI graph highlighting
+      setAiHighlightedNodeIds([]);
+      setAiHighlightedEdgeIds([]);
+
       // Trigger canvas rebuild after fetching new data
       setReloadTrigger(prev => prev + 1);
     } catch (err) {
@@ -422,6 +435,12 @@ export default function GraphExplorerPage() {
             centerSelectionTrigger={centerSelectionTrigger}
             reloadTrigger={reloadTrigger}
             onNodeAction={handleNodeAction}
+            aiHighlightedNodeIds={aiHighlightedNodeIds}
+            aiHighlightedEdgeIds={aiHighlightedEdgeIds}
+            onUserInteraction={() => {
+              setAiHighlightedNodeIds([]);
+              setAiHighlightedEdgeIds([]);
+            }}
           />
           <GraphLegend />
         </div>
@@ -432,9 +451,25 @@ export default function GraphExplorerPage() {
           {/* Keep Chat mounted so its conversation state survives panel switching */}
           <div className={showChat ? 'block' : 'hidden'}>
             <GraphChatPanel
+              key={activeRepo?.repository_id}
               activeRepo={activeRepo}
               selectedNode={selectedNode}
               onClose={() => setShowChat(false)}
+              onResetGraphHighlight={clearAIHighlighting}
+              onGraphAction={(action) => {
+                if (!action) {
+                  clearAIHighlighting();
+                  return;
+                }
+
+                setAiHighlightedNodeIds(
+                  action.node_ids || []
+                );
+
+                setAiHighlightedEdgeIds(
+                  action.edge_ids || []
+                );
+              }}
             />
           </div>
 

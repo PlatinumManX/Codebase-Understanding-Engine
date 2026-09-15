@@ -5,7 +5,8 @@ import { sendAIQuery } from '../../../shared/api/repositoryApi';
 export default function GraphChatPanel({
   activeRepo,
   selectedNode,
-  onClose
+  onClose,
+  onGraphAction
 }) {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -32,14 +33,6 @@ export default function GraphChatPanel({
   useEffect(() => {
     scrollToBottom();
   }, [messages, isThinking]);
-
-  // Reset the chat when the repository changes.
-  useEffect(() => {
-    setMessages([]);
-    setConversationId(null);
-    setIsThinking(false);
-    setErrorMsg(null);
-  }, [activeRepo?.repository_id]);
 
   const buildSelectedNodeContext = () => {
     if (!selectedNode) {
@@ -98,6 +91,10 @@ export default function GraphChatPanel({
         setConversationId(
           result.conversation_id
         );
+      }
+
+      if (result.graph_action && onGraphAction) {
+        onGraphAction(result.graph_action);
       }
 
       const assistantMsg = {
@@ -167,6 +164,10 @@ export default function GraphChatPanel({
         );
       }
 
+      if (result.graph_action && onGraphAction) {
+        onGraphAction(result.graph_action);
+      }
+
       const assistantMsg = {
         id:  createMessageId(),
         role: 'assistant',
@@ -217,6 +218,14 @@ export default function GraphChatPanel({
         'Explain the architecture of this project.',
         'Show the dependency flow'
       ];
+    
+  //Reset Button
+  const handleResetChat = () => {
+    setMessages([]);
+    setConversationId(null);
+    setInputValue('');
+    setErrorMsg(null);
+  };
 
   return (
     <div className="h-[550px] rounded-lg border border-[#30363d] bg-[#0d1117] overflow-hidden flex flex-col font-mono shadow-[0_18px_50px_rgba(0,0,0,0.28)] select-text">
@@ -233,26 +242,38 @@ export default function GraphChatPanel({
           </div>
         </div>
 
-        <button
-          onClick={onClose}
-          type="button"
-          className="text-gray-400 hover:text-white transition-colors cursor-pointer shrink-0"
-          title="Close Chat"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={handleResetChat}
+            type="button"
+            disabled={isThinking}
+            className="text-[10px] text-gray-400 hover:text-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Reset Chat"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+            Reset
+          </button>
+
+          <button
+            onClick={onClose}
+            type="button"
+            className="text-gray-400 hover:text-white transition-colors cursor-pointer"
+            title="Close Chat"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Context Indicator */}
